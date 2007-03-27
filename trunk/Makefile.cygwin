@@ -43,7 +43,7 @@ HDR=\
 	BOWTrader.hpp \
 	JanTrader.hpp
 
-LIBS=-lboost_date_time-gcc-mt-1_33_1 -lboost_program_options-gcc-mt-1_33_1 -lgsl -lgslcblas
+LIBS=-lboost_date_time-gcc-mt-s-1_33_1 -lboost_program_options-gcc-mt-s-1_33_1 -lgsl -lgslcblas
 
 LIBPATH= \
 
@@ -53,9 +53,9 @@ INCLUDES= \
 	-I/usr/include/boost-1_33_1 \
 	-I.
 
-CFLAGS=-g
+CFLAGS=-g -mthreads
 CPPFLASG=
-LDFLAGS=
+LDFLAGS=-mthreads
 DEPFLAGS=-M
 
 all: $(BIN)
