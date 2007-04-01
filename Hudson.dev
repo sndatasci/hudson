@@ -1,8 +1,8 @@
 [Project]
 FileName=Hudson.dev
 Name=Hudson
-UnitCount=34
-Type=1
+UnitCount=25
+Type=2
 Ver=1
 ObjFiles=
 Includes=
@@ -12,7 +12,7 @@ ResourceIncludes=C:\cygwin\home\rational\Hudson
 MakeIncludes=
 Compiler=
 CppCompiler=
-Linker=../../../../DevCpp/lib/libboost_date_time-mgw-mt-s-1_33_1.lib_@@_../../../../DevCpp/lib/libboost_program_options-mgw-mt-s-1_33_1.lib_@@_../../../../DevCpp/lib/libgsl.a_@@_../../../../DevCpp/lib/libgslcblas.a_@@_
+Linker=_@@__@@_
 IsCpp=1
 Icon=
 ExeOutput=objs
@@ -32,7 +32,7 @@ CompilerSettings=00000010010000010000d0
 [Unit1]
 FileName=BnHTrader.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -42,7 +42,7 @@ BuildCmd=
 [Unit2]
 FileName=BnHTrader.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -52,37 +52,7 @@ BuildCmd=
 [Unit3]
 FileName=DaySeries.hpp
 CompileCpp=1
-Folder=Hudson
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit4]
-FileName=BOWTrader.cpp
-CompileCpp=1
-Folder=Hudson
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit5]
-FileName=BOWTrader.hpp
-CompileCpp=1
-Folder=Hudson
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit6]
-FileName=DayPrice.hpp
-CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -90,19 +60,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit7]
-FileName=EOMTrader.hpp
+FileName=Execution.hpp
 CompileCpp=1
-Folder=Hudson
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit8]
-FileName=EOMTrader.cpp
-CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -110,9 +70,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=FileDriver.hpp
+FileName=ExecutionSet.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -120,19 +80,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=EOWTrader.cpp
+FileName=ReturnFactors.hpp
 CompileCpp=1
-Folder=Hudson
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit11]
-FileName=EOWTrader.hpp
-CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -140,9 +90,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=Execution.cpp
+FileName=LongPosition.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -150,9 +100,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit13]
-FileName=Execution.hpp
+FileName=Position.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -160,9 +110,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=ExecutionSet.cpp
+FileName=Position.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -170,9 +120,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=ExecutionSet.hpp
+FileName=PositionSet.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -180,9 +130,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=ReturnFactors.hpp
+FileName=PositionSet.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -190,9 +140,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit17]
-FileName=JanTrader.cpp
+FileName=Report.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -200,9 +150,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit18]
-FileName=JanTrader.hpp
+FileName=Report.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -210,9 +160,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit19]
-FileName=LongPosition.cpp
+FileName=ReturnFactors.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -220,9 +170,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit20]
-FileName=LongPosition.hpp
+FileName=ShortPosition.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -230,9 +180,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit21]
-FileName=Position.cpp
+FileName=ShortPosition.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -240,9 +190,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit22]
-FileName=Position.hpp
+FileName=YahooDriver.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -250,9 +200,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit24]
-FileName=PositionSet.hpp
+FileName=Trader.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -260,9 +210,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit25]
-FileName=Report.cpp
+FileName=YahooDriver.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -270,9 +220,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit26]
-FileName=Report.hpp
+FileName=Trader.hpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -280,9 +230,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit27]
-FileName=ReturnFactors.cpp
+FileName=YahooDriver.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -301,16 +251,6 @@ BuildCmd=
 
 [Unit29]
 FileName=ShortPosition.cpp
-CompileCpp=1
-Folder=Hudson
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit30]
-FileName=YahooDriver.hpp
 CompileCpp=1
 Folder=Hudson
 Compile=1
@@ -388,9 +328,59 @@ ProductVersion=
 AutoIncBuildNr=0
 
 [Unit23]
-FileName=PositionSet.cpp
+FileName=Trader.cpp
 CompileCpp=1
-Folder=Hudson
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit4]
+FileName=DayPrice.hpp
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit5]
+FileName=FileDriver.hpp
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit6]
+FileName=Execution.cpp
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit8]
+FileName=ExecutionSet.cpp
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit11]
+FileName=LongPosition.cpp
+CompileCpp=1
+Folder=
 Compile=1
 Link=1
 Priority=1000
