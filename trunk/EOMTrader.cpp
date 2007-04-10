@@ -48,8 +48,8 @@ void EOMTrader::run(unsigned entry_days, unsigned exit_days) throw(TraderExcepti
 
 	try {
 
-	  Position::ID id = buy("EOM", entry_iter->first, entry_iter->second.adjclose);
-	  close(id, exit_iter->first, exit_iter->second.adjclose);
+	  Position::ID id = buy("EOM", entry_iter->first, entry_iter->second.close);
+	  close(id, exit_iter->first, exit_iter->second.close);
 
 	} catch( TraderException& te ) {
 	  cerr << "Trader error: " << te.what() << endl;
