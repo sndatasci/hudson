@@ -4,10 +4,10 @@
 
 CXX=/geek-gadgets/sparc-sun-solaris2.8/gcc-3.4/bin/g++
 
-BIN=eom eom_matrix jan jan_matrix eow bow
+LIB=libhudson.a
+BIN=eom eow jan eom_matrix jan_matrix
 
 SRC=\
-	series.cpp \
 	YahooDriver.cpp \
 	ReturnFactors.cpp \
 	Position.cpp \
@@ -18,11 +18,7 @@ SRC=\
 	ShortPosition.cpp \
 	PositionSet.cpp \
 	Trader.cpp \
-	BnHTrader.cpp  \
-	EOMTrader.cpp \
-	EOWTrader.cpp \
-	BOWTrader.cpp \
-	JanTrader.cpp
+	BnHTrader.cpp 
 
 HDR=\
 	FileDriver.hpp \
@@ -38,24 +34,24 @@ HDR=\
 	ShortPosition.hpp \
 	PositionSet.hpp \
 	Trader.hpp \
-	BnHTrader.hpp \
-	EOMTrader.hpp \
-	EOWTrader.hpp \
-	BOWTrader.hpp \
-	JanTrader.hpp
+	BnHTrader.hpp
 
 
-
-LIBS=-lboost_date_time-gcc -lboost_program_options -lgsl -lgslcblas
+LIBS=-lhudson -lboost_date_time-gcc -lboost_program_options -lgsl -lgslcblas
 
 LIBPATH= \
+	-L. \
+	-L/home/users/agiannetti/lib \
 	-L/mkv/extlib/sparc-sun-solaris2.8-gcc-3.4/boost-1_33_1/lib
 
 RPATH= \
+	-R. \
+	-R/home/users/agiannetti/lib \
 	-R/mkv/extlib/sparc-sun-solaris2.8-gcc-3.4/boost-1_33_1/lib
 
 INCLUDES= \
 	-I. \
+	-I/home/users/agiannetti/include \
 	-I/mkv/extlib/sparc-sun-solaris2.8-gcc-3.4/boost-1_33_1/include
 
 CFLAGS=-g
@@ -64,31 +60,39 @@ LDFLAGS=
 DEPFLAGS=-M
 
 
-all: $(BIN)
+all: $(LIB) $(BIN)
+
+lib: $(LIB)
+
+bin: $(BIN)
 
 %.d: %.cpp
 	@$(CXX) $(INCLUDES) $(DEPFLAGS) $< > $@
 
 %.o: %.cpp
-	$(CXX) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $<
+	$(CXX) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
-eow: $(SRC:.cpp=.o) eow.o
-	$(CXX) -o $@ $(LDFLAGS) $^ $(LIBPATH) $(LIBS)
+libhudson.a: $(SRC:.cpp=.o)
+	ar r $@ $^
+	ranlib $@
 
-bow: $(SRC:.cpp=.o) bow.o
-	$(CXX) -o $@ $(LDFLAGS) $^ $(LIBPATH) $(LIBS)
+eow: $(LIB) eow.o EOWTrader.o
+	$(CXX) -o $@ $(LDFLAGS) eow.o EOWTrader.o $(LIBPATH) $(LIBS)
 
-eom: $(SRC:.cpp=.o) eom.o
-	$(CXX) -o $@ $(LDFLAGS) $^ $(LIBPATH) $(LIBS)
+bow: $(LIB) bow.o BOWTrader.o
+	$(CXX) -o $@ $(LDFLAGS) bow.o BOWTrader.o $(LIBPATH) $(LIBS)
 
-eom_matrix: $(SRC:.cpp=.o) eom_matrix.o
-	$(CXX) -o $@ $(LDFLAGS) $^ $(LIBPATH) $(LIBS)
+eom: $(LIB) eom.o EOMTrader.o
+	$(CXX) -o $@ $(LDFLAGS) eom.o EOMTrader.o $(LIBPATH) $(LIBS)
 
-jan: $(SRC:.cpp=.o) jan.o
-	$(CXX) -o $@ $(LDFLAGS) $^ $(LIBPATH) $(LIBS)
+eom_matrix: $(LIB) eom_matrix.o EOMTrader.o
+	$(CXX) -o $@ $(LDFLAGS) eom_matrix.o EOMTrader.o $(LIBPATH) $(LIBS)
 
-jan_matrix: $(SRC:.cpp=.o) jan_matrix.o
-	$(CXX) -o $@ $(LDFLAGS) $^ $(LIBPATH) $(LIBS)
+jan: $(LIB) jan.o JanTrader.o
+	$(CXX) -o $@ $(LDFLAGS) jan.o JanTrader.o $(LIBPATH) $(LIBS)
+
+jan_matrix: $(LIB) jan_matrix.o JanTrader.o
+	$(CXX) -o $@ $(LDFLAGS) jan_matrix.o JanTrader.o $(LIBPATH) $(LIBS)
 
 clean:
 	\rm -f *.o *.d core
@@ -96,4 +100,4 @@ clean:
 clobber:
 	\rm -f *.o *.d core $(BIN)
 
--include $(SRC:.cpp=.d)
+-include dep/$(SRC:.cpp=.d)
