@@ -79,7 +79,7 @@ bool Series::YahooDriver::next(DayPrice& dp) throw(Series::DriverException)
 	switch( i ) {
 
 	case DATE: {
-	  dp.key = _parseDate(field);
+	  dp.key = from_string(field);
 	  if( dp.key.is_not_a_date() ) {
 		stringstream ss;
 		ss << "Invalid key at line " << _linenum;

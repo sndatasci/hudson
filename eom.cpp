@@ -47,8 +47,8 @@ int main(int argc, char* argv[])
 	  ("series_file", po::value<string>(&dbfile), "series database")
 	  ("entry_days", po::value<int>(&entry_days)->default_value(2), "offset entry days from EOM")
 	  ("exit_days", po::value<int>(&exit_days)->default_value(2), "offset exit days from previous EOM")
-	  ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYYMMDD)")
-	  ("end_date", po::value<string>(&end_date), "end of trading period (YYYYMMDD)")
+	  ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYY-MM-DD)")
+	  ("end_date", po::value<string>(&end_date), "end of trading period (YYYY-MM-DD)")
 	  ;
 
 	po::variables_map vm;
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 	cout << "Exit days: " << exit_days << endl;
 	cout << "Series file: " << dbfile << endl;
 
-  } catch( exception& e) {
+  } catch( std::exception& e) {
 	cerr << "Error: " << e.what() << endl;
 	exit(EXIT_FAILURE);
   }
@@ -99,12 +99,16 @@ int main(int argc, char* argv[])
 	  exit(EXIT_FAILURE);
 	}
 
-  } catch( std::out_of_range& e ) {
-	cerr << "Can't get begin/end dates: " << e.what() << endl;
-	exit(EXIT_FAILURE);
-
   } catch( Series::DriverException& e ) {
 	cerr << "Driver error: " << e.what() << endl;
+	exit(EXIT_FAILURE);
+
+  } catch( std::out_of_range& e ) {
+	cerr << "Out of range error: " << e.what() << endl;
+	exit(EXIT_FAILURE);
+
+  } catch( std::exception& e ) {
+	cerr << "Error: " << e.what() << endl;
 	exit(EXIT_FAILURE);
   }
 
