@@ -129,31 +129,3 @@ bool Series::YahooDriver::eof(void)
   return _infile.eof();
 }
 
-
-gregorian::date Series::YahooDriver::_parseDate(string& field) throw(Series::DriverException)
-{
-  typedef tokenizer<boost::char_separator<char> > date_tokenizer;
-  boost::char_separator<char> sep("-");
-  date_tokenizer date_tokens(field, sep);
-
-  date_tokenizer::iterator date_iter = date_tokens.begin();
-  unsigned day = atoi((*date_iter).c_str());
-
-  if( day == 0 || day > 31 ) {
-	ostringstream oss;
-	oss << "Invalid day of the month " << day;
-	throw DriverException(oss.str());
-  }
-
-  ++date_iter;
-  string month = *date_iter;
-
-  ++date_iter;
-  unsigned year = atoi((*date_iter).c_str());
-  year += (year < 10 ? 2000 : 1900);
-
-  stringstream ss;
-  ss << day << '-' << month << '-' << year;
-
-  return date(from_uk_string(ss.str()));
-}

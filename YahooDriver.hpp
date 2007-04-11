@@ -42,9 +42,6 @@ namespace Series
 	};
 
   private:
-	boost::gregorian::date _parseDate(std::string& dates) throw(DriverException);
-
-  private:
 	std::ifstream _infile;
 	std::string _line;
 	unsigned _linenum;

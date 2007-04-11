@@ -108,12 +108,16 @@ int main(int argc, char* argv[])
 	  exit(EXIT_FAILURE);
 	}
 
-  } catch( std::out_of_range& e ) {
+  } catch( Series::DriverException& e ) {
+	cerr << "Driver error: " << e.what() << endl;
+	exit(EXIT_FAILURE);
+
+  } catch( out_of_range& e ) {
 	cerr << "Can't get begin/end dates: " << e.what() << endl;
 	exit(EXIT_FAILURE);
 
-  } catch( Series::DriverException& e ) {
-	cerr << "Driver error: " << e.what() << endl;
+  } catch( exception& e ) {
+	cerr << "Error: " << e.what() << endl;
 	exit(EXIT_FAILURE);
   }
 
