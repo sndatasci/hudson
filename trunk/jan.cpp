@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
 	  ("hedge_dbfile", po::value<string>(&hedge_dbfile), "hedge price database")
 	  ("long_symbol", po::value<string>(&long_symbol), "long ticker")
 	  ("hedge_symbol", po::value<string>(&hedge_symbol), "hedge ticker")
-	  ("begin_date", po::value<string>(&begin_date), "start of trading period")
-	  ("end_date", po::value<string>(&end_date), "end of trading period")
+	  ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYY-MM-DD)")
+	  ("end_date", po::value<string>(&end_date), "end of trading period (YYYY-MM-DD)")
 	  ("entry_offset", po::value<int>(&entry_offset), "offset from canonical entry date")
 	  ("exit_offset", po::value<int>(&exit_offset), "offset from canonical exit date")
 	  ;
@@ -111,12 +111,16 @@ int main(int argc, char* argv[])
 	  exit(EXIT_FAILURE);
 	}
 
-  } catch( std::out_of_range& e ) {
+  } catch( Series::DriverException& e ) {
+	cerr << "Driver error: " << e.what() << endl;
+	exit(EXIT_FAILURE);
+
+  } catch( out_of_range& e ) {
 	cerr << "Can't get begin/end dates: " << e.what() << endl;
 	exit(EXIT_FAILURE);
 
-  } catch( Series::DriverException& e ) {
-	cerr << "Driver error: " << e.what() << endl;
+  } catch( exception& e ) {
+	cerr << "Error: " << e.what() << endl;
 	exit(EXIT_FAILURE);
   }
 

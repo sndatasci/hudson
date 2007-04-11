@@ -45,8 +45,8 @@ int main(int argc, char* argv[])
 	desc.add_options()
 	  ("help", "produce help message")
 	  ("series_file", po::value<string>(&dbfile), "series database")
-	  ("begin_date", po::value<string>(&begin_date), "start of trading period")
-	  ("end_date", po::value<string>(&end_date), "end of trading period")
+	  ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYY-MM-DD)")
+	  ("end_date", po::value<string>(&end_date), "end of trading period (YYYY-MM-DD)")
 	  ("max_entry_offset", po::value<int>(&entry_offset)->default_value(5), "max entry offset before EOM")
 	  ("max_exit_offset", po::value<int>(&exit_offset)->default_value(5), "max exit offset after EOM")
 	  ;
@@ -94,12 +94,16 @@ int main(int argc, char* argv[])
 	  exit(EXIT_FAILURE);
 	}
 
-  } catch( std::out_of_range& e ) {
-	cerr << "Can't get begin/end dates: " << e.what() << endl;
-	exit(EXIT_FAILURE);
-
   } catch( DriverException& e ) {
 	cerr << "Driver error: " << e.what() << endl;
+	exit(EXIT_FAILURE);
+
+  } catch( out_of_range& e ) {
+	cerr << "Out of range error: " << e.what() << endl;
+	exit(EXIT_FAILURE);
+
+  } catch( exception& e ) {
+	cerr << "Error: " << e.what() << endl;
 	exit(EXIT_FAILURE);
   }
 
