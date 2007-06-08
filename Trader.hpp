@@ -5,13 +5,17 @@
 #ifndef _TRADER_HPP_
 #define _TRADER_HPP_
 
+#ifdef WIN32
+#pragma warning (disable:4290)
+#endif
+
 // STL
 #include <string>
 
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 
-// Backtester
+// Hudson
 #include "PositionSet.hpp"
 
 
