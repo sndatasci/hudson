@@ -5,6 +5,11 @@
 #ifndef _LONGPOSITION_HPP_
 #define _LONGPOSITION_HPP_
 
+#ifdef WIN32
+#pragma warning (disable:4290)
+#endif
+
+// Hudson
 #include "Position.hpp"
 
 

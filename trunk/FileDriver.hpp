@@ -5,6 +5,10 @@
 #ifndef _SERIES_FILEDRIVER_HPP_
 #define _SERIES_FILEDRIVER_HPP_
 
+#ifdef WIN32
+#pragma warning (disable:4290)
+#endif
+
 // STL
 #include <string>
 #include <stdexcept>

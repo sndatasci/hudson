@@ -5,12 +5,13 @@
 #ifndef _RETURNFACTORS_HPP_
 #define _RETURNFACTORS_HPP_
 
-// Posix
+// CSTD
 #include <cmath>
 
 // STL
 #include <vector>
 #include <numeric>
+#include <functional>
 
 
 class ReturnFactors
@@ -33,7 +34,7 @@ public:
   double gsd(void) const;
   double best(void) const;
   double worst(void) const;
-  unsigned num(void) const;
+  size_t num(void) const;
   unsigned max_cons_pos(void) const; // max consecutive positive
   unsigned max_cons_neg(void) const; // max consecutive negative
 
