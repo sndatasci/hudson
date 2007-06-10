@@ -136,12 +136,12 @@ int main(int argc, char* argv[])
   rp.print();
 
   // BnH
+  cout << endl << "B&H" << endl << "--" << endl;
   BnHTrader bnh(db);
   bnh.run();
   ReturnFactors bnh_rf(bnh.factors(), db.duration().days(), 12);
   Report bnh_rp(bnh_rf);
 
-  cout << endl;
   bnh_rp.roi();
   bnh_rp.cagr();
   bnh_rp.gsdm();
