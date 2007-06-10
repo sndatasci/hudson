@@ -41,12 +41,10 @@ LIBS=-lhudson -lboost_date_time -lboost_program_options -lgsl -lgslcblas
 
 LIBPATH= \
 	-L. \
-	-L/home/users/agiannetti/lib \
 	-L/opt/local/lib
 
 RPATH= \
 	-R. \
-	-R/home/users/agiannetti/lib \
 	-R/opt/local/lib
 
 INCLUDES= \

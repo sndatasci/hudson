@@ -19,15 +19,6 @@ using namespace std;
 namespace lmb = boost::lambda;
 
 
-template <class Arg, class Res>
-struct folog10: public std::unary_function<Arg, Res>
-{
-  Res operator() (Arg x) const {
-    return std::log10(x);
-  }
-};
-
-
 ReturnFactors::ReturnFactors(const vdouble& vf, unsigned days, unsigned yf):
   _vf(vf),
   _days(days),
@@ -37,8 +28,7 @@ ReturnFactors::ReturnFactors(const vdouble& vf, unsigned days, unsigned yf):
   _fv = accumulate<vdouble::const_iterator, double>( _vf.begin(), _vf.end(), 1, lmb::_1 * lmb::_2 );
   _mean = accumulate<vdouble::const_iterator, double>( _vf.begin(), _vf.end(), 0 ) / _vf.size();
   _stddev = ::sqrt( accumulate<vdouble::const_iterator, double>( _vf.begin(), _vf.end(), 0, variance1(_mean) ) / (_vf.size() - 1) );
-
-  transform(_vf.begin(), _vf.end(), _vlf.begin(), folog10<double, double>());
+  transform(_vf.begin(), _vf.end(), back_insert_iterator<vdouble>(_vlf), log10_1());
 }
 
 
