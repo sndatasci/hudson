@@ -5,7 +5,7 @@
 CXX=g++
 
 LIB=libhudson.a
-BIN=eom eow jan eom_matrix jan_matrix
+BIN=eom eow bow jan eom_matrix jan_matrix
 
 SRC=\
 	YahooDriver.cpp \
