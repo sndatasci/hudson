@@ -13,7 +13,6 @@
 #include <numeric>
 #include <functional>
 
-
 class ReturnFactors
 {
 public:
@@ -43,21 +42,25 @@ public:
 
 private:
   struct variance1 : public std::binary_function<double, double, double> {
-	variance1(double mean): _mean(mean) { }
+    variance1(double mean): _mean(mean) { }
 
-	// accumulate() doesn't accumulate when using a custom binary_function...
-	double operator()(double x, double y) { return x + ::pow(y - _mean, 2); }
+    // accumulate() doesn't accumulate when using a custom binary_function...
+    double operator()(double x, double y) { return x + ::pow(y - _mean, 2); }
+
   private:
-	double _mean;
+    double _mean;
   };
 
-
   struct skew1: public std::binary_function<double, double, double> {
-	skew1(double mean): _mean(mean) { }
+    skew1(double mean): _mean(mean) { }
 
-	double operator()(double x, double y) { return x + ::pow(y - _mean, 3); }
+    double operator()(double x, double y) { return x + ::pow(y - _mean, 3); }
   private:
-	double _mean;
+    double _mean;
+  };
+
+  struct log10_1: public std::unary_function<double, double> {
+    double operator()(double x) { return ::log10(x); }
   };
 
   double _dd(int i) const;
