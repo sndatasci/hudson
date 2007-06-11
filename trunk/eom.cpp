@@ -2,7 +2,7 @@
  * eom.cpp
  */
 
-// Posix
+// STDLIB
 #include <ctime>
 #include <cstdlib>
 #include <cmath>
@@ -16,7 +16,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/program_options.hpp>
 
-// Series
+// Hudson
 #include "YahooDriver.hpp"
 #include "DaySeries.hpp"
 #include "DayPrice.hpp"
@@ -41,39 +41,39 @@ int main(int argc, char* argv[])
   string dbfile;
 
   try {
-	po::options_description desc("Allowed options");
-	desc.add_options()
-	  ("help", "produce help message")
-	  ("series_file", po::value<string>(&dbfile), "series database")
-	  ("entry_days", po::value<int>(&entry_days)->default_value(2), "offset entry days from EOM")
-	  ("exit_days", po::value<int>(&exit_days)->default_value(2), "offset exit days from previous EOM")
-	  ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYY-MM-DD)")
-	  ("end_date", po::value<string>(&end_date), "end of trading period (YYYY-MM-DD)")
-	  ;
+	  po::options_description desc("Allowed options");
+	  desc.add_options()
+	    ("help", "produce help message")
+	    ("series_file", po::value<string>(&dbfile), "series database")
+	    ("entry_days", po::value<int>(&entry_days)->default_value(2), "offset entry days from EOM")
+	    ("exit_days", po::value<int>(&exit_days)->default_value(2), "offset exit days from previous EOM")
+	    ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYY-MM-DD)")
+	    ("end_date", po::value<string>(&end_date), "end of trading period (YYYY-MM-DD)")
+	    ;
 
-	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-	po::notify(vm);
+	  po::variables_map vm;
+	  po::store(po::parse_command_line(argc, argv, desc), vm);
+	  po::notify(vm);
 
-	if( vm.count("help") ) {
-	  cout << desc << endl;
-	  exit(0);
-	}
+	  if( vm.count("help") ) {
+	    cout << desc << endl;
+	    exit(0);
+	  }
 
-	if( vm["series_file"].empty() ||
-		vm["entry_days"].empty() || vm["exit_days"].empty() ||
-		vm["begin_date"].empty() || vm["end_date"].empty() ) {
-	  cout << desc << endl;
-	  exit(1);
-	}
+	  if( vm["series_file"].empty() ||
+		    vm["entry_days"].empty() || vm["exit_days"].empty() ||
+		    vm["begin_date"].empty() || vm["end_date"].empty() ) {
+	    cout << desc << endl;
+	    exit(1);
+	  }
 
-	cout << "Entry days: " << entry_days << endl;
-	cout << "Exit days: " << exit_days << endl;
-	cout << "Series file: " << dbfile << endl;
+	  cout << "Entry days: " << entry_days << endl;
+	  cout << "Exit days: " << exit_days << endl;
+	  cout << "Series file: " << dbfile << endl;
 
   } catch( std::exception& e) {
-	cerr << "Error: " << e.what() << endl;
-	exit(EXIT_FAILURE);
+	  cerr << "Error: " << e.what() << endl;
+	  exit(EXIT_FAILURE);
   }
 
   Series::YahooDriver yd;
@@ -81,35 +81,35 @@ int main(int argc, char* argv[])
 
   try {
 
-	date load_begin(from_simple_string(begin_date));
-	if( load_begin.is_not_a_date() ) {
-	  cerr << "Invalid begin date " << begin_date << endl;
-	  exit(EXIT_FAILURE);
-	}
+	  date load_begin(from_simple_string(begin_date));
+	  if( load_begin.is_not_a_date() ) {
+	    cerr << "Invalid begin date " << begin_date << endl;
+	    exit(EXIT_FAILURE);
+	  }
 
-	date load_end(from_simple_string(end_date));
-	if( load_end.is_not_a_date() ) {
-	  cerr << "Invalid end date " << end_date << endl;
-	  exit(EXIT_FAILURE);
-	}
+	  date load_end(from_simple_string(end_date));
+	  if( load_end.is_not_a_date() ) {
+	    cerr << "Invalid end date " << end_date << endl;
+	    exit(EXIT_FAILURE);
+	  }
 
-	cout << "Loading " << dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-	if( db.load(dbfile, load_begin, load_end) <= 0 ) {
-	  cerr << "No records found" << endl;
-	  exit(EXIT_FAILURE);
-	}
+	  cout << "Loading " << dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+	  if( db.load(dbfile, load_begin, load_end) <= 0 ) {
+	    cerr << "No records found" << endl;
+	    exit(EXIT_FAILURE);
+	  }
 
   } catch( Series::DriverException& e ) {
-	cerr << "Driver error: " << e.what() << endl;
-	exit(EXIT_FAILURE);
+	  cerr << "Driver error: " << e.what() << endl;
+	  exit(EXIT_FAILURE);
 
   } catch( std::out_of_range& e ) {
-	cerr << "Out of range error: " << e.what() << endl;
-	exit(EXIT_FAILURE);
+	  cerr << "Out of range error: " << e.what() << endl;
+	  exit(EXIT_FAILURE);
 
   } catch( std::exception& e ) {
-	cerr << "Error: " << e.what() << endl;
-	exit(EXIT_FAILURE);
+	  cerr << "Error: " << e.what() << endl;
+	  exit(EXIT_FAILURE);
   }
 
   cout << "Records: " << db.size() << endl;

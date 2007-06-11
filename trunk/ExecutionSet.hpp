@@ -33,10 +33,10 @@ public:
   ExecutionSet(void);
   ~ExecutionSet(void);
 
-  bool buy(boost::gregorian::date dt, double price, unsigned size);
-  bool sell(boost::gregorian::date dt, double price, unsigned size);
-  bool sell_short(boost::gregorian::date dt, double price, unsigned size);
-  bool cover(boost::gregorian::date dt, double price, unsigned size);
+  bool buy(boost::gregorian::date dt, const Price& price, unsigned size);
+  bool sell(boost::gregorian::date dt, const Price& price, unsigned size);
+  bool sell_short(boost::gregorian::date dt, const Price& price, unsigned size);
+  bool cover(boost::gregorian::date dt, const Price& price, unsigned size);
 
   const Execution& first_by_date(void) const { return **(_es.get<date_key>().begin()); }
   const Execution& last_by_date(void) const { return **(_es.get<date_key>().rbegin()); }

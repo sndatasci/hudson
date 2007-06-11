@@ -35,28 +35,28 @@ void ExecutionSet::print(void) const
 }
 
 
-bool ExecutionSet::buy(boost::gregorian::date dt, double price, unsigned size)
+bool ExecutionSet::buy(boost::gregorian::date dt, const Price& price, unsigned size)
 {
   Execution* pExe = new BuyExecution(++_eid, dt, price, size);
   return _es.insert(pExe).second;
 }
 
 
-bool ExecutionSet::sell(boost::gregorian::date dt, double price, unsigned size)
+bool ExecutionSet::sell(boost::gregorian::date dt, const Price& price, unsigned size)
 {
   Execution* pExe = new SellExecution(++_eid, dt, price, size);
   return _es.insert(pExe).second;
 }
 
 
-bool ExecutionSet::sell_short(boost::gregorian::date dt, double price, unsigned size)
+bool ExecutionSet::sell_short(boost::gregorian::date dt, const Price& price, unsigned size)
 {
   Execution* pExe = new SellShortExecution(++_eid, dt, price, size);
   return _es.insert(pExe).second;
 }
 
 
-bool ExecutionSet::cover(boost::gregorian::date dt, double price, unsigned size)
+bool ExecutionSet::cover(boost::gregorian::date dt, const Price& price, unsigned size)
 {
   Execution* pExe = new CoverExecution(++_eid, dt, price, size);
   return _es.insert(pExe).second;

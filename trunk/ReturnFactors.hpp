@@ -72,7 +72,7 @@ private:
 
   unsigned _days;				// time in days
   unsigned _yf;					// yearly factors (12 for monthly)
-  double _years;				// time in years (fractionable)
+  double _years;				// time in years
   double _fv;					// future value
   double _mean;					// factors average
   double _stddev;				// factors standard deviation
