@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 
+#include "Price.hpp"
 #include "LongPosition.hpp"
 #include "ShortPosition.hpp"
 #include "Trader.hpp"
@@ -25,7 +26,7 @@ Trader::Trader(void):
 
 
 // Buy a new position
-Position::ID Trader::buy(const string& symbol, const date& dt, double price, unsigned size) throw(TraderException)
+Position::ID Trader::buy(const string& symbol, const date& dt, const Price& price, unsigned size) throw(TraderException)
 {
   // Create new position
   Position* pPos;
@@ -56,7 +57,7 @@ Position::ID Trader::buy(const string& symbol, const date& dt, double price, uns
 
 
 // Add buy for an existing position
-void Trader::buy(Position::ID id, const boost::gregorian::date& dt, double price, unsigned size) throw(TraderException)
+void Trader::buy(Position::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size) throw(TraderException)
 {
   // Find existing position
   PositionSet::const_iterator iter = _miPositions.find(id, pos_comp_id());
@@ -87,7 +88,7 @@ void Trader::buy(Position::ID id, const boost::gregorian::date& dt, double price
 
 
 // Sell an existing long position
-void Trader::sell(Position::ID id, const date& dt, double price, unsigned size) throw(TraderException)
+void Trader::sell(Position::ID id, const date& dt, const Price& price, unsigned size) throw(TraderException)
 {
   // Find existing position
   PositionSet::const_iterator iter = _miPositions.find(id, pos_comp_id());
@@ -117,7 +118,7 @@ void Trader::sell(Position::ID id, const date& dt, double price, unsigned size) 
 }
 
 
-Position::ID Trader::sell_short(const string& symbol, const date& dt, double price, unsigned size) throw(TraderException)
+Position::ID Trader::sell_short(const string& symbol, const date& dt, const Price& price, unsigned size) throw(TraderException)
 {
   Position* pPos; 
 
@@ -143,7 +144,7 @@ Position::ID Trader::sell_short(const string& symbol, const date& dt, double pri
 }
 
 
-void Trader::sell_short(Position::ID id, const date& dt, double price, unsigned size) throw(TraderException)
+void Trader::sell_short(Position::ID id, const date& dt, const Price& price, unsigned size) throw(TraderException)
 {
   // Find existing position
   PositionSet::const_iterator iter = _miPositions.find(id, pos_comp_id());
@@ -172,7 +173,7 @@ void Trader::sell_short(Position::ID id, const date& dt, double price, unsigned 
 }
 
 
-void Trader::cover(Position::ID id, const date& dt, double price, unsigned size) throw(TraderException)
+void Trader::cover(Position::ID id, const date& dt, const Price& price, unsigned size) throw(TraderException)
 {
   // Find existing position
   PositionSet::const_iterator iter = _miPositions.find(id, pos_comp_id());
@@ -202,7 +203,7 @@ void Trader::cover(Position::ID id, const date& dt, double price, unsigned size)
 }
 
 
-void Trader::close(Position::ID id, const date& dt, double price) throw(TraderException)
+void Trader::close(Position::ID id, const date& dt, const Price& price) throw(TraderException)
 {
   // Find existing position
   PositionSet::const_iterator iter = _miPositions.find(id, pos_comp_id());

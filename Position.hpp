@@ -18,14 +18,17 @@
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 
+// Hudson
 #include "ExecutionSet.hpp"
+
+class Price;
 
 
 class PositionException: public std::exception
 {
 public:
   PositionException(const std::string& what):
-	_what(what)
+	  _what(what)
   {
   }
 
@@ -43,8 +46,8 @@ public:
   typedef unsigned long ID;
 
   enum Type {
-	LONG,
-	SHORT
+	  LONG,
+	  SHORT
   };
 
 public:
@@ -62,11 +65,11 @@ public:
   const Execution& first_exec(void) const { return _sExecutions.last_by_date(); }
   const Execution& last_exec(void) const { return _sExecutions.first_by_date(); }
 
-  virtual void buy(const boost::gregorian::date& dt, double price, unsigned size) throw(PositionException) = 0;
-  virtual void sell(const boost::gregorian::date& dt, double price, unsigned size) throw(PositionException) = 0;
-  virtual void sell_short(const boost::gregorian::date& dt, double price, unsigned size) throw(PositionException) = 0;
-  virtual void cover(const boost::gregorian::date& dt, double price, unsigned size) throw(PositionException) = 0;
-  virtual void close(const boost::gregorian::date& dt, double price) throw(PositionException) = 0;
+  virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
+  virtual void sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
+  virtual void sell_short(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
+  virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
+  virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException) = 0;
   virtual double factor(void) const { return 1; }
   virtual Type type(void) const = 0;
   virtual std::string type_str(void) const = 0;

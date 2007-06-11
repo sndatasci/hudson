@@ -2,9 +2,11 @@
  * Position.cpp
  */
 
-// IO
+// STL
 #include <iostream>
 
+// Hudson
+#include "Price.hpp"
 #include "Position.hpp"
 
 using namespace std;

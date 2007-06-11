@@ -18,6 +18,8 @@
 // Hudson
 #include "PositionSet.hpp"
 
+class Price;
+
 
 class TraderException: public std::exception
 {
@@ -41,17 +43,17 @@ public:
   Trader(void);
 
   // Buy/Sell
-  Position::ID buy(const std::string& symbol, const boost::gregorian::date& dt, double price, unsigned size = 1) throw(TraderException);  
-  void buy(Position::ID, const boost::gregorian::date& dt, double price, unsigned size = 1) throw(TraderException);
-  void sell(Position::ID, const boost::gregorian::date& dt, double price, unsigned size = 1) throw(TraderException);
+  Position::ID buy(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);  
+  void buy(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  void sell(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
 
   // Short Sell/Cover
-  Position::ID sell_short(const std::string& symbol, const boost::gregorian::date& dt, double price, unsigned size = 1) throw(TraderException);
-  void sell_short(Position::ID, const boost::gregorian::date& dt, double price, unsigned size = 1) throw(TraderException);
-  void cover(Position::ID, const boost::gregorian::date& dt, double price, unsigned size = 1) throw(TraderException);
+  Position::ID sell_short(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  void sell_short(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  void cover(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
 
   // Close
-  void close(Position::ID, const boost::gregorian::date& dt, double price) throw(TraderException);
+  void close(Position::ID, const boost::gregorian::date& dt, const Price& price) throw(TraderException);
 
   const PositionSet positions(void) const { return _miPositions; }
 
