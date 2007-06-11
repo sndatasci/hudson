@@ -101,7 +101,7 @@ typename Series::DaySeries<T>::ThisMap::const_iterator Series::DaySeries<T>::bef
   if( (iter = ThisMap::lower_bound(k)) == ThisMap::begin() && recs > 0 )
 	return ThisMap::end();
 
-  for( int i = 0; i < recs; i++ )
+  for( unsigned i = 0; i < recs; i++ )
 	if( --iter == ThisMap::begin() )
 	  return ThisMap::end();
 
@@ -122,7 +122,7 @@ typename Series::DaySeries<T>::ThisMap::const_iterator Series::DaySeries<T>::aft
 	}
   }
 
-  for( int i = 0; i < recs; i++ )
+  for( unsigned i = 0; i < recs; i++ )
 	if( ++iter == ThisMap::end() )
 	  return ThisMap::end();
 
