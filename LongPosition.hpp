@@ -18,19 +18,22 @@ class LongPosition: public Position
 public:
   LongPosition(ID id, const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
 
+  virtual Type type(void) const { return LONG; }
+  virtual std::string type_str(void) const { return "Long"; }
+
   unsigned buys(void) const { return _buys; }
   unsigned sells(void) const { return _sells; }
-  double avgBuyPrice(void) const { return _avgBuyPrice; }
-  double avgSellPrice(void) const { return _avgSellPrice; }
+
+  virtual double avgEntryPrice(void) const { return _avgBuyPrice; }
+  virtual double avgExitPrice(void) const { return _avgSellPrice; }
+  virtual double factor(void) const { return _avgSellPrice / _avgBuyPrice; }
 
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
   virtual void sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
   virtual void sell_short(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException);
-  virtual double factor(void) const;
-  virtual Type type(void) const { return LONG; }
-  virtual std::string type_str(void) const { return "Long"; }
+
 
 private:
   unsigned _buys;

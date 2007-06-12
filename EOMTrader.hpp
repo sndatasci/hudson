@@ -11,6 +11,7 @@
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 
+// Hudson
 #include "DayPrice.hpp"
 #include "DaySeries.hpp"
 #include "Trader.hpp"

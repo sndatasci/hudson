@@ -2,6 +2,9 @@
  * ShortPosition.cpp
  */
 
+#include "StdAfx.h"
+
+// Hudson
 #include "ShortPosition.hpp"
 
 using namespace std;
@@ -79,12 +82,6 @@ void ShortPosition::close(const date& dt, const Price& price) throw(PositionExce
 	  throw PositionException("Position is closed");
 
   cover(dt, price, _size);
-}
-
-
-double ShortPosition::factor(void) const
-{
-  return _avgShortPrice / _avgCoverPrice;
 }
 
 

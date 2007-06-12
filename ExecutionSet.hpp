@@ -5,20 +5,28 @@
 #ifndef _EXECUTIONSET_HPP_
 #define _EXECUTIONSET_HPP_
 
+#ifdef WIN32
+#pragma warning (disable:4290)
+#endif
+
 // Boost
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/tag.hpp>
 
+// Hudson
 #include "Execution.hpp"
 
 
 struct date_key { };
 struct side_key { };
 
+// Execution*
 typedef boost::multi_index::multi_index_container<
+
   Execution*,
+
   boost::multi_index::indexed_by<
     boost::multi_index::ordered_unique<boost::multi_index::identity<Execution> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<date_key>, boost::multi_index::const_mem_fun<Execution, boost::gregorian::date, &Execution::dt> >,
@@ -37,6 +45,9 @@ public:
   bool sell(boost::gregorian::date dt, const Price& price, unsigned size);
   bool sell_short(boost::gregorian::date dt, const Price& price, unsigned size);
   bool cover(boost::gregorian::date dt, const Price& price, unsigned size);
+
+  size_t size(void) const { return _es.size_(); }
+  bool empty(void) const { return _es.empty_(); }
 
   const Execution& first_by_date(void) const { return **(_es.get<date_key>().begin()); }
   const Execution& last_by_date(void) const { return **(_es.get<date_key>().rbegin()); }

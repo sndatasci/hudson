@@ -22,12 +22,8 @@ public:
 
   void run(void);
 
-  std::vector<double> factors(void) const { return _vf; }
-
 private:
   const DB& _db;
-
-  std::vector<double> _vf;
 };
 
 #endif // _BNHTRADER_HPP_

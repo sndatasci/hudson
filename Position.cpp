@@ -2,6 +2,8 @@
  * Position.cpp
  */
 
+#include "StdAfx.h"
+
 // STL
 #include <iostream>
 

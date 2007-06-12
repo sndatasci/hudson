@@ -1,0 +1,5 @@
+-- TODO.txt
+
+* Add exception type in exception classes what()
+* PositionSet inherits from multi_set, ExecutionSet contains multi_set??
+* Move ExecutionSet/PositionSet from shallow copy to deep copy

@@ -5,9 +5,12 @@
 #ifndef _SERIES_DAYSERIES_HPP_
 #define _SERIES_DAYSERIES_HPP_
 
-#include <iostream>
+#ifdef WIN32
+#pragma warning (disable:4290)
+#endif
 
 // STL
+#include <iostream>
 #include <map>
 #include <string>
 
@@ -24,31 +27,31 @@ namespace Series
   template <class T>
   class DaySeries: public std::map<boost::gregorian::date, T>
   {
-	typedef std::map<boost::gregorian::date, T> ThisMap;
+	  typedef std::map<boost::gregorian::date, T> ThisMap;
 
   public:
-	DaySeries(const std::string& name, FileDriver<T>& driver);
+	  DaySeries(const std::string& name, FileDriver<T>& driver);
 
-	std::string name(void) const { return _name; }
-	
-	int load(const std::string& filename); // load all records returned by the driver
-	int load(const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
+	  std::string name(void) const { return _name; }
+  	
+	  int load(const std::string& filename); // load all records returned by the driver
+	  int load(const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
 
-	boost::gregorian::date_period period(void) const;
-	boost::gregorian::date_duration duration(void) const;
-	long days(void) const;
+	  boost::gregorian::date_period period(void) const;
+	  boost::gregorian::date_duration duration(void) const;
+	  long days(void) const;
 
-	typename ThisMap::const_iterator at_or_before(const boost::gregorian::date& k) const;
-	typename ThisMap::const_iterator before(const boost::gregorian::date& k, unsigned recs = 1) const;
-	typename ThisMap::const_iterator after(const boost::gregorian::date& k, unsigned recs = 1) const;
-	typename ThisMap::const_iterator first_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const;
-	typename ThisMap::const_iterator last_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const;
-	typename ThisMap::const_iterator first_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
-	typename ThisMap::const_iterator last_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
+	  typename ThisMap::const_iterator at_or_before(const boost::gregorian::date& k) const;
+	  typename ThisMap::const_iterator before(const boost::gregorian::date& k, unsigned recs = 1) const;
+	  typename ThisMap::const_iterator after(const boost::gregorian::date& k, unsigned recs = 1) const;
+	  typename ThisMap::const_iterator first_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const;
+	  typename ThisMap::const_iterator last_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const;
+	  typename ThisMap::const_iterator first_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
+	  typename ThisMap::const_iterator last_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
 
   private:
-	std::string _name;
-	FileDriver<T>& _driver;
+	  std::string _name;
+	  FileDriver<T>& _driver;
   };
 
 } // namespace Series

@@ -5,7 +5,11 @@
 #ifndef _RETURNFACTORS_HPP_
 #define _RETURNFACTORS_HPP_
 
-// CSTD
+#ifdef WIN32
+#pragma warning (disable:4290)
+#endif
+
+// STDLIB
 #include <cmath>
 
 // STL
@@ -13,16 +17,34 @@
 #include <numeric>
 #include <functional>
 
+// Hudson
+#include "PositionSet.hpp"
+
+
+class ReturnFactorsException: public std::exception
+{
+public:
+  ReturnFactorsException(const std::string& what):
+    _what(what)
+  {
+  }
+
+  virtual ~ReturnFactorsException(void) { }
+  virtual const char* what(void) const { return _what.c_str(); }
+
+protected:
+  std::string _what;
+};
+
+
 class ReturnFactors
 {
 public:
-  typedef std::vector<double> vdouble;
-
-  ReturnFactors(const vdouble& vf, unsigned days, unsigned yf);
+  ReturnFactors(const PositionSet& sPositions, unsigned days, unsigned yperiods) throw(ReturnFactorsException);
   ~ReturnFactors(void);
 
   unsigned days(void) const { return _days; }
-  unsigned yperiods(void) const { return _yf; }
+  unsigned yperiods(void) const { return _yperiods; }
 
   double roi(void) const;
   double avg(void) const;
@@ -31,18 +53,18 @@ public:
   double skew(void) const;
   double cagr(void) const;
   double gsd(void) const;
-  double best(void) const;
-  double worst(void) const;
+  const Position& best(void) const;
+  const Position& worst(void) const;
   size_t num(void) const;
   unsigned max_cons_pos(void) const; // max consecutive positive
   unsigned max_cons_neg(void) const; // max consecutive negative
 
-  vdouble pos(void) const;
-  vdouble neg(void) const;
+  PositionSet pos(void) const;
+  PositionSet neg(void) const;
 
 private:
-  struct variance1 : public std::binary_function<double, double, double> {
-    variance1(double mean): _mean(mean) { }
+  struct variance_bf : public std::binary_function<double, double, double> {
+    variance_bf(double mean): _mean(mean) { }
 
     // accumulate() doesn't accumulate when using a custom binary_function...
     double operator()(double x, double y) { return x + ::pow(y - _mean, 2); }
@@ -51,31 +73,50 @@ private:
     double _mean;
   };
 
-  struct skew1: public std::binary_function<double, double, double> {
-    skew1(double mean): _mean(mean) { }
+  struct skew_bf: public std::binary_function<double, double, double> {
+    skew_bf(double mean): _mean(mean) { }
 
     double operator()(double x, double y) { return x + ::pow(y - _mean, 3); }
+
   private:
     double _mean;
   };
 
-  struct log10_1: public std::unary_function<double, double> {
+  struct log10_uf: public std::unary_function<double, double> {
+
     double operator()(double x) { return ::log10(x); }
+  };
+
+  struct PositionGt: public std::binary_function<Position*, double, bool> {
+
+    bool operator()(Position* pPos, double x) const { return pPos->factor() > x; }
+  };
+
+  struct PositionLt: public std::binary_function<Position*, double, bool> {
+
+    bool operator()(Position* pPos, double x) const { return pPos->factor() < x; }
+  };
+
+  struct PositionLtCmp: public std::binary_function<Position*, Position*, bool> {
+
+    bool operator()(const Position* pos1, const Position* pos2) const { return pos1->factor() < pos2->factor(); }
   };
 
   double _dd(int i) const;
 
 private:
-  vdouble _vf;					// factors
-  vdouble _vlf;					// log factors
-  double* _f;					// C-Style array for GSL
+  PositionSet _sPositions;
 
-  unsigned _days;				// time in days
-  unsigned _yf;					// yearly factors (12 for monthly)
-  double _years;				// time in years
-  double _fv;					// future value
-  double _mean;					// factors average
-  double _stddev;				// factors standard deviation
+  typedef std::vector<double> doubleVector;
+  doubleVector _vFactors; // time-ordered position factors
+  doubleVector _vLogFactors; // time-ordered position log factors
+
+  unsigned _days;			// time in days
+  unsigned _yperiods; // yearly factors (12 for monthly)
+  double _years;			// total time in years
+  double _fvalue;			// future value
+  double _mean;				// factors average
+  double _stddev;			// factors standard deviation
 };
 
 #endif // _RETURNFACTORS_HPP_
