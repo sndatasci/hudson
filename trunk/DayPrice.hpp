@@ -5,6 +5,10 @@
 #ifndef _SERIES_DAYPRICE_HPP_
 #define _SERIES_DAYPRICE_HPP_
 
+#ifdef WIN32
+#pragma warning (disable:4290)
+#endif
+
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 

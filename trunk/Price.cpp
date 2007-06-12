@@ -2,6 +2,8 @@
 * Price.cpp
 */
 
+#include "StdAfx.h"
+
 // Hudson
 #include "Price.hpp"
 

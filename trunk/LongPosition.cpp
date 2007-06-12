@@ -2,6 +2,9 @@
  * LongPosition.cpp
  */
 
+#include "StdAfx.h"
+
+// Hudson
 #include "LongPosition.hpp"
 
 using namespace std;
@@ -79,12 +82,6 @@ void LongPosition::close(const date& dt, const Price& price) throw(PositionExcep
 	  throw PositionException("Position is closed");
 
   sell(dt, price, _size);
-}
-
-
-double LongPosition::factor(void) const
-{
-  return _avgSellPrice / _avgBuyPrice;
 }
 
 

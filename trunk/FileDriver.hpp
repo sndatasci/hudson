@@ -19,26 +19,26 @@ namespace Series
   class DriverException: public std::exception
   {
   public:
-	DriverException(const std::string& what):
-	  _what(what)
-	{
-	}
+	  DriverException(const std::string& what):
+	    _what(what)
+	  {
+	  }
 
-	virtual ~DriverException(void) throw() { }
-	virtual const char* what(void) throw() { return _what.c_str(); }
+	  virtual ~DriverException(void) { }
+	  virtual const char* what(void) { return _what.c_str(); }
 
-  protected:
-	std::string _what;
+    protected:
+	  std::string _what;
   };
 
   template <class T>
   class FileDriver 
   {
   public:
-	virtual bool open(const std::string& filename) = 0;
-	virtual void close(void) = 0;
-	virtual bool next(T& record) throw(DriverException) = 0;
-	virtual bool eof(void) = 0;
+	  virtual bool open(const std::string& filename) = 0;
+	  virtual void close(void) = 0;
+	  virtual bool next(T& record) throw(DriverException) = 0;
+	  virtual bool eof(void) = 0;
   };
   
 } // namespace Series

@@ -99,6 +99,30 @@ int main(int argc, char* argv[])
 	    exit(EXIT_FAILURE);
 	  }
 
+    cout << "Records: " << db.size() << endl;
+    cout << "Period: " << db.period() << endl;
+    cout << "Total days: " << db.duration().days() << endl;
+
+    EOMTrader trader(db);
+    trader.run(entry_days, exit_days);
+    trader.positions().closed().print();
+    cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
+
+    ReturnFactors rf(trader.positions().closed(), db.duration().days(), 12);
+
+    Report rp(rf);
+    rp.print();
+
+    // BnH
+    cout << endl << "B&H" << endl << "--" << endl;
+    BnHTrader bnh(db);
+    bnh.run();
+    ReturnFactors bnh_rf(bnh.positions().closed(), db.duration().days(), 12);
+    Report bnh_rp(bnh_rf);
+
+    bnh_rp.roi();
+    bnh_rp.cagr();
+
   } catch( Series::DriverException& e ) {
 	  cerr << "Driver error: " << e.what() << endl;
 	  exit(EXIT_FAILURE);
@@ -111,31 +135,6 @@ int main(int argc, char* argv[])
 	  cerr << "Error: " << e.what() << endl;
 	  exit(EXIT_FAILURE);
   }
-
-  cout << "Records: " << db.size() << endl;
-  cout << "Period: " << db.period() << endl;
-  cout << "Total days: " << db.duration().days() << endl;
-
-  EOMTrader trader(db);
-  trader.run(entry_days, exit_days);
-  trader.positions().closed().print();
-  cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
-
-  ReturnFactors rf(trader.positions().closed().factors(), db.duration().days(), 12);
-
-  Report rp(rf);
-  rp.print();
-
-  // BnH
-  cout << endl << "B&H" << endl << "--" << endl;
-  BnHTrader bnh(db);
-  bnh.run();
-  ReturnFactors bnh_rf(bnh.factors(), db.duration().days(), 12);
-  Report bnh_rp(bnh_rf);
-
-  bnh_rp.roi();
-  bnh_rp.cagr();
-  bnh_rp.gsdm();
 
   return 0;
 }

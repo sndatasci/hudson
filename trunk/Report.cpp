@@ -2,9 +2,12 @@
  * Report.cpp
  */
 
+#include "StdAfx.h"
+
 // STL
 #include <iostream>
 
+// Hudson
 #include "Report.hpp"
 
 using namespace std;

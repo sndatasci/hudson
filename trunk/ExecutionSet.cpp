@@ -2,10 +2,12 @@
  * ExecutionSet.cpp
  */
 
+#include "StdAfx.h"
 
-// C++
+// STL
 #include <iostream>
 
+// Hudson
 #include "ExecutionSet.hpp"
 
 using namespace std;
@@ -20,17 +22,15 @@ ExecutionSet::ExecutionSet(void):
 ExecutionSet::~ExecutionSet(void)
 {
   for( __ExecutionSet::const_iterator iter = _es.begin(); iter != _es.end(); ++iter )
-	delete *iter;
+	  delete *iter;
 }
 
 
 void ExecutionSet::print(void) const
 {
-  for( executions_by_date::iterator iter = _es.get<date_key>().begin();
-	   iter != _es.get<date_key>().end();
-	   ++iter ) {
-	(*iter)->print();
-	cout << ", ";
+  for( executions_by_date::iterator iter = _es.get<date_key>().begin(); iter != _es.get<date_key>().end(); ++iter ) {
+	  (*iter)->print();
+	  cout << ", ";
   }
 }
 

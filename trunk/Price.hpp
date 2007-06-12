@@ -24,8 +24,8 @@ class PriceException: public std::exception
     {
     }
 
-    virtual ~PriceException(void) throw() { }
-    virtual const char* what(void) const throw() { return _what.c_str(); }
+    virtual ~PriceException(void) { }
+    virtual const char* what(void) const { return _what.c_str(); }
 
   protected:
     std::string _what;

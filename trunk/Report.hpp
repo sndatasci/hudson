@@ -5,13 +5,19 @@
 #ifndef _REPORT_HPP_
 #define _REPORT_HPP_
 
+#ifdef WIN32
+#pragma warning (disable:4290)
+#endif
+
 // C++
 #include <iostream>
 
 // STL
 #include <string>
 
+// Hudson
 #include "ReturnFactors.hpp"
+#include "Position.hpp"
 
 
 class Report
@@ -29,8 +35,8 @@ public:
   void neg_trades(void) const { std::cout << "Neg trades: " << _rf_neg.num() << " (" << _neg_percent*100 << "%)" << std::endl; }
   void avg_pos(void) const { std::cout << "Avg pos: " << _rf_pos.avg()*100 << '%' << std::endl; }
   void avg_neg(void) const { std::cout << "Avg neg: " << _rf_neg.avg()*100 << '%' << std::endl; }
-  void best(void) const { std::cout << "Best: " << _rf.best()*100 << '%' << std::endl; }
-  void worst(void) const { std::cout << "Worst: " << _rf.worst()*100 << '%' << std::endl; }
+  void best(void) const { const Position& pos = _rf.best(); std::cout << "Best: " << (pos.factor()-1)*100 << '%' << " (" << pos.first_exec().dt() << '/' << pos.last_exec().dt() << ')' << std::endl; }
+  void worst(void) const { const Position& pos = _rf.worst(); std::cout << "Worst: " << (pos.factor()-1)*100 << '%' << " (" << pos.first_exec().dt() << '/' << pos.last_exec().dt() << ')' << std::endl; }
   void max_cons_pos(void) const { std::cout << "Max cons pos: " << _rf.max_cons_pos() << std::endl; }
   void max_cons_neg(void) const { std::cout << "Max cons neg: " << _rf.max_cons_neg() << std::endl; }
   void max_dd(void) const { std::cout << "Max Drawdown: " << -(1-_rf.dd())*100 << '%' << std::endl; }
