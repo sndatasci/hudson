@@ -46,8 +46,8 @@ public:
   bool sell_short(boost::gregorian::date dt, const Price& price, unsigned size);
   bool cover(boost::gregorian::date dt, const Price& price, unsigned size);
 
-  size_t size(void) const { return _es.size_(); }
-  bool empty(void) const { return _es.empty_(); }
+  size_t size(void) const { return _es.size(); }
+  bool empty(void) const { return _es.empty(); }
 
   const Execution& first_by_date(void) const { return **(_es.get<date_key>().begin()); }
   const Execution& last_by_date(void) const { return **(_es.get<date_key>().rbegin()); }

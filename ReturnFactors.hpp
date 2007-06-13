@@ -30,8 +30,8 @@ public:
     _Str += msg;
   }
 
-  virtual ~ReturnFactorsException(void) { }
-  virtual const char *what() const { return _Str.c_str(); }
+  virtual ~ReturnFactorsException(void) throw() { }
+  virtual const char *what() const throw() { return _Str.c_str(); }
 
 protected:
   std::string _Str;
@@ -41,7 +41,7 @@ protected:
 class ReturnFactors
 {
 public:
-  ReturnFactors(const PositionSet& sPositions, unsigned days, unsigned yperiods) throw(ReturnFactorsException);
+  ReturnFactors(const PositionSet& sPositions, unsigned days, unsigned yperiods);
   ~ReturnFactors(void);
 
   unsigned days(void) const { return _days; }

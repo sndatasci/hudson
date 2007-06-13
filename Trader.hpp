@@ -30,8 +30,8 @@ public:
     _Str += msg;
   }
 
-  virtual ~TraderException(void) { }
-  virtual const char *what() const { return _Str.c_str(); }
+  virtual ~TraderException(void) throw() { }
+  virtual const char *what() const throw() { return _Str.c_str(); }
 
 protected:
   std::string _Str;

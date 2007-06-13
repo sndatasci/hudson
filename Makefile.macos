@@ -1,6 +1,4 @@
-#
-# Position Sever Makefile
-#
+# Hudson Makefile
 
 CXX=g++
 
@@ -18,7 +16,8 @@ SRC=\
 	ShortPosition.cpp \
 	PositionSet.cpp \
 	Trader.cpp \
-	BnHTrader.cpp 
+	BnHTrader.cpp \
+	Price.cpp
 
 HDR=\
 	FileDriver.hpp \
@@ -34,7 +33,8 @@ HDR=\
 	ShortPosition.hpp \
 	PositionSet.hpp \
 	Trader.hpp \
-	BnHTrader.hpp
+	BnHTrader.hpp \
+	Price.hpp
 
 
 LIBS=-lhudson -lboost_date_time -lboost_program_options -lgsl -lgslcblas

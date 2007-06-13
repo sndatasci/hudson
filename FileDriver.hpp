@@ -19,14 +19,14 @@ namespace Series
   class DriverException: public std::exception
   {
   public:
-	  DriverException(const std::string& msg):
+    DriverException(const std::string& msg):
       _Str("DriverException: ")
-	  {
+    {
       _Str += msg;
-	  }
-
-	  virtual ~DriverException(void) { }
-    virtual const char *what() const { return _Str.c_str(); }
+    }
+    
+    virtual ~DriverException(void) throw() { }
+    virtual const char *what() const throw() { return _Str.c_str(); }
 
   private:
     std::string _Str;
