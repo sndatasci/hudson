@@ -34,7 +34,6 @@ public:
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException);
 
-
 private:
   unsigned _buys;
   unsigned _sells;

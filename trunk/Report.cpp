@@ -58,3 +58,34 @@ void Report::print(void) const
   cout.precision(curr_precision);
   cout.flags(curr_flags);
 }
+
+
+void Report::max_cons_pos( void ) const
+{
+  PositionSet pset = _rf.max_cons_pos();
+  cout << "Max cons pos: ";
+  if( pset.empty() ) {
+    cout << 0 << endl;
+    return;
+  }
+
+  Position* pFirstPos = *(pset.get<last_exec_key>().begin());
+  Position* pLastPos = *(pset.get<last_exec_key>().rbegin());
+  cout << pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
+}
+
+
+void Report::max_cons_neg( void ) const
+{
+  PositionSet pset = _rf.max_cons_neg();
+  cout << "Max cons neg: ";
+  if( pset.empty() ) {
+    cout << 0 << endl;
+    return;
+  }
+
+  Position* pFirstPos = *(pset.get<last_exec_key>().begin());
+  Position* pLastPos = *(pset.get<last_exec_key>().rbegin());
+  cout << pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
+}
+

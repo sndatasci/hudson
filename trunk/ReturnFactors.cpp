@@ -25,14 +25,11 @@ using namespace std;
 namespace lmb = boost::lambda;
 
 
-ReturnFactors::ReturnFactors(const PositionSet& sPositions, unsigned days, unsigned yf) throw (ReturnFactorsException):
+ReturnFactors::ReturnFactors(const PositionSet& sPositions, unsigned days, unsigned yf):
   _sPositions(sPositions),
   _days(days),
   _yperiods(yf)
 {
-  if( sPositions.empty() )
-    throw ReturnFactorsException("Empty positions set");
-
   _years = (days == 0 ? 0 : days/(double)365);
 
   // Initialize time-ordered position factors by last execution (position close)
@@ -55,40 +52,13 @@ ReturnFactors::~ReturnFactors()
 
 double ReturnFactors::roi(void) const
 {
-  return _fvalue - 1;
+  return _sPositions.empty() ? 0 : _fvalue - 1;
 }
 
 
 double ReturnFactors::avg(void) const
 {
-  return _mean - 1;
-}
-
-
-double ReturnFactors::dd(void) const
-{
-  vector<double> vdd; // calculated drawdowns
-
-  // calculate drawdown from each factor point
-  for( unsigned i = 0; i < _vFactors.size(); i++ )
-	  vdd.push_back(_dd(i));
-
-  // return highest drawdown from all calculated
-  return (*min_element(vdd.begin(), vdd.end()));
-}
-
-
-double ReturnFactors::_dd(int start) const
-{
-  double acc = 1;
-  double my_dd = 1;
-  for( unsigned i = start; i < _vFactors.size(); i++ ) {
-	  acc *= _vFactors[i];
-	  if( acc < my_dd )
-	    my_dd = acc;
-  }
-
-  return my_dd;
+  return _sPositions.empty() ? 0 : _mean - 1;
 }
 
 
@@ -110,12 +80,15 @@ double ReturnFactors::skew(void) const
 
 double ReturnFactors::cagr(void) const
 {
-  return ::pow(_fvalue, 1/_years) - 1;
+  return _sPositions.empty() ? 0 : std::pow(_fvalue, 1/_years) - 1;
 }
 
 
 double ReturnFactors::gsd(void) const
 {
+  if( _sPositions.empty() )
+    return 0;
+
   double lfavg = accumulate<doubleVector::const_iterator, double>( _vLogFactors.begin(), _vLogFactors.end(), 0 ) / _vLogFactors.size();
   double lfstddev = ::sqrt( accumulate<doubleVector::const_iterator, double>( _vLogFactors.begin(), _vLogFactors.end(), 0, variance_bf(lfavg) ) / (_vLogFactors.size() - 1) );
   return ::pow( (double)10, lfstddev * ::sqrt((double)_yperiods) ) - 1;
@@ -138,9 +111,9 @@ PositionSet ReturnFactors::pos(void) const
 {
   PositionSet sPosPositions;
 
-  remove_copy_if( _sPositions.begin(), _sPositions.end(), // source
-				          inserter(sPosPositions, sPosPositions.end()), // destination
-				          bind2nd(PositionLt(), 1.0) ); // negative condition
+  for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter )
+    if( (*iter)->factor() > 1 )
+      sPosPositions.insert(*iter);
 
   return sPosPositions;
 }
@@ -150,9 +123,9 @@ PositionSet ReturnFactors::neg(void) const
 {
   PositionSet sNegPositions;
 
-  remove_copy_if( _sPositions.begin(), _sPositions.end(), // source vector
-				          inserter(sNegPositions, sNegPositions.end()), // destination
-				          bind2nd(PositionGt(), 1.0)); // condition
+  for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter )
+    if( (*iter)->factor() < 1 )
+      sNegPositions.insert(*iter);
 
   return sNegPositions;
 }
@@ -160,54 +133,91 @@ PositionSet ReturnFactors::neg(void) const
 
 size_t ReturnFactors::num(void) const
 {
-  return _vFactors.size();
+  return _sPositions.size();
 }
 
 
-unsigned ReturnFactors::max_cons_pos(void) const
+PositionSet ReturnFactors::max_cons_pos(void) const
 {
-  if( _vFactors.empty() ) return 0;
+  vector<PositionSet> cons;
+  cons.push_back(PositionSet()); // At least one position set for max_element
+  
+  position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
+  while( iter != _sPositions.get<last_exec_key>().end() ) {
+    // Filter out negative factors
+    if( (*iter)->factor() <= 1 ) {
+      ++iter;
+      continue;
+    }
 
-  vector<unsigned> cons;
-  unsigned pos = 0;
+    // Positive factor, look for positive sequence
+    PositionSet pset;
+    while( iter != _sPositions.get<last_exec_key>().end() && (*iter)->factor() > 1 ) {
+      pset.insert(*iter);
+      ++iter;
+    }
 
-  cons.push_back(0);
-  for( unsigned i = 0; i < _vFactors.size(); i++ ) { // for each factor
-	  while( _vFactors[i] > 1 && i < _vFactors.size() ) { // add-up consecutive positive factors
-	    ++pos;
-	    ++i;
-	  }
-
-	  if( pos ) { // if positive factors
-	    cons.push_back(pos); // store total number of consecutive positive factors
-	    pos = 0;
-	  }
+    // Store sequence
+    cons.push_back(pset);
   }
 
-  return *max_element(cons.begin(), cons.end());
+  return *max_element(cons.begin(), cons.end(), PositionSetSizeCmp());
 }
 
 
-unsigned ReturnFactors::max_cons_neg(void) const
+PositionSet ReturnFactors::max_cons_neg(void) const
 {
-  if( _vFactors.empty() )
+  vector<PositionSet> cons;
+  cons.push_back(PositionSet()); // At least one position set for max_element
+  
+  position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
+  while( iter != _sPositions.get<last_exec_key>().end() ) {
+    // Filter out positive factors
+    if( (*iter)->factor() >= 1 ) {
+      ++iter;
+      continue;
+    }
+
+    // Negative factor, look for negative sequence
+    PositionSet pset;
+    while( iter != _sPositions.get<last_exec_key>().end() && (*iter)->factor() < 1 ) {
+      pset.insert(*iter);
+      ++iter;
+    }
+
+    // Store sequence
+    cons.push_back(pset);
+  }
+
+  return *max_element(cons.begin(), cons.end(), PositionSetSizeCmp());
+}
+
+
+double ReturnFactors::dd(void) const
+{
+  if( _sPositions.empty() )
     return 0;
 
-  vector<unsigned> cons;
-  unsigned neg = 0;
+  vector<double> vdd; // calculated drawdowns
 
-  cons.push_back(0);
-  for( unsigned i = 0; i < _vFactors.size(); i++ ) {
-	  while( _vFactors[i] < 1 && i < _vFactors.size() ) {
-	    ++neg;
-	    ++i;
-	  }
+  // calculate drawdown from each factor point
+  for( unsigned i = 0; i < _vFactors.size(); i++ )
+    vdd.push_back(_dd(i));
 
-	  if( neg ) {
-	    cons.push_back(neg);
-	    neg = 0;
-	  }
-  }
+  // return highest drawdown from all calculated
+  return (*min_element(vdd.begin(), vdd.end()));
+}
 
-  return *max_element(cons.begin(), cons.end());
+
+double ReturnFactors::_dd(int start) const
+{
+  double acc = 1;
+  double my_dd = 1;
+  for( unsigned i = start; i < _vFactors.size(); i++ ) {
+    acc *= _vFactors[i];
+    if( acc < my_dd )
+      my_dd = acc;
+    }
+
+  return my_dd;
 }

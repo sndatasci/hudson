@@ -19,14 +19,14 @@ namespace Series
   class DayPrice
   {
   public:
-	boost::gregorian::date key;
+	  boost::gregorian::date key;
 
-	double high;
-	double low;
-	double open;
-	double close;
-	double adjclose;
-	unsigned long volume;
+	  double high;
+	  double low;
+	  double open;
+	  double close;
+	  double adjclose;
+	  unsigned long volume;
   };
 
 } // namespace Series
