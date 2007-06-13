@@ -24,16 +24,17 @@ class Price;
 class TraderException: public std::exception
 {
 public:
-  TraderException(const std::string& what):
-	  _what(what)
+  TraderException(const std::string& msg):
+	  _Str("TraderException: ")
   {
+    _Str += msg;
   }
 
   virtual ~TraderException(void) { }
-  virtual const char* what(void) const { return _what.c_str(); }
+  virtual const char *what() const { return _Str.c_str(); }
 
 protected:
-  std::string _what;
+  std::string _Str;
 };
 
 

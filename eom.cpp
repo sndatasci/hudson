@@ -41,6 +41,7 @@ int main(int argc, char* argv[])
   string dbfile;
 
   try {
+
 	  po::options_description desc("Allowed options");
 	  desc.add_options()
 	    ("help", "produce help message")
@@ -71,15 +72,8 @@ int main(int argc, char* argv[])
 	  cout << "Exit days: " << exit_days << endl;
 	  cout << "Series file: " << dbfile << endl;
 
-  } catch( std::exception& e) {
-	  cerr << "Error: " << e.what() << endl;
-	  exit(EXIT_FAILURE);
-  }
-
-  Series::YahooDriver yd;
-  DB db("myseries", yd);
-
-  try {
+    Series::YahooDriver yd;
+    DB db("myseries", yd);
 
 	  date load_begin(from_simple_string(begin_date));
 	  if( load_begin.is_not_a_date() ) {
@@ -123,16 +117,9 @@ int main(int argc, char* argv[])
     bnh_rp.roi();
     bnh_rp.cagr();
 
-  } catch( Series::DriverException& e ) {
-	  cerr << "Driver error: " << e.what() << endl;
-	  exit(EXIT_FAILURE);
+  } catch( std::exception& ex ) {
 
-  } catch( std::out_of_range& e ) {
-	  cerr << "Out of range error: " << e.what() << endl;
-	  exit(EXIT_FAILURE);
-
-  } catch( std::exception& e ) {
-	  cerr << "Error: " << e.what() << endl;
+	  cerr << ex.what() << endl;
 	  exit(EXIT_FAILURE);
   }
 

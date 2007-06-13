@@ -9,10 +9,8 @@
 #pragma warning (disable:4290)
 #endif
 
-// C++
-#include <stdexcept>
-
 // STL
+#include <stdexcept>
 #include <string>
 
 // Boost
@@ -27,16 +25,17 @@ class Price;
 class PositionException: public std::exception
 {
 public:
-  PositionException(const std::string& what):
-	  _what(what)
+  PositionException(const std::string& msg):
+	  _Str("PositionException: ")
   {
+    _Str += msg;
   }
 
   virtual ~PositionException(void) { }
-  virtual const char* what(void) const { return _what.c_str(); }
+  virtual const char *what() const { return _Str.c_str(); }
 
 protected:
-  std::string _what;
+  std::string _Str;
 };
 
 

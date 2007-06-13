@@ -24,16 +24,17 @@
 class ReturnFactorsException: public std::exception
 {
 public:
-  ReturnFactorsException(const std::string& what):
-    _what(what)
+  ReturnFactorsException(const std::string& msg):
+    _Str("ReturnFactorsException: ")
   {
+    _Str += msg;
   }
 
   virtual ~ReturnFactorsException(void) { }
-  virtual const char* what(void) const { return _what.c_str(); }
+  virtual const char *what() const { return _Str.c_str(); }
 
 protected:
-  std::string _what;
+  std::string _Str;
 };
 
 
@@ -56,8 +57,8 @@ public:
   const Position& best(void) const;
   const Position& worst(void) const;
   size_t num(void) const;
-  unsigned max_cons_pos(void) const; // max consecutive positive
-  unsigned max_cons_neg(void) const; // max consecutive negative
+  PositionSet max_cons_pos(void) const; // max consecutive positive
+  PositionSet max_cons_neg(void) const; // max consecutive negative
 
   PositionSet pos(void) const;
   PositionSet neg(void) const;
@@ -100,6 +101,11 @@ private:
   struct PositionLtCmp: public std::binary_function<Position*, Position*, bool> {
 
     bool operator()(const Position* pos1, const Position* pos2) const { return pos1->factor() < pos2->factor(); }
+  };
+
+  struct PositionSetSizeCmp: public std::binary_function<PositionSet, PositionSet, bool> {
+
+    bool operator()(const PositionSet& pset1, const PositionSet& pset2) const { return pset1.size() < pset2.size(); }
   };
 
   double _dd(int i) const;

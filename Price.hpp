@@ -19,16 +19,17 @@
 class PriceException: public std::exception
 {
   public:
-    PriceException(const std::string& what):
-      _what(what)
+    PriceException(const std::string& msg):
+      _Str("PriceException: ")
     {
+      _Str += msg;
     }
 
     virtual ~PriceException(void) { }
-    virtual const char* what(void) const { return _what.c_str(); }
+    virtual const char *what() const { return _Str.c_str(); }
 
   protected:
-    std::string _what;
+    std::string _Str;
 };
 
 

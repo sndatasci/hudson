@@ -19,17 +19,19 @@ namespace Series
   class DriverException: public std::exception
   {
   public:
-	  DriverException(const std::string& what):
-	    _what(what)
+	  DriverException(const std::string& msg):
+      _Str("DriverException: ")
 	  {
+      _Str += msg;
 	  }
 
 	  virtual ~DriverException(void) { }
-	  virtual const char* what(void) { return _what.c_str(); }
+    virtual const char *what() const { return _Str.c_str(); }
 
-    protected:
-	  std::string _what;
+  private:
+    std::string _Str;
   };
+
 
   template <class T>
   class FileDriver 
