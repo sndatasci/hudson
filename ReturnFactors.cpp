@@ -140,7 +140,7 @@ size_t ReturnFactors::num(void) const
 PositionSet ReturnFactors::max_cons_pos(void) const
 {
   vector<PositionSet> cons;
-  cons.push_back(PositionSet()); // At least one position set for max_element
+  cons.push_back(PositionSet()); // At least one position set for max_element to work
   
   position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
   while( iter != _sPositions.get<last_exec_key>().end() ) {
@@ -168,7 +168,7 @@ PositionSet ReturnFactors::max_cons_pos(void) const
 PositionSet ReturnFactors::max_cons_neg(void) const
 {
   vector<PositionSet> cons;
-  cons.push_back(PositionSet()); // At least one position set for max_element
+  cons.push_back(PositionSet()); // At least one position set for max_element to work
   
   position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
   while( iter != _sPositions.get<last_exec_key>().end() ) {
@@ -193,31 +193,38 @@ PositionSet ReturnFactors::max_cons_neg(void) const
 }
 
 
-double ReturnFactors::dd(void) const
+PositionSet ReturnFactors::dd(void) const
 {
   if( _sPositions.empty() )
-    return 0;
+    return PositionSet();
 
-  vector<double> vdd; // calculated drawdowns
+  vector<PositionSet> dd; // all drawdowns
+  dd.push_back(PositionSet()); // at least one position set for max_element to work
 
-  // calculate drawdown from each factor point
-  for( unsigned i = 0; i < _vFactors.size(); i++ )
-    vdd.push_back(_dd(i));
+  // calculate drawdown from each 
+  for( position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin(); iter != _sPositions.get<last_exec_key>().end(); ++iter )
+    dd.push_back(_dd(iter)); // add drawdown from this point
 
   // return highest drawdown from all calculated
-  return (*min_element(vdd.begin(), vdd.end()));
+  return *min_element(dd.begin(), dd.end(), PositionSetRealizedCmp());
 }
 
 
-double ReturnFactors::_dd(int start) const
+PositionSet ReturnFactors::_dd(position_by_last_exec::iterator& start) const
 {
+  PositionSet pset, dd_pset;
   double acc = 1;
   double my_dd = 1;
-  for( unsigned i = start; i < _vFactors.size(); i++ ) {
-    acc *= _vFactors[i];
-    if( acc < my_dd )
-      my_dd = acc;
-    }
 
-  return my_dd;
+  for( position_by_last_exec::iterator iter = start; iter != _sPositions.get<last_exec_key>().end(); ++iter ) {
+    pset.insert(*iter);
+    acc *= (*iter)->factor();
+
+    if( acc < my_dd ) {
+      my_dd = acc;
+      dd_pset = pset;
+    }
+  }
+
+  return dd_pset;
 }

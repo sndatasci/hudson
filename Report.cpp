@@ -89,3 +89,21 @@ void Report::max_cons_neg( void ) const
   cout << pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
 }
 
+
+void Report::max_dd( void ) const
+{
+  PositionSet pset = _rf.dd();
+  cout << "Max drawdown: ";
+  if( pset.empty() ) {
+    cout << 0 << endl;
+    return;
+  }
+
+  Position* pFirstPos = *(pset.get<last_exec_key>().begin());
+  Position* pLastPos = *(pset.get<last_exec_key>().rbegin());
+
+  boost::gregorian::date_duration dur = pLastPos->last_exec().dt() - pFirstPos->first_exec().dt();
+
+  ReturnFactors ddrf(pset, dur.days(), 12);
+  cout << ddrf.roi()*100 << "% (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
+}

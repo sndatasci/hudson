@@ -48,6 +48,8 @@ public:
   const PositionSet closed(void) const;
   const PositionSet open(void) const;
 
+  double realized(void) const;
+
   void print(void) const;
 };
 
