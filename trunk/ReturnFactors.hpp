@@ -47,21 +47,24 @@ public:
   unsigned days(void) const { return _days; }
   unsigned yperiods(void) const { return _yperiods; }
 
+  size_t num(void) const;
+
   double roi(void) const;
   double avg(void) const;
-  double dd(void) const;
   double stddev(void) const;
   double skew(void) const;
   double cagr(void) const;
   double gsd(void) const;
+
   const Position& best(void) const;
   const Position& worst(void) const;
-  size_t num(void) const;
+
   PositionSet max_cons_pos(void) const; // max consecutive positive
   PositionSet max_cons_neg(void) const; // max consecutive negative
 
   PositionSet pos(void) const;
   PositionSet neg(void) const;
+  PositionSet dd(void) const;
 
 private:
   struct variance_bf : public std::binary_function<double, double, double> {
@@ -108,18 +111,24 @@ private:
     bool operator()(const PositionSet& pset1, const PositionSet& pset2) const { return pset1.size() < pset2.size(); }
   };
 
-  double _dd(int i) const;
+  struct PositionSetRealizedCmp: public std::binary_function<PositionSet, PositionSet, bool> {
+
+    bool operator()(const PositionSet& pset1, const PositionSet& pset2) const { return pset1.realized() < pset2.realized(); }
+  };
+
+  PositionSet _dd(position_by_last_exec::iterator& start) const;
 
 private:
   PositionSet _sPositions;
 
   typedef std::vector<double> doubleVector;
-  doubleVector _vFactors; // time-ordered position factors
+  doubleVector _vFactors; // time-ordered position factors for fast array calculations
   doubleVector _vLogFactors; // time-ordered position log factors
 
   unsigned _days;			// time in days
   unsigned _yperiods; // yearly factors (12 for monthly)
   double _years;			// total time in years
+
   double _fvalue;			// future value
   double _mean;				// factors average
   double _stddev;			// factors standard deviation

@@ -46,3 +46,14 @@ const PositionSet PositionSet::open(void) const
 
   return openPos;
 }
+
+
+double PositionSet::realized( void ) const
+{
+  double acc = 1;
+  for( const_iterator iter = begin(); iter != end(); ++iter )
+    if( (*iter)->closed() )
+      acc *= (*iter)->factor();
+
+  return acc;
+}

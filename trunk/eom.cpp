@@ -45,11 +45,11 @@ int main(int argc, char* argv[])
 	  po::options_description desc("Allowed options");
 	  desc.add_options()
 	    ("help", "produce help message")
-	    ("series_file", po::value<string>(&dbfile), "series database")
-	    ("entry_days", po::value<int>(&entry_days)->default_value(2), "offset entry days from EOM")
-	    ("exit_days", po::value<int>(&exit_days)->default_value(2), "offset exit days from previous EOM")
-	    ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYY-MM-DD)")
-	    ("end_date", po::value<string>(&end_date), "end of trading period (YYYY-MM-DD)")
+	    ("series_file", po::value<string>(&dbfile),                       "series database")
+	    ("entry_days",  po::value<int>(&entry_days)->default_value(2),    "offset entry days from EOM")
+	    ("exit_days",   po::value<int>(&exit_days)->default_value(2),     "offset exit days from previous EOM")
+	    ("begin_date",  po::value<string>(&begin_date),                   "start of trading period (YYYY-MM-DD)")
+	    ("end_date",    po::value<string>(&end_date),                     "end of trading period (YYYY-MM-DD)")
 	    ;
 
 	  po::variables_map vm;

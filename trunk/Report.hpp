@@ -39,7 +39,7 @@ public:
   void worst(void) const { const Position& pos = _rf.worst(); std::cout << "Worst: " << (pos.factor()-1)*100 << '%' << " (" << pos.first_exec().dt() << " - " << pos.last_exec().dt() << ')' << std::endl; }
   void max_cons_pos(void) const;
   void max_cons_neg(void) const;
-  void max_dd(void) const { std::cout << "Max Drawdown: " << -(1-_rf.dd())*100 << '%' << std::endl; }
+  void max_dd(void) const;
   void roi(void) const { std::cout << "ROI: " << _rf.roi()*100 << '%' << std::endl; }
   void cagr(void) const { std::cout << "CAGR: " << _rf.cagr()*100 << '%' << std::endl; }
   void gsdm(void) const { std::cout << "GSDm: " << _rf.gsd()*100 << '%' << std::endl; }
