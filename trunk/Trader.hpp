@@ -42,7 +42,7 @@ class Trader
 {
 public:
   Trader(void);
-  virtual ~Trader(void);
+  virtual ~Trader(void) { }
 
   // Buy/Sell
   Position::ID buy(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);  

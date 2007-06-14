@@ -91,19 +91,19 @@ private:
     double operator()(double x) { return ::log10(x); }
   };
 
-  struct PositionGt: public std::binary_function<Position*, double, bool> {
+  struct PositionGt: public std::binary_function<PositionPtr, double, bool> {
 
-    bool operator()(Position* pPos, double x) const { return pPos->factor() > x; }
+    bool operator()(PositionPtr pPos, double x) const { return pPos->factor() > x; }
   };
 
-  struct PositionLt: public std::binary_function<Position*, double, bool> {
+  struct PositionLt: public std::binary_function<PositionPtr, double, bool> {
 
-    bool operator()(Position* pPos, double x) const { return pPos->factor() < x; }
+    bool operator()(PositionPtr pPos, double x) const { return pPos->factor() < x; }
   };
 
-  struct PositionLtCmp: public std::binary_function<Position*, Position*, bool> {
+  struct PositionLtCmp: public std::binary_function<PositionPtr, PositionPtr, bool> {
 
-    bool operator()(const Position* pos1, const Position* pos2) const { return pos1->factor() < pos2->factor(); }
+    bool operator()(const PositionPtr pos1, const PositionPtr pos2) const { return pos1->factor() < pos2->factor(); }
   };
 
   struct PositionSetSizeCmp: public std::binary_function<PositionSet, PositionSet, bool> {

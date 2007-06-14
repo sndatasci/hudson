@@ -28,23 +28,16 @@ Trader::Trader(void):
 }
 
 
-Trader::~Trader(void)
-{
-  for( PositionSet::const_iterator citer = _miPositions.begin(); citer != _miPositions.end(); ++citer )
-    delete (*citer);
-}
-
-
 // Buy a new position
 Position::ID Trader::buy(const string& symbol, const date& dt, const Price& price, unsigned size) throw(TraderException)
 {
   // Create new position
-  Position* pPos;
+  PositionPtr pPos;
 
   // Buy position
   try {
 
-	  pPos = new LongPosition(++_pid, symbol, dt, price, size);
+	  pPos = PositionPtr(new LongPosition(++_pid, symbol, dt, price, size));
 
   } catch( const PositionException& e ) {
 	  ostringstream oss;
@@ -75,7 +68,7 @@ void Trader::buy(Position::ID id, const boost::gregorian::date& dt, const Price&
   	throw TraderException("Can't find position");
 
   // Add buy transaction to existing position
-  Position* pPos = *iter;
+  PositionPtr pPos = *iter;
   try {
 
   	pPos->buy(dt, price, size);
@@ -106,7 +99,7 @@ void Trader::sell(Position::ID id, const date& dt, const Price& price, unsigned 
 	  throw TraderException("Can't find position");
 
   // Add sell transaction to existing position
-  Position* pPos = *iter;
+  PositionPtr pPos = *iter;
   try {
 
 	  pPos->sell(dt, price, size);
@@ -130,11 +123,11 @@ void Trader::sell(Position::ID id, const date& dt, const Price& price, unsigned 
 
 Position::ID Trader::sell_short(const string& symbol, const date& dt, const Price& price, unsigned size) throw(TraderException)
 {
-  Position* pPos; 
+  PositionPtr pPos; 
 
   try {
 
-	  pPos = new ShortPosition(++_pid, symbol, dt, price, size);
+	  pPos = PositionPtr(new ShortPosition(++_pid, symbol, dt, price, size));
 
   } catch( const PositionException& e ) {
 	  ostringstream oss;
@@ -162,7 +155,7 @@ void Trader::sell_short(Position::ID id, const date& dt, const Price& price, uns
 	  throw TraderException("Can't find position");
 
   // Add short execution to existing position
-  Position *pPos = *iter;
+  PositionPtr pPos = *iter;
   try {
 
   	pPos->sell_short(dt, price, size);
@@ -191,7 +184,7 @@ void Trader::cover(Position::ID id, const date& dt, const Price& price, unsigned
 	  throw TraderException("Can't find position");
 
   // Add cover execution to existing position
-  Position* pPos = *iter;
+  PositionPtr pPos = *iter;
   try {
 
 	  pPos->cover(dt, price, size);
@@ -221,7 +214,7 @@ void Trader::close(Position::ID id, const date& dt, const Price& price) throw(Tr
 	  throw TraderException("Can't find position");
 
   // Close position
-  Position* pPos = *iter;
+  PositionPtr pPos = *iter;
   try {
 
 	  pPos->close(dt, price);

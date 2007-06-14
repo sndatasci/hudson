@@ -24,6 +24,7 @@
 #include <boost/multi_index/tag.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/shared_ptr.hpp>
 
 // Windows
 #ifdef WIN32
