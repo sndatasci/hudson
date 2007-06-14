@@ -17,6 +17,7 @@
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/tag.hpp>
+#include <boost/shared_ptr.hpp>
 
 // Hudson
 #include "Position.hpp"
@@ -27,10 +28,11 @@ struct type_key   { };
 struct factor_key { };
 struct last_exec_key { };
 
-// Position*
+typedef boost::shared_ptr<Position> PositionPtr;
+
 typedef boost::multi_index::multi_index_container<
 
-  Position*,
+  PositionPtr,
 
   boost::multi_index::indexed_by<
     boost::multi_index::ordered_unique<boost::multi_index::identity<Position> >,
@@ -44,6 +46,8 @@ typedef boost::multi_index::multi_index_container<
 
 class PositionSet: public __PositionSet
 {
+public:
+  
 public:
   const PositionSet closed(void) const;
   const PositionSet open(void) const;

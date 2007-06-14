@@ -69,8 +69,8 @@ void Report::max_cons_pos( void ) const
     return;
   }
 
-  Position* pFirstPos = *(pset.get<last_exec_key>().begin());
-  Position* pLastPos = *(pset.get<last_exec_key>().rbegin());
+  PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
+  PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
   cout << pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
 }
 
@@ -84,8 +84,8 @@ void Report::max_cons_neg( void ) const
     return;
   }
 
-  Position* pFirstPos = *(pset.get<last_exec_key>().begin());
-  Position* pLastPos = *(pset.get<last_exec_key>().rbegin());
+  PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
+  PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
   cout << pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
 }
 
@@ -99,8 +99,8 @@ void Report::max_dd( void ) const
     return;
   }
 
-  Position* pFirstPos = *(pset.get<last_exec_key>().begin());
-  Position* pLastPos = *(pset.get<last_exec_key>().rbegin());
+  PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
+  PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
 
   boost::gregorian::date_duration dur = pLastPos->last_exec().dt() - pFirstPos->first_exec().dt();
 

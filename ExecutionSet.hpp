@@ -22,10 +22,11 @@
 struct date_key { };
 struct side_key { };
 
-// Execution*
+typedef boost::shared_ptr<Execution> ExecutionPtr;
+
 typedef boost::multi_index::multi_index_container<
 
-  Execution*,
+  ExecutionPtr,
 
   boost::multi_index::indexed_by<
     boost::multi_index::ordered_unique<boost::multi_index::identity<Execution> >,
@@ -39,7 +40,7 @@ class ExecutionSet
 {
 public:
   ExecutionSet(void);
-  ~ExecutionSet(void);
+  ~ExecutionSet(void) { }
 
   bool buy(boost::gregorian::date dt, const Price& price, unsigned size);
   bool sell(boost::gregorian::date dt, const Price& price, unsigned size);
