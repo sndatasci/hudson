@@ -70,6 +70,7 @@ public:
   virtual double avgEntryPrice(void) const = 0;
   virtual double avgExitPrice(void) const = 0;
   virtual double factor(void) const = 0;
+  virtual double factor(const Price& price) const = 0;
 
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
   virtual void sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;

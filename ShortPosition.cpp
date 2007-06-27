@@ -95,3 +95,30 @@ void ShortPosition::sell(const boost::gregorian::date& dt, const Price& price, u
 {
   throw PositionException("Short position");
 }
+
+
+double ShortPosition::factor( void ) const throw(PositionException)
+{
+  if( ! closed() )
+    throw PositionException("Position not closed");
+
+  if( _avgShortPrice <= 0 )
+    throw PositionException("Invalid average short price");
+
+  if( _avgCoverPrice <= 0 )
+    throw PositionException("Invalid average cover price");
+
+  return _avgShortPrice / _avgCoverPrice;
+}
+
+
+double ShortPosition::factor( const Price& price ) const throw(PositionException)
+{
+  if( closed() )
+    throw PositionException("Closed position");
+
+  if( _avgShortPrice <= 0 )
+    throw PositionException("Invalid short price");
+
+  return _avgShortPrice / price;
+}

@@ -131,9 +131,9 @@ PositionSet ReturnFactors::neg(void) const
 }
 
 
-size_t ReturnFactors::num(void) const
+int ReturnFactors::num(void) const
 {
-  return _sPositions.size();
+  return (int)_sPositions.size();
 }
 
 

@@ -26,6 +26,7 @@
 struct symbol_key { };
 struct type_key   { };
 struct factor_key { };
+struct first_exec_key { };
 struct last_exec_key { };
 
 typedef boost::shared_ptr<Position> PositionPtr;
@@ -39,6 +40,7 @@ typedef boost::multi_index::multi_index_container<
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<symbol_key>, boost::multi_index::const_mem_fun<Position, std::string, &Position::symbol> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<type_key>, boost::multi_index::const_mem_fun<Position, Position::Type, &Position::type> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<factor_key>, boost::multi_index::const_mem_fun<Position, double, &Position::factor> >,
+    boost::multi_index::ordered_non_unique<boost::multi_index::tag<first_exec_key>, boost::multi_index::const_mem_fun<Position, const Execution&, &Position::first_exec> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<last_exec_key>, boost::multi_index::const_mem_fun<Position, const Execution&, &Position::last_exec> >
   >
 > __PositionSet;
@@ -53,6 +55,7 @@ public:
   const PositionSet open(void) const;
 
   double realized(void) const;
+  double unrealized(void) const;
 
   void print(void) const;
 };
@@ -60,6 +63,7 @@ public:
 
 typedef PositionSet::index<symbol_key>::type position_by_symbol;
 typedef PositionSet::index<type_key>::type position_by_type;
+typedef PositionSet::index<first_exec_key>::type position_by_first_exec;
 typedef PositionSet::index<last_exec_key>::type position_by_last_exec;
 
 

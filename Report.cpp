@@ -71,7 +71,7 @@ void Report::max_cons_pos( void ) const
 
   PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
   PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
-  cout << pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
+  cout << (int)pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
 }
 
 
@@ -86,7 +86,7 @@ void Report::max_cons_neg( void ) const
 
   PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
   PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
-  cout << pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
+  cout << (int)pset.size() << " (" << pFirstPos->last_exec().dt() << " - " << pLastPos->last_exec().dt() << ")" << endl;
 }
 
 

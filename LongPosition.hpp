@@ -12,6 +12,8 @@
 // Hudson
 #include "Position.hpp"
 
+class Price;
+
 
 class LongPosition: public Position
 {
@@ -26,7 +28,9 @@ public:
 
   virtual double avgEntryPrice(void) const { return _avgBuyPrice; }
   virtual double avgExitPrice(void) const { return _avgSellPrice; }
-  virtual double factor(void) const { return _avgSellPrice / _avgBuyPrice; }
+
+  virtual double factor(void) const throw(PositionException);
+  virtual double factor(const Price& price) const throw(PositionException);
 
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
   virtual void sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
