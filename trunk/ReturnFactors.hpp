@@ -47,7 +47,7 @@ public:
   unsigned days(void) const { return _days; }
   unsigned yperiods(void) const { return _yperiods; }
 
-  size_t num(void) const;
+  int num(void) const;
 
   double roi(void) const;
   double avg(void) const;

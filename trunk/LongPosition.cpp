@@ -95,3 +95,30 @@ void LongPosition::cover(const date& dt, const Price& price, unsigned size) thro
 {
   throw PositionException("Invalid side");
 }
+
+
+double LongPosition::factor( void ) const throw(PositionException)
+{
+  if( ! closed() )
+    throw PositionException("Position not closed");
+
+  if( _avgBuyPrice <= 0 )
+    throw PositionException("Invalid average buy price");
+
+  if( _avgSellPrice <= 0 )
+    throw PositionException("Invalid average sell price");
+
+  return _avgSellPrice / _avgBuyPrice;
+}
+
+
+double LongPosition::factor( const Price& price ) const throw(PositionException)
+{
+  if( closed() )
+    throw PositionException("Position closed");
+
+  if( _avgBuyPrice <= 0 )
+    throw PositionException("Invalid average buy price");
+
+  return price / _avgBuyPrice;
+}

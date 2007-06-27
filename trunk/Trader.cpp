@@ -39,15 +39,9 @@ Position::ID Trader::buy(const string& symbol, const date& dt, const Price& pric
 
 	  pPos = PositionPtr(new LongPosition(++_pid, symbol, dt, price, size));
 
-  } catch( const PositionException& e ) {
-	  ostringstream oss;
-	  oss << "Position error: " << e.what();
-	  throw TraderException(oss.str());
+  } catch( const exception& ex ) {
 
-  } catch( const std::exception& e ) {
-	  ostringstream oss;
-	  oss << "Standard exception: " << e.what();
-	  throw TraderException(oss.str());
+	  throw TraderException(ex.what());
   }
 
   // Add new position to trader collection
@@ -73,15 +67,9 @@ void Trader::buy(Position::ID id, const boost::gregorian::date& dt, const Price&
 
   	pPos->buy(dt, price, size);
 
-  } catch( const PositionException& e ) {
-	  ostringstream oss;
-	  oss << "Position error: " << e.what();
-	  throw TraderException(oss.str());
+  } catch( const exception& ex ) {
 
-  } catch( const std::exception& e ) {
-	  ostringstream oss;
-	  oss << "Standard exception: " << e.what();
-	  throw TraderException(oss.str());
+	  throw TraderException(ex.what());
   }
 
   // Update existing position
@@ -104,15 +92,9 @@ void Trader::sell(Position::ID id, const date& dt, const Price& price, unsigned 
 
 	  pPos->sell(dt, price, size);
 
-  } catch( const PositionException& e ) {
-	  ostringstream oss;
-	  oss << "Position error: " << e.what();
-	  throw TraderException(oss.str());
+  } catch( const exception& ex ) {
 
-  } catch( const std::exception& e ) {
-	  ostringstream oss;
-	  oss << "Standard exception: " << e.what();
-	  throw TraderException(oss.str());
+	  throw TraderException(ex.what());
   }
 
   // Update existing position
@@ -129,15 +111,9 @@ Position::ID Trader::sell_short(const string& symbol, const date& dt, const Pric
 
 	  pPos = PositionPtr(new ShortPosition(++_pid, symbol, dt, price, size));
 
-  } catch( const PositionException& e ) {
-	  ostringstream oss;
-	  oss << "Position error: " << e.what();
-	  throw TraderException(oss.str());
+  } catch( const exception& ex ) {
 
-  } catch( const std::exception& e ) {
-	  ostringstream oss;
-	  oss << "Standard exception: " << e.what();
-	  throw TraderException(oss.str());
+	  throw TraderException(ex.what());
   }
 
   if( _miPositions.insert(pPos).first == _miPositions.end() )
@@ -160,15 +136,9 @@ void Trader::sell_short(Position::ID id, const date& dt, const Price& price, uns
 
   	pPos->sell_short(dt, price, size);
 
-  } catch( const PositionException& e ) {
-	  ostringstream oss;
-	  oss << "Position error: " << e.what();
-	  throw TraderException(oss.str());
+  } catch( const exception& ex ) {
 
-  } catch( const std::exception& e ) {
-	  ostringstream oss;
-	  oss << "Standard exception: " << e.what();
-	  throw TraderException(oss.str());
+	  throw TraderException(ex.what());
   }
 
   if( _miPositions.replace(iter, pPos) == false )
@@ -189,15 +159,9 @@ void Trader::cover(Position::ID id, const date& dt, const Price& price, unsigned
 
 	  pPos->cover(dt, price, size);
 
-  } catch( const PositionException& e ) {
-	  ostringstream oss;
-	  oss << "Position error: " << e.what();
-	  throw TraderException(oss.str());
+  } catch( const exception& ex ) {
 
-  } catch( const std::exception& e ) {
-	  ostringstream oss;
-	  oss << "Standard exception: " << e.what();
-	  throw TraderException(oss.str());
+	  throw TraderException(ex.what());
   }
 
   // Update existing position
@@ -219,15 +183,9 @@ void Trader::close(Position::ID id, const date& dt, const Price& price) throw(Tr
 
 	  pPos->close(dt, price);
 
-  } catch( const PositionException& e ) {
-	  ostringstream oss;
-	  oss << "Position error: " << e.what();
-	  throw TraderException(oss.str());
+  } catch( const exception& ex ) {
 
-  } catch( const std::exception& e ) {
-	  ostringstream oss;
-	  oss << "Standard exception: " << e.what();
-	  throw TraderException(oss.str());
+	  throw TraderException(ex.what());
   }
 
   // Update existing position
