@@ -19,6 +19,7 @@
 
 // Hudson
 #include "ReturnFactors.hpp"
+#include "PositionFactors.hpp"
 
 
 using namespace std;
@@ -42,11 +43,6 @@ ReturnFactors::ReturnFactors(const PositionSet& sPositions, unsigned days, unsig
   _fvalue = accumulate<doubleVector::const_iterator, double>( _vFactors.begin(), _vFactors.end(), 1, lmb::_1 * lmb::_2 );
   _mean = accumulate<doubleVector::const_iterator, double>( _vFactors.begin(), _vFactors.end(), 0 ) / _vFactors.size();
   _stddev = ::sqrt( accumulate<doubleVector::const_iterator, double>( _vFactors.begin(), _vFactors.end(), 0, variance_bf(_mean) ) / (_vFactors.size() - 1) );
-}
-
-
-ReturnFactors::~ReturnFactors()
-{
 }
 
 
@@ -140,8 +136,7 @@ int ReturnFactors::num(void) const
 PositionSet ReturnFactors::max_cons_pos(void) const
 {
   vector<PositionSet> cons;
-  cons.push_back(PositionSet()); // At least one position set for max_element to work
-  
+
   position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
   while( iter != _sPositions.get<last_exec_key>().end() ) {
     // Filter out negative factors
@@ -161,6 +156,9 @@ PositionSet ReturnFactors::max_cons_pos(void) const
     cons.push_back(pset);
   }
 
+  if( cons.empty() )
+    return PositionSet(); // max_element crashes on empty set
+
   return *max_element(cons.begin(), cons.end(), PositionSetSizeCmp());
 }
 
@@ -168,7 +166,6 @@ PositionSet ReturnFactors::max_cons_pos(void) const
 PositionSet ReturnFactors::max_cons_neg(void) const
 {
   vector<PositionSet> cons;
-  cons.push_back(PositionSet()); // At least one position set for max_element to work
   
   position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
   while( iter != _sPositions.get<last_exec_key>().end() ) {
@@ -189,6 +186,9 @@ PositionSet ReturnFactors::max_cons_neg(void) const
     cons.push_back(pset);
   }
 
+  if( cons.empty() )
+    return PositionSet(); // max_element crashes on empty set
+
   return *max_element(cons.begin(), cons.end(), PositionSetSizeCmp());
 }
 
@@ -201,7 +201,7 @@ PositionSet ReturnFactors::dd(void) const
   vector<PositionSet> dd; // all drawdowns
   dd.push_back(PositionSet()); // at least one position set for max_element to work
 
-  // calculate drawdown from each 
+  // calculate drawdown from each position
   for( position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin(); iter != _sPositions.get<last_exec_key>().end(); ++iter )
     dd.push_back(_dd(iter)); // add drawdown from this point
 

@@ -122,7 +122,16 @@
 				RelativePath=".\Position.cpp">
 			</File>
 			<File
+				RelativePath=".\PositionFactors.cpp">
+			</File>
+			<File
 				RelativePath=".\PositionSet.cpp">
+			</File>
+			<File
+				RelativePath=".\PositionsFactors.cpp">
+			</File>
+			<File
+				RelativePath=".\PositionsReport.cpp">
 			</File>
 			<File
 				RelativePath=".\Price.cpp">
@@ -187,7 +196,16 @@
 				RelativePath=".\Position.hpp">
 			</File>
 			<File
+				RelativePath=".\PositionFactors.hpp">
+			</File>
+			<File
 				RelativePath=".\PositionSet.hpp">
+			</File>
+			<File
+				RelativePath=".\PositionsFactors.hpp">
+			</File>
+			<File
+				RelativePath=".\PositionsReport.hpp">
 			</File>
 			<File
 				RelativePath=".\Price.hpp">

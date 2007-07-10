@@ -114,9 +114,6 @@ double LongPosition::factor( void ) const throw(PositionException)
 
 double LongPosition::factor( const Price& price ) const throw(PositionException)
 {
-  if( closed() )
-    throw PositionException("Position closed");
-
   if( _avgBuyPrice <= 0 )
     throw PositionException("Invalid average buy price");
 

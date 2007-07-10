@@ -53,11 +53,6 @@ inline double operator+(const Price& first, const Price& second) { return first.
 inline double operator*(const Price& first, const Price& second) { return first.value() * second.value(); }
 inline double operator/(const Price& first, const Price& second) { return first.value() / second.value(); }
 
-//inline double operator-(const Price& first, int second) { return first.value() - second; }
-//inline double operator+(const Price& first, int second) { return first.value() + second; }
-//inline double operator*(const Price& first, int second) { return first.value() * second; }
-//inline double operator/(const Price& first, int second) { return first.value() / second; }
-
 inline double operator-(const Price& first, double second) { return first.value() - second; }
 inline double operator+(const Price& first, double second) { return first.value() + second; }
 inline double operator*(const Price& first, double second) { return first.value() * second; }

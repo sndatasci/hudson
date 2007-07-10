@@ -21,28 +21,10 @@
 #include "PositionSet.hpp"
 
 
-class ReturnFactorsException: public std::exception
-{
-public:
-  ReturnFactorsException(const std::string& msg):
-    _Str("ReturnFactorsException: ")
-  {
-    _Str += msg;
-  }
-
-  virtual ~ReturnFactorsException(void) throw() { }
-  virtual const char *what() const throw() { return _Str.c_str(); }
-
-protected:
-  std::string _Str;
-};
-
-
 class ReturnFactors
 {
 public:
   ReturnFactors(const PositionSet& sPositions, unsigned days, unsigned yperiods);
-  ~ReturnFactors(void);
 
   unsigned days(void) const { return _days; }
   unsigned yperiods(void) const { return _yperiods; }
@@ -64,6 +46,7 @@ public:
 
   PositionSet pos(void) const;
   PositionSet neg(void) const;
+
   PositionSet dd(void) const;
 
 private:
