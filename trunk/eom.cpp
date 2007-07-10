@@ -21,9 +21,11 @@
 #include "DaySeries.hpp"
 #include "DayPrice.hpp"
 #include "ReturnFactors.hpp"
+#include "PositionFactors.hpp"
 #include "EOMTrader.hpp"
 #include "BnHTrader.hpp"
 #include "Report.hpp"
+#include "PositionsReport.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -103,9 +105,15 @@ int main(int argc, char* argv[])
     cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
 
     ReturnFactors rf(trader.positions().closed(), db.duration().days(), 12);
+    PositionsFactors pf(trader.positions().closed(), db);
 
     Report rp(rf);
     rp.print();
+
+    // Positions excursion
+    cout << endl << "Positions excursion" << endl << "--" << endl;
+    PositionsReport pr(pf);
+    pr.print();
 
     // BnH
     cout << endl << "B&H" << endl << "--" << endl;

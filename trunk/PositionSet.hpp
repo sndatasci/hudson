@@ -24,8 +24,6 @@
 
 
 struct symbol_key { };
-struct type_key   { };
-struct factor_key { };
 struct first_exec_key { };
 struct last_exec_key { };
 
@@ -38,8 +36,6 @@ typedef boost::multi_index::multi_index_container<
   boost::multi_index::indexed_by<
     boost::multi_index::ordered_unique<boost::multi_index::identity<Position> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<symbol_key>, boost::multi_index::const_mem_fun<Position, std::string, &Position::symbol> >,
-    boost::multi_index::ordered_non_unique<boost::multi_index::tag<type_key>, boost::multi_index::const_mem_fun<Position, Position::Type, &Position::type> >,
-    boost::multi_index::ordered_non_unique<boost::multi_index::tag<factor_key>, boost::multi_index::const_mem_fun<Position, double, &Position::factor> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<first_exec_key>, boost::multi_index::const_mem_fun<Position, const Execution&, &Position::first_exec> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<last_exec_key>, boost::multi_index::const_mem_fun<Position, const Execution&, &Position::last_exec> >
   >
@@ -48,8 +44,6 @@ typedef boost::multi_index::multi_index_container<
 
 class PositionSet: public __PositionSet
 {
-public:
-  
 public:
   const PositionSet closed(void) const;
   const PositionSet open(void) const;
@@ -61,10 +55,9 @@ public:
 };
 
 
-typedef PositionSet::index<symbol_key>::type position_by_symbol;
-typedef PositionSet::index<type_key>::type position_by_type;
-typedef PositionSet::index<first_exec_key>::type position_by_first_exec;
-typedef PositionSet::index<last_exec_key>::type position_by_last_exec;
+typedef PositionSet::index<symbol_key>::type      position_by_symbol;
+typedef PositionSet::index<first_exec_key>::type  position_by_first_exec;
+typedef PositionSet::index<last_exec_key>::type   position_by_last_exec;
 
 
 struct pos_comp_id
