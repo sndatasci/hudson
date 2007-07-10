@@ -9,6 +9,8 @@
 #pragma warning (disable:4290)
 #endif
 
+// CSTD
+#include <cmath>
 // STL
 #include <stdexcept>
 
