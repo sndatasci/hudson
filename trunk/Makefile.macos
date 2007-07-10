@@ -14,10 +14,15 @@ SRC=\
 	ExecutionSet.cpp \
 	LongPosition.cpp \
 	ShortPosition.cpp \
+	Position.cpp \
+	PositionFactors.cpp \
+	PositionsFactors.cpp \
+	PositionsReport.cpp \
+	Price.cpp \
 	PositionSet.cpp \
 	Trader.cpp \
 	BnHTrader.cpp \
-	Price.cpp
+	StdAfx.cpp \
 
 HDR=\
 	FileDriver.hpp \
@@ -26,12 +31,15 @@ HDR=\
 	YahooDriver.hpp \
 	ReturnFactors.hpp \
 	Position.hpp \
+	PositionFactors.hpp \
 	Report.hpp \
 	Execution.hpp \
 	ExecutionSet.hpp \
 	LongPosition.hpp \
 	ShortPosition.hpp \
 	PositionSet.hpp \
+	PositionsFactors.hpp \
+	PositionsReport.hpp \
 	Trader.hpp \
 	BnHTrader.hpp \
 	Price.hpp
