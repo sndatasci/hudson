@@ -125,10 +125,10 @@
 				RelativePath=".\PositionFactors.cpp">
 			</File>
 			<File
-				RelativePath=".\PositionSet.cpp">
+				RelativePath=".\PositionFactorsSet.cpp">
 			</File>
 			<File
-				RelativePath=".\PositionsFactors.cpp">
+				RelativePath=".\PositionSet.cpp">
 			</File>
 			<File
 				RelativePath=".\PositionsReport.cpp">
@@ -141,6 +141,12 @@
 			</File>
 			<File
 				RelativePath=".\ReturnFactors.cpp">
+			</File>
+			<File
+				RelativePath=".\SeriesFactor.cpp">
+			</File>
+			<File
+				RelativePath=".\SeriesFactorSet.cpp">
 			</File>
 			<File
 				RelativePath=".\ShortPosition.cpp">
@@ -199,10 +205,10 @@
 				RelativePath=".\PositionFactors.hpp">
 			</File>
 			<File
-				RelativePath=".\PositionSet.hpp">
+				RelativePath=".\PositionFactorsSet.hpp">
 			</File>
 			<File
-				RelativePath=".\PositionsFactors.hpp">
+				RelativePath=".\PositionSet.hpp">
 			</File>
 			<File
 				RelativePath=".\PositionsReport.hpp">
@@ -215,6 +221,12 @@
 			</File>
 			<File
 				RelativePath=".\ReturnFactors.hpp">
+			</File>
+			<File
+				RelativePath=".\SeriesFactor.hpp">
+			</File>
+			<File
+				RelativePath=".\SeriesFactorSet.hpp">
 			</File>
 			<File
 				RelativePath=".\ShortPosition.hpp">

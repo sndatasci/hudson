@@ -105,13 +105,13 @@ int main(int argc, char* argv[])
     cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
 
     ReturnFactors rf(trader.positions().closed(), db.duration().days(), 12);
-    PositionsFactors pf(trader.positions().closed(), db);
+    PositionFactorsSet pf(trader.positions().closed(), db);
 
     Report rp(rf);
     rp.print();
 
     // Positions excursion
-    cout << endl << "Positions excursion" << endl << "--" << endl;
+    cout << endl << "Position Excursions" << endl << "--" << endl;
     PositionsReport pr(pf);
     pr.print();
 
