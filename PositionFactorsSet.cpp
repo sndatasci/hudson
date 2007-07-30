@@ -15,7 +15,7 @@
 using namespace std;
 
 
-PositionFactorsSet::PositionFactorsSet( const PositionSet& sPositions, const Series::DaySeries<Series::DayPrice>& db ):
+PositionFactorsSet::PositionFactorsSet( const PositionSet& sPositions, const Series::DaySeries& db ):
   _sPositions(sPositions),
   _db(db)
 {

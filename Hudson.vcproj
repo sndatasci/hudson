@@ -110,6 +110,9 @@
 				RelativePath=".\BnHTrader.cpp">
 			</File>
 			<File
+				RelativePath=".\DaySeries.cpp">
+			</File>
+			<File
 				RelativePath=".\Execution.cpp">
 			</File>
 			<File

@@ -21,7 +21,7 @@ using namespace boost::gregorian;
 using namespace Series;
 
 
-PositionFactors::PositionFactors( const Position& pos, const DaySeries<DayPrice>& db ):
+PositionFactors::PositionFactors( const Position& pos, const DaySeries& db ):
   _pos(pos),
   _db(db)
 {
@@ -35,7 +35,7 @@ PositionFactors::PositionFactors( const Position& pos, const DaySeries<DayPrice>
   date curr_date;
 
   // Initialize all factors until the end of the series database
-  for( DaySeries<DayPrice>::const_iterator iter = _db.after(_pos.first_exec().dt()); iter != _db.end(); ++iter ) {
+  for( DaySeries::const_iterator iter = _db.after(_pos.first_exec().dt()); iter != _db.end(); ++iter ) {
 
     // If position is closed we only initialize factors up to the last execution
     if( _pos.closed() && iter->first > _pos.last_exec().dt() )

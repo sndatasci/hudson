@@ -23,32 +23,32 @@
 namespace Series
 {
 
-  class YahooDriver: public FileDriver<DayPrice>
+  class YahooDriver: public FileDriver
   {
   public:
-	YahooDriver(void);
-	~YahooDriver(void);
+	  YahooDriver(void);
+	  ~YahooDriver(void);
 
-	virtual bool open(const std::string& filename);
-	virtual void close(void);
-	virtual bool next(DayPrice& dp) throw(DriverException);
-	virtual bool eof(void);
-
-  private:
-	enum FIELDS_POS {
-	  DATE = 0,
-	  OPEN,
-	  HIGH,
-	  LOW,
-	  CLOSE,
-	  VOLUME,
-	  ADJCLOSE
-	};
+	  virtual bool open(const std::string& filename);
+	  virtual void close(void);
+	  virtual bool next(DayPrice& dp) throw(DriverException);
+	  virtual bool eof(void);
 
   private:
-	std::ifstream _infile;
-	std::string _line;
-	unsigned _linenum;
+	  enum FIELDS_POS {
+	    DATE = 0,
+	    OPEN,
+	    HIGH,
+	    LOW,
+	    CLOSE,
+	    VOLUME,
+	    ADJCLOSE
+	  };
+
+  private:
+	  std::ifstream _infile;
+	  std::string _line;
+	  unsigned _linenum;
   };
 
 } // namespace Series

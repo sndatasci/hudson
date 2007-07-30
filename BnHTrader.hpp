@@ -15,7 +15,7 @@
 
 class BnHTrader: public Trader
 {
-  typedef Series::DaySeries<Series::DayPrice> DB;
+  typedef Series::DaySeries DB;
 
 public:
   BnHTrader(const DB& db);

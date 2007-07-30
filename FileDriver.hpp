@@ -13,6 +13,10 @@
 #include <string>
 #include <stdexcept>
 
+// Hudson
+#include "DayPrice.hpp"
+
+
 namespace Series
 {
 
@@ -33,13 +37,12 @@ namespace Series
   };
 
 
-  template <class T>
   class FileDriver 
   {
   public:
 	  virtual bool open(const std::string& filename) = 0;
 	  virtual void close(void) = 0;
-	  virtual bool next(T& record) throw(DriverException) = 0;
+	  virtual bool next(DayPrice& record) throw(DriverException) = 0;
 	  virtual bool eof(void) = 0;
   };
   
