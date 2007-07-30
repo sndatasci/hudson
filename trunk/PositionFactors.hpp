@@ -26,7 +26,7 @@
 class PositionFactors
 {
   public:
-    PositionFactors(const Position& pos, const Series::DaySeries<Series::DayPrice>& db);
+    PositionFactors(const Position& pos, const Series::DaySeries& db);
 
     double avg(void) const;
     double stddev(void) const;
@@ -75,7 +75,7 @@ class PositionFactors
 
   private:
     const Position& _pos;
-    const Series::DaySeries<Series::DayPrice>& _db;
+    const Series::DaySeries& _db;
     SeriesFactorSet _sfs;
 
     typedef std::vector<double> doubleVector;

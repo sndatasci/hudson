@@ -19,7 +19,7 @@
 
 class EOMTrader: public Trader
 {
-  typedef Series::DaySeries<Series::DayPrice> DB;
+  typedef Series::DaySeries DB;
 
 public:
   EOMTrader(const DB& db);

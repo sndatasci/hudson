@@ -24,7 +24,7 @@
 class PositionFactorsSet
 {
 public:
-  PositionFactorsSet(const PositionSet& sPositions, const Series::DaySeries<Series::DayPrice>& db);
+  PositionFactorsSet(const PositionSet& sPositions, const Series::DaySeries& db);
 
   double avg_neg_excursion(void) const; // average negative position excursion
   double avg_pos_excursion(void) const; // average positive position excursion
@@ -48,7 +48,7 @@ private:
 
 private:
   const PositionSet _sPositions;
-  const Series::DaySeries<Series::DayPrice>& _db;
+  const Series::DaySeries& _db;
 };
 
 #endif // _POSITIONSFACTORS_HPP_

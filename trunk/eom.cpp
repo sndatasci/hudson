@@ -2,19 +2,7 @@
  * eom.cpp
  */
 
-// STDLIB
-#include <ctime>
-#include <cstdlib>
-#include <cmath>
-
-// IO
-#include <iostream>
-#include <fstream>
-#include <string>
-
-// Boost
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/program_options.hpp>
+#include "StdAfx.h"
 
 // Hudson
 #include "YahooDriver.hpp"
@@ -29,11 +17,10 @@
 
 using namespace std;
 using namespace boost::gregorian;
+using namespace Series;
 
 namespace po = boost::program_options;
 
-
-typedef Series::DaySeries<Series::DayPrice> DB;
 
 
 int main(int argc, char* argv[])
@@ -74,8 +61,8 @@ int main(int argc, char* argv[])
 	  cout << "Exit days: " << exit_days << endl;
 	  cout << "Series file: " << dbfile << endl;
 
-    Series::YahooDriver yd;
-    DB db("myseries", yd);
+    YahooDriver yd;
+    DaySeries db("myseries", yd);
 
 	  date load_begin(from_simple_string(begin_date));
 	  if( load_begin.is_not_a_date() ) {
