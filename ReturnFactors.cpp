@@ -199,13 +199,14 @@ PositionSet ReturnFactors::dd(void) const
     return PositionSet();
 
   vector<PositionSet> dd; // all drawdowns
-  dd.push_back(PositionSet()); // at least one position set for max_element to work
-
   // calculate drawdown from each position
   for( position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin(); iter != _sPositions.get<last_exec_key>().end(); ++iter )
     dd.push_back(_dd(iter)); // add drawdown from this point
 
-  // return highest drawdown from all calculated
+  if( dd.empty() )
+    return PositionSet(); // min_element() crashes on empty vector
+
+  // return highest drawdown
   return *min_element(dd.begin(), dd.end(), PositionSetRealizedCmp());
 }
 

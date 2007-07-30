@@ -13,8 +13,11 @@
 // Hudson
 #include "PositionFactors.hpp"
 #include "Position.hpp"
+#include "SeriesFactorSet.hpp"
 
 using namespace std;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
 using namespace Series;
 
 
@@ -24,30 +27,35 @@ PositionFactors::PositionFactors( const Position& pos, const DaySeries<DayPrice>
 {
   //cout << "Initializing position " << pos.id() << " (" << (_pos.open() ? "open" : "closed") << ')' << ", entry " << pos.avgEntryPrice() << " [" << _pos.first_exec().dt() << '/' << _pos.last_exec().dt() << ']' << endl;
 
-  // Browse all price series from the position opening and build daily factors vector
-  bool first_factor = true;
-  double prev_price = 0;
+  // Browse all price series from the position opening and build daily factors
+  double prev_price = _pos.avgEntryPrice();
   double curr_price = 0;
-  double f = 0;
+
+  date prev_date = _pos.first_exec().dt();
+  date curr_date;
+
+  // Initialize all factors until the end of the series database
   for( DaySeries<DayPrice>::const_iterator iter = _db.after(_pos.first_exec().dt()); iter != _db.end(); ++iter ) {
 
     // If position is closed we only initialize factors up to the last execution
     if( _pos.closed() && iter->first > _pos.last_exec().dt() )
       break;
 
+    // Get current price mark
     curr_price = iter->second.close;
+    curr_date  = iter->first;
 
-    if( first_factor ) {
-      f = _pos.factor(curr_price);
-      first_factor = false;
-    } else {
-      f = curr_price / prev_price;
-    }
+    // Calculate long/short factor
+    double f = _pos.factor(prev_price, curr_price);
 
-    //cout << setprecision(4) << "On " << iter->first << " mark price: " << iter->second.close << ", factor: " << f << endl;
+    // Initialize doubles vector
     _vFactors.push_back(f);
 
+    //cout << setprecision(4) << "On " << iter->first << " mark price: " << curr_price << ", factor: " << f << endl;
+    _sfs.insert(SeriesFactor(ptime(prev_date), ptime(curr_date), f));
+
     prev_price = curr_price;
+    prev_date = curr_date;
   }
 
   _mean = accumulate<doubleVector::const_iterator, double>( _vFactors.begin(), _vFactors.end(), 0 ) / _vFactors.size();
@@ -76,67 +84,71 @@ double PositionFactors::stddev( void ) const
 }
 
 
-double PositionFactors::best( void ) const
+const SeriesFactor& PositionFactors::best( void ) const
 {
-  return *max_element(_vFactors.begin(), _vFactors.end());
+  return *max_element(_sfs.begin(), _sfs.end());
 }
 
 
-double PositionFactors::worst( void ) const
+const SeriesFactor& PositionFactors::worst( void ) const
 {
-  return *min_element(_vFactors.begin(), _vFactors.end());
+  return *min_element(_sfs.begin(), _sfs.end());
 }
 
 
-int PositionFactors::max_cons_pos( void ) const
+SeriesFactorSet PositionFactors::max_cons_pos(void) const
 {
-  vector<unsigned> cons;
+  vector<SeriesFactorSet> cons;
 
-  for( unsigned i = 0; i < _vFactors.size(); i++ ) {
-
-    // Filter out negative or break-even factors
-    if( _vFactors[i] <= 1 )
+  series_factor_by_end_mark::iterator iter = _sfs.get<to_key>().begin();
+  while( iter != _sfs.get<to_key>().end() ) {
+    if( (*iter).factor() <= 1 ) {
+      ++iter;
       continue;
-
-    // Look for positive sequence
-    unsigned counter = 0;
-    while( i < _vFactors.size() && _vFactors[i] > 1 ) {
-      ++counter;
-      ++i;
     }
-    cons.push_back(counter);
+
+    // Positive factor, look for positive sequence
+    SeriesFactorSet sfset;
+    while( iter != _sfs.get<to_key>().end() && (*iter).factor() > 1 ) {
+      sfset.insert(*iter);
+      ++iter;
+    }
+
+    cons.push_back(sfset);
   }
 
   if( cons.empty() )
-    return 0;
+    return SeriesFactorSet(); // max_element() crashes on empty collection
 
-  return *max_element(cons.begin(), cons.end());
+  return *max_element(cons.begin(), cons.end(), SeriesFactorSetSizeCmp());
 }
 
 
-int PositionFactors::max_cons_neg( void ) const
+SeriesFactorSet PositionFactors::max_cons_neg(void) const
 {
-  vector<unsigned> cons;
+  vector<SeriesFactorSet> cons;
 
-  for( unsigned i = 0; i < _vFactors.size(); i++ ) {
-
-    // Filter out positive or break-even factors
-    if( _vFactors[i] >= 1 )
+  series_factor_by_end_mark::iterator iter = _sfs.get<to_key>().begin();
+  while ( iter != _sfs.get<to_key>().end() ) {
+    if( (*iter).factor() >= 1 ) {
+      ++iter;
       continue;
-
-    // Look for negative sequence
-    unsigned counter = 0;
-    while( i < _vFactors.size() && _vFactors[i] < 1 ) {
-      ++counter;
-      ++i;
     }
-    cons.push_back(counter);
+
+    // Negative factor, look for negative sequence
+    SeriesFactorSet sfset;
+    while( iter != _sfs.get<to_key>().end() && (*iter).factor() < 1 ) {
+      sfset.insert(*iter);
+      ++iter;
+    }
+
+    cons.push_back(sfset);
   }
 
   if( cons.empty() )
-    return 0;
+    return SeriesFactorSet();
 
-  return *max_element(cons.begin(), cons.end());
+  return *max_element(cons.begin(), cons.end(), SeriesFactorSetSizeCmp());
 }
 
 
@@ -162,66 +174,73 @@ unsigned PositionFactors::num_neg(void) const
 }
 
 
-double PositionFactors::dd( void ) const
+SeriesFactorSet PositionFactors::dd( void ) const
 {
-  doubleVector vDD; // all drawdowns
+  vector<SeriesFactorSet> vsfs;
 
-  // calculate drawdown from each factor
-  for( unsigned i = 0; i != _vFactors.size(); ++i )
-    vDD.push_back(_dd(i)); // add drawdown from this point
+  // store drawdown from each series factor
+  for( series_factor_by_end_mark::iterator iter = _sfs.get<to_key>().begin(); iter != _sfs.get<to_key>().end(); ++iter )
+    vsfs.push_back(_dd(iter));
 
-  if( vDD.empty() )
-    return 1;
+  if( vsfs.empty() )
+    return SeriesFactorSet();
 
   // return highest drawdown from all calculated
-  return *min_element(vDD.begin(), vDD.end());
+  return *min_element(vsfs.begin(), vsfs.end(), SeriesFactorSetFactorCmp());
 }
 
 
-double PositionFactors::_dd(unsigned start) const
+SeriesFactorSet PositionFactors::_dd(series_factor_by_end_mark::const_iterator& start) const
 {
+  SeriesFactorSet sfs, dd_sfs;
   double acc = 1;
   double dd = 1;
 
-  for( unsigned i = start; i < _vFactors.size(); ++i ) {
+  for( series_factor_by_end_mark::const_iterator iter = start; iter != _sfs.get<to_key>().end(); ++iter ) {
+    sfs.insert(*iter);
+    acc *= (*iter).factor();
 
-    acc *= _vFactors[i];
-
-    if( acc < dd )
+    if( acc < dd ) {
       dd = acc;
+      dd_sfs = sfs;
+    }
   }
 
-  return dd;
+  return dd_sfs;
 }
 
 
-double PositionFactors::pk(void) const
+SeriesFactorSet PositionFactors::pk(void) const
 {
-  doubleVector vPK; // all peaks
+  vector<SeriesFactorSet> vsfs;
 
-  // calculate peak from each factor
-  for( unsigned i = 0; i != _vFactors.size(); ++i )
-    vPK.push_back(_pk(i));
+  // store drawdown from each series factor
+  for( series_factor_by_end_mark::iterator iter = _sfs.get<to_key>().begin(); iter != _sfs.get<to_key>().end(); ++iter )
+    vsfs.push_back(_pk(iter));
 
-  if( vPK.empty() )
-    return 1;
+  if( vsfs.empty() )
+    return SeriesFactorSet();
 
-  return *max_element(vPK.begin(), vPK.end());
+  // return highest drawdown from all calculated
+  return *max_element(vsfs.begin(), vsfs.end(), SeriesFactorSetFactorCmp());
 }
 
 
-double PositionFactors::_pk(unsigned start) const
+SeriesFactorSet PositionFactors::_pk(series_factor_by_end_mark::const_iterator& start) const
 {
+  SeriesFactorSet sfs, pk_sfs;
   double acc = 1;
   double pk = 1;
 
-  for( unsigned i = start; i < _vFactors.size(); ++i ) {
+  for( series_factor_by_end_mark::const_iterator iter = start; iter != _sfs.get<to_key>().end(); ++iter ) {
+    sfs.insert(*iter);
+    acc *= (*iter).factor();
 
-    acc *= _vFactors[i];
-
-    if( acc > pk )
+    if( acc > pk ) {
       pk = acc;
+      pk_sfs = sfs;
+    }
   }
 
-  return pk;
+  return pk_sfs;
 }

@@ -52,7 +52,7 @@ double PositionSet::realized(void) const
 {
   PositionSet closedPositions = closed();
   if( closedPositions.empty() )
-    return 0;
+    return 1;
 
   double acc = 1;
   for( const_iterator iter = closedPositions.begin(); iter != closedPositions.end(); ++iter )
@@ -66,7 +66,7 @@ double PositionSet::unrealized(void) const
 {
   PositionSet openPositions = open();
   if( openPositions.empty() )
-    return 0;
+    return 1;
 
   double acc = 1;
   for( const_iterator iter = openPositions.begin(); iter != openPositions.end(); ++iter )

@@ -31,6 +31,7 @@ public:
 
   virtual double factor(void) const throw(PositionException);
   virtual double factor(const Price& price) const throw(PositionException);
+  virtual double factor(const Price& prev_price, const Price& curr_price) const;
 
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
   virtual void sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
