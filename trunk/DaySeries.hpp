@@ -13,6 +13,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
@@ -34,12 +35,20 @@ namespace Series
 
 	  std::string name(void) const { return _name; }
   	
+    bool isLoaded(void) const { return _isLoaded; }
+
 	  std::size_t load(const std::string& filename); // load all records returned by the driver
 	  std::size_t load(const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
 
 	  boost::gregorian::date_period period(void) const;
 	  boost::gregorian::date_duration duration(void) const;
 	  long days(void) const;
+
+    std::vector<double> open(unsigned num) const;
+    std::vector<double> close(unsigned num) const;
+    std::vector<double> adjclose(unsigned num) const;
+    std::vector<double> high(unsigned num) const;
+    std::vector<double> low(unsigned num) const;
 
 	  ThisMap::const_iterator at_or_before(const boost::gregorian::date& k) const;
 	  ThisMap::const_iterator before(const boost::gregorian::date& k, unsigned recs = 1) const;
@@ -51,6 +60,7 @@ namespace Series
 
   private:
 	  std::string _name;
+    bool _isLoaded;
 	  FileDriver& _driver;
   };
 

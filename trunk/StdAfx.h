@@ -32,6 +32,9 @@
 
 #include <boost/shared_ptr.hpp>
 
+// TA-LIB
+#include <ta_libc.h>
+
 // Windows
 #ifdef WIN32
 #include <windows.h>
