@@ -2,8 +2,12 @@
  * EOMTrader.hpp
  */
 
+// TA-LIB
+#include <ta_libc.h>
 
+// Hudson
 #include "EOMTrader.hpp"
+#include "TA.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -18,6 +22,15 @@ EOMTrader::EOMTrader(const DB& db):
 
 void EOMTrader::run(unsigned entry_days, unsigned exit_days) throw(TraderException)
 {
+  TA ta;
+  vector<double> v = _db.close(50);
+  int outBeg, outNbElement;
+  double outReal[50];
+
+  TA_MA(0, 50, &v[0],
+        50, TA_MAType_SMA,
+        &outBeg, &outNbElement, outReal);
+
   _invested_days = days(0);
   date my_first_entry;
   date my_last_exit;

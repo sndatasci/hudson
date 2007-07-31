@@ -12,6 +12,7 @@ using namespace std;
 
 Series::DaySeries::DaySeries(const std::string& name, Series::FileDriver& driver):
   _name(name),
+  _isLoaded(false),
   _driver(driver)
 {
 }
@@ -189,6 +190,8 @@ size_t Series::DaySeries::load(const std::string& filename)
 
   _driver.close();
 
+  _isLoaded = true;
+
   return std::map<boost::gregorian::date, DayPrice>::size();
 }
 
@@ -224,5 +227,82 @@ size_t Series::DaySeries::load(const std::string& filename, const boost::gregori
 
   _driver.close();
 
+  _isLoaded = true;
+
   return ThisMap::size();
+}
+
+
+vector<double> Series::DaySeries::open( unsigned num ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  const_reverse_iterator iter = rbegin();
+  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
+    v.insert(v.begin(), iter->second.open);
+
+  return v;
+}
+
+
+vector<double> Series::DaySeries::close( unsigned num ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  const_reverse_iterator iter = rbegin();
+  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
+    v.insert(v.begin(), iter->second.close);
+
+  return v;
+}
+
+
+vector<double> Series::DaySeries::adjclose( unsigned num ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  const_reverse_iterator iter = rbegin();
+  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
+    v.insert(v.begin(), iter->second.adjclose);
+
+  return v;
+}
+
+
+vector<double> Series::DaySeries::high( unsigned num ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  const_reverse_iterator iter = rbegin();
+  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
+    v.insert(v.begin(), iter->second.high);
+
+  return v;
+}
+
+
+vector<double> Series::DaySeries::low( unsigned num ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  const_reverse_iterator iter = rbegin();
+  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
+    v.insert(v.begin(), iter->second.low);
+
+  return v;
 }

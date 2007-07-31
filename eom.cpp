@@ -22,7 +22,6 @@ using namespace Series;
 namespace po = boost::program_options;
 
 
-
 int main(int argc, char* argv[])
 {
   int entry_days, exit_days;
@@ -31,6 +30,9 @@ int main(int argc, char* argv[])
 
   try {
 
+    /*
+    * Extract simulation options
+    */
 	  po::options_description desc("Allowed options");
 	  desc.add_options()
 	    ("help", "produce help message")
@@ -61,6 +63,9 @@ int main(int argc, char* argv[])
 	  cout << "Exit days: " << exit_days << endl;
 	  cout << "Series file: " << dbfile << endl;
 
+    /*
+    * Load series data
+    */
     YahooDriver yd;
     DaySeries db("myseries", yd);
 
@@ -86,11 +91,17 @@ int main(int argc, char* argv[])
     cout << "Period: " << db.period() << endl;
     cout << "Total days: " << db.duration().days() << endl;
 
+    /*
+    * Initialize and run strategy
+    */
     EOMTrader trader(db);
     trader.run(entry_days, exit_days);
     trader.positions().closed().print();
     cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
 
+    /*
+    * Print simulation reports
+    */
     ReturnFactors rf(trader.positions().closed(), db.duration().days(), 12);
     PositionFactorsSet pf(trader.positions().closed(), db);
 
