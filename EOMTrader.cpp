@@ -2,12 +2,10 @@
  * EOMTrader.hpp
  */
 
-// TA-LIB
-#include <ta_libc.h>
-
 // Hudson
 #include "EOMTrader.hpp"
 #include "TA.hpp"
+#include "Print.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -22,14 +20,7 @@ EOMTrader::EOMTrader(const DB& db):
 
 void EOMTrader::run(unsigned entry_days, unsigned exit_days) throw(TraderException)
 {
-  TA ta;
-  vector<double> v = _db.close(50);
-  int outBeg, outNbElement;
-  double outReal[50];
-
-  TA_MA(0, 50, &v[0],
-        50, TA_MAType_SMA,
-        &outBeg, &outNbElement, outReal);
+  TA ta(_db);
 
   _invested_days = days(0);
   date my_first_entry;
@@ -58,6 +49,8 @@ void EOMTrader::run(unsigned entry_days, unsigned exit_days) throw(TraderExcepti
 	    cerr << "Can't find actual exit date for EOM " << last_tradeday_iter->first << endl;
 	    continue;
 	  }
+
+    ta.SMA(TA::CLOSE, entry_iter, 20);
 
 	  try {
 

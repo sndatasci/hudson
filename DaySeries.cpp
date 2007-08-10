@@ -6,6 +6,7 @@
 
 // Hudson
 #include "DaySeries.hpp"
+#include "Print.hpp"
 
 using namespace std;
 
@@ -15,6 +16,78 @@ Series::DaySeries::DaySeries(const std::string& name, Series::FileDriver& driver
   _isLoaded(false),
   _driver(driver)
 {
+}
+
+
+size_t Series::DaySeries::load(const std::string& filename)
+{
+  ThisMap::clear();
+
+  if( !_driver.open(filename) )
+    return 0;
+
+  DayPrice rec;
+  while( !_driver.eof() ) {
+
+    try {
+
+      if( _driver.next(rec) == false )
+        continue;
+
+      if( ThisMap::insert(ThisMap::value_type(rec.key, rec)).second == false ) {
+        cerr << "Duplicate record " << rec.key << endl;
+        continue;
+        }
+
+    } catch( DriverException& e ) {
+      cerr << e.what() << endl;
+      continue;
+    }
+
+  }	// while not EOF
+
+  _driver.close();
+
+  _isLoaded = true;
+
+  return std::map<boost::gregorian::date, DayPrice>::size();
+}
+
+
+size_t Series::DaySeries::load(const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end)
+{
+  ThisMap::clear();
+
+  if( !_driver.open(filename) )
+    return 0;
+
+  DayPrice rec;
+  while( !_driver.eof() ) {
+
+    try {
+
+      if( _driver.next(rec) == false ) // EOF
+        continue;
+
+      if( rec.key < begin || rec.key > end )
+        continue;					// out of range
+
+      if( ThisMap::insert(ThisMap::value_type(rec.key, rec)).second == false ) {
+        cerr << "Duplicate record " << rec.key << endl;
+        continue;
+      }
+
+    } catch( DriverException& e ) {
+      cerr << e.what() << endl;
+      continue;
+    }
+  }	// while not EOF
+
+  _driver.close();
+
+  _isLoaded = true;
+
+  return ThisMap::size();
 }
 
 
@@ -161,148 +234,112 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::last_in_week(boost
 }
 
 
-size_t Series::DaySeries::load(const std::string& filename)
-{
-  ThisMap::clear();
-
-  if( !_driver.open(filename) )
-    return 0;
-
-  DayPrice rec;
-  while( !_driver.eof() ) {
-
-    try {
-
-      if( _driver.next(rec) == false )
-        continue;
-
-      if( ThisMap::insert(ThisMap::value_type(rec.key, rec)).second == false ) {
-        cerr << "Duplicate record " << rec.key << endl;
-        continue;
-      }
-
-    } catch( DriverException& e ) {
-        cerr << e.what() << endl;
-        continue;
-    }
-
-  }	// while not EOF
-
-  _driver.close();
-
-  _isLoaded = true;
-
-  return std::map<boost::gregorian::date, DayPrice>::size();
-}
-
-
-size_t Series::DaySeries::load(const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end)
-{
-  ThisMap::clear();
-
-  if( !_driver.open(filename) )
-    return 0;
-
-  DayPrice rec;
-  while( !_driver.eof() ) {
-
-    try {
-
-      if( _driver.next(rec) == false ) // EOF
-        continue;
-
-      if( rec.key < begin || rec.key > end )
-        continue;					// out of range
-
-      if( ThisMap::insert(ThisMap::value_type(rec.key, rec)).second == false ) {
-        cerr << "Duplicate record " << rec.key << endl;
-        continue;
-      }
-
-    } catch( DriverException& e ) {
-      cerr << e.what() << endl;
-      continue;
-    }
-  }	// while not EOF
-
-  _driver.close();
-
-  _isLoaded = true;
-
-  return ThisMap::size();
-}
-
-
-vector<double> Series::DaySeries::open( unsigned num ) const
+std::vector<double> Series::DaySeries::open( const_iterator iter, unsigned num ) const
 {
   vector<double> v;
 
   if( !_isLoaded )
     return v;
 
-  const_reverse_iterator iter = rbegin();
-  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
-    v.insert(v.begin(), iter->second.open);
+  cout << "open series last value: " << iter->second.open << " (" << iter->first << ")" << endl;
+
+  // reverse iterator conversion skip the first element in series.
+  // manually last series element.
+  v.insert(v.begin(), iter->second.open);
+  unsigned i = 1;
+  for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
+    v.insert(v.begin(), rev_iter->second.open);
+
+  PRINT_ELEMENTS(v, "open series: ");
+  return v; 
+}
+
+
+std::vector<double> Series::DaySeries::close( const_iterator iter, unsigned num ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  // reverse iterator conversion skip the first element in series.
+  // manually last series element.
+  v.insert(v.begin(), iter->second.close);
+  unsigned i = 1;
+  for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
+    v.insert(v.begin(), rev_iter->second.close);
 
   return v;
 }
 
 
-vector<double> Series::DaySeries::close( unsigned num ) const
+std::vector<double> Series::DaySeries::adjclose( const_iterator iter, unsigned num ) const
 {
   vector<double> v;
 
   if( !_isLoaded )
     return v;
 
-  const_reverse_iterator iter = rbegin();
-  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
-    v.insert(v.begin(), iter->second.close);
+  // reverse iterator conversion skip the first element in series.
+  // manually last series element.
+  v.insert(v.begin(), iter->second.adjclose);
+  unsigned i = 1;
+  for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
+    v.insert(v.begin(), rev_iter->second.adjclose);
 
   return v;
 }
 
 
-vector<double> Series::DaySeries::adjclose( unsigned num ) const
+std::vector<double> Series::DaySeries::high( const_iterator iter, unsigned num ) const
 {
   vector<double> v;
 
   if( !_isLoaded )
     return v;
 
-  const_reverse_iterator iter = rbegin();
-  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
-    v.insert(v.begin(), iter->second.adjclose);
+  // reverse iterator conversion skip the first element in series.
+  // manually last series element.
+  v.insert(v.begin(), iter->second.high);
+  unsigned i = 1;
+  for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
+    v.insert(v.begin(), rev_iter->second.high);
 
   return v;
 }
 
 
-vector<double> Series::DaySeries::high( unsigned num ) const
+std::vector<double> Series::DaySeries::low( const_iterator iter, unsigned num ) const
 {
   vector<double> v;
 
   if( !_isLoaded )
     return v;
 
-  const_reverse_iterator iter = rbegin();
-  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
-    v.insert(v.begin(), iter->second.high);
+  // reverse iterator conversion skip the first element in series.
+  // manually last series element.
+  v.insert(v.begin(), iter->second.low);
+  unsigned i = 1;
+  for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
+    v.insert(v.begin(), rev_iter->second.low);
 
   return v;
 }
 
 
-vector<double> Series::DaySeries::low( unsigned num ) const
+std::vector<double> Series::DaySeries::volume( const_iterator iter, unsigned num ) const
 {
   vector<double> v;
 
   if( !_isLoaded )
     return v;
 
-  const_reverse_iterator iter = rbegin();
-  for( unsigned i = 0; i < num && iter != rend(); ++i, ++iter )
-    v.insert(v.begin(), iter->second.low);
+  // reverse iterator conversion skip the first element in series.
+  // manually last series element.
+  v.insert(v.begin(), iter->second.volume);
+  unsigned i = 1;
+  for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
+    v.insert(v.begin(), rev_iter->second.volume);
 
   return v;
 }

@@ -223,6 +223,9 @@
 				RelativePath=".\Price.hpp">
 			</File>
 			<File
+				RelativePath=".\Print.hpp">
+			</File>
+			<File
 				RelativePath=".\Report.hpp">
 			</File>
 			<File
