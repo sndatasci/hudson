@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EOM", "..\EOM\EOM.vcproj", 
 		{20AE52C8-2F82-4501-97F0-3BDD0AE154DF} = {20AE52C8-2F82-4501-97F0-3BDD0AE154DF}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VIXTrader", "..\VIXTrader\VIXTrader.vcproj", "{759F1619-2524-42B5-84DC-8325876C53ED}"
+	ProjectSection(ProjectDependencies) = postProject
+		{20AE52C8-2F82-4501-97F0-3BDD0AE154DF} = {20AE52C8-2F82-4501-97F0-3BDD0AE154DF}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -24,6 +29,10 @@ Global
 		{1572373B-9669-4782-83A5-99CBEDCFFB32}.Debug.Build.0 = Debug|Win32
 		{1572373B-9669-4782-83A5-99CBEDCFFB32}.Release.ActiveCfg = Release|Win32
 		{1572373B-9669-4782-83A5-99CBEDCFFB32}.Release.Build.0 = Release|Win32
+		{759F1619-2524-42B5-84DC-8325876C53ED}.Debug.ActiveCfg = Debug|Win32
+		{759F1619-2524-42B5-84DC-8325876C53ED}.Debug.Build.0 = Debug|Win32
+		{759F1619-2524-42B5-84DC-8325876C53ED}.Release.ActiveCfg = Release|Win32
+		{759F1619-2524-42B5-84DC-8325876C53ED}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

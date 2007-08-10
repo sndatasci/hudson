@@ -1,5 +1,5 @@
 /*
- * eom.cpp
+ * vix.cpp
  */
 
 // Boost
@@ -11,7 +11,7 @@
 #include "DayPrice.hpp"
 #include "ReturnFactors.hpp"
 #include "PositionFactors.hpp"
-#include "EOMTrader.hpp"
+#include "VIXTrader.hpp"
 #include "BnHTrader.hpp"
 #include "Report.hpp"
 #include "PositionsReport.hpp"
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
     /*
     * Initialize and run strategy
     */
-    EOMTrader trader(db);
+    VIXTrader trader(db);
     trader.run(entry_days, exit_days);
     trader.positions().closed().print();
     cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
