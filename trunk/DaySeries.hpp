@@ -44,11 +44,12 @@ namespace Series
 	  boost::gregorian::date_duration duration(void) const;
 	  long days(void) const;
 
-    std::vector<double> open(unsigned num) const;
-    std::vector<double> close(unsigned num) const;
-    std::vector<double> adjclose(unsigned num) const;
-    std::vector<double> high(unsigned num) const;
-    std::vector<double> low(unsigned num) const;
+    std::vector<double> open(const_iterator iter, unsigned num) const;
+    std::vector<double> close(const_iterator iter, unsigned num) const;
+    std::vector<double> adjclose(const_iterator iter, unsigned num) const;
+    std::vector<double> high(const_iterator iter, unsigned num) const;
+    std::vector<double> low(const_iterator iter, unsigned num) const;
+    std::vector<double> volume(const_iterator iter, unsigned num) const;
 
 	  ThisMap::const_iterator at_or_before(const boost::gregorian::date& k) const;
 	  ThisMap::const_iterator before(const boost::gregorian::date& k, unsigned recs = 1) const;
