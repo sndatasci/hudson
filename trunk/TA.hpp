@@ -63,6 +63,7 @@ public:
   typedef double RSIRes;
   typedef double ROCRes;
   typedef double ROCRRes;
+  typedef double ROCPRes;
   typedef double STDDEVRes;
   typedef struct
   {
@@ -76,6 +77,7 @@ public:
   RSIRes    RSI(SERIES_TYPE st, DB::const_iterator& iter, unsigned rsi_period) const throw(TAException);
   ROCRes    ROC(SERIES_TYPE st, DB::const_iterator& iter, unsigned roc_period) const throw(TAException);
   ROCRRes   ROCR(SERIES_TYPE st, DB::const_iterator& iter, unsigned roc_period) const throw(TAException);
+  ROCPRes   ROCP( SERIES_TYPE st, DB::const_iterator& iter, unsigned rocp_period ) const throw(TAException);
   STDDEVRes STDDEV(SERIES_TYPE st, DB::const_iterator& iter, unsigned stddev_period, double sd = 1) const throw(TAException);
   BBRes     BBANDS(SERIES_TYPE st, DB::const_iterator& iter, unsigned ma_period, double sd_up, double sd_down) const throw(TAException);
 
