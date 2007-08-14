@@ -31,7 +31,7 @@ public:
   }
 
   virtual ~TraderException(void) throw() { }
-  virtual const char *what() const throw() { return _Str.c_str(); }
+  virtual const char *what(void) const throw() { return _Str.c_str(); }
 
 protected:
   std::string _Str;

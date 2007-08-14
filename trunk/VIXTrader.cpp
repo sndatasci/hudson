@@ -11,64 +11,70 @@ using namespace std;
 using namespace boost::gregorian;
 
 
-VIXTrader::VIXTrader(const DB& db):
+VIXTrader::VIXTrader(const DB& db, const DB& vixdb):
   _db(db),
+  _vixdb(vixdb),
   _invested_days(0)
 {
 }
 
 
-void VIXTrader::run(unsigned entry_days, unsigned exit_days) throw(TraderException)
+void VIXTrader::run(void) throw(TraderException)
 {
-  TA ta(_db);
-
+  TA ta;
   _invested_days = days(0);
-  date my_first_entry;
-  date my_last_exit;
 
-  for( month_iterator miter(_db.begin()->first); miter < _db.rbegin()->first; ++miter ) {
-
-	  if( (*miter).month() == _db.rbegin()->first.month() && (*miter).year() == _db.rbegin()->first.year() )
-	    // We're on the last month of database record, we don't have enough records to find next month exit date
-	    continue;
-
-	  DB::const_iterator last_tradeday_iter = _db.last_in_month((*miter).year(), (*miter).month());
-	  if( last_tradeday_iter == _db.end() ) {
-	    cerr << "Can't find last trade day at date " << (*miter) << endl;
-	    continue;
-	  }
-
-	  DB::const_iterator entry_iter = _db.before(last_tradeday_iter->first, entry_days - 1);
-	  if( entry_iter == _db.end() ) {
-	    cerr << "Can't find actual entry date for EOM " << last_tradeday_iter->first << endl;
-	    continue;
-	  }
-
-	  DB::const_iterator exit_iter = _db.after(last_tradeday_iter->first, exit_days);
-	  if( exit_iter == _db.end() ) {
-	    cerr << "Can't find actual exit date for EOM " << last_tradeday_iter->first << endl;
-	    continue;
-	  }
-
-    ta.SMA(TA::CLOSE, entry_iter, 20);
+  for( DB::const_iterator iter(_vixdb.begin()); iter != _vixdb.end(); ++iter ) {
 
 	  try {
 
-	    Position::ID id = buy("EOM", entry_iter->first, entry_iter->second.close);
-	    close(id, exit_iter->first, exit_iter->second.close);
+      // 1. Calculate current invested days
+      if( ! _miPositions.open().empty() )
+        _invested_days = _invested_days + days(1);
+
+      // 2. Calculate VIX BBANDS
+      TA::BBRes resBBANDS3 = ta.BBANDS(_db.close(iter, 100), 100, 3, 3);
+      TA::BBRes resBBANDS1 = ta.BBANDS(_db.close(iter, 100), 100, 1, 1);
+
+      // 3. Check buy signal
+      if( _miPositions.open().empty() && iter->second.close > resBBANDS3.upper_band ) {
+        //cout << "VIX gt 3 stddev UB on " << iter->first << " (VIX = " << iter->second.close << ", BB 3 stddev UB: " << resBBANDS3.upper_band << ")" << endl;
+
+        // Buy at the open the next day
+        DB::const_iterator iter_entry = _db.after(iter->first);
+        if( iter_entry == _db.end() ) {
+          cerr << "Can't open position after " << iter->first << endl;
+          continue;
+        }
+
+	      buy("VIX2STDEV", iter_entry->first, iter_entry->second.open);
+      } 
+
+      // 4. Check sell signal
+      if( ! _miPositions.open().empty() && iter->second.close < resBBANDS1.upper_band ) {
+        cout << "VIX lt 1 stddev UP on " << iter->first << " (VIX = " << iter->second.close << ", BB 1 stddev UB: " << resBBANDS1.upper_band << ")" << endl;
+
+        // Get next bar
+        DB::const_iterator iter_exit = _db.after(iter->first);
+        if( iter_exit == _db.end() ) {
+          cerr << "Can't close position after " << iter->first << endl;
+          continue;
+        }
+
+        // Close all open positions at tomorrow's open
+        PositionSet ps = _miPositions.open();
+        for( PositionSet::const_iterator pos_iter = ps.begin(); pos_iter != ps.end(); ++pos_iter ) {
+          PositionPtr pPos = (*pos_iter);
+	        close(pPos->id(), iter_exit->first, iter_exit->second.open);
+        } // end of all open positions
+      }
   	
 	  } catch( std::exception& e ) {
+
 	    cerr << e.what() << endl;
 	    continue;
 	  }
 
-	  _invested_days = _invested_days + date_period(entry_iter->first, exit_iter->first).length();
-  	
-	  if( my_first_entry.is_not_a_date() ) my_first_entry = entry_iter->first;
-	    my_last_exit = exit_iter->first;
+  }	// for each bar
 
-  }	// for each month in price database
-
-  _first_entry = my_first_entry;
-  _last_exit = my_last_exit;
 }

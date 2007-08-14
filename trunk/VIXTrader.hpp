@@ -22,16 +22,15 @@ class VIXTrader: public Trader
   typedef Series::DaySeries DB;
 
 public:
-  VIXTrader(const DB& db);
+  VIXTrader(const DB& spxdb, const DB& vixdb);
 
-  void run(unsigned entry_days, unsigned exit_days) throw(TraderException);
+  void run(void) throw(TraderException);
 
-  boost::gregorian::date first_entry(void) { return _first_entry; }
-  boost::gregorian::date last_exit(void) { return _last_exit; }
   boost::gregorian::days invested_days(void) { return _invested_days; }
 
 private:
   const DB& _db;
+  const DB& _vixdb;
 
   boost::gregorian::date _first_entry;
   boost::gregorian::date _last_exit;

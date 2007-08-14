@@ -20,9 +20,8 @@ EOMTrader::EOMTrader(const DB& db):
 
 void EOMTrader::run(unsigned entry_days, unsigned exit_days) throw(TraderException)
 {
-  TA ta(_db);
-
   _invested_days = days(0);
+
   date my_first_entry;
   date my_last_exit;
 
@@ -49,8 +48,6 @@ void EOMTrader::run(unsigned entry_days, unsigned exit_days) throw(TraderExcepti
 	    cerr << "Can't find actual exit date for EOM " << last_tradeday_iter->first << endl;
 	    continue;
 	  }
-
-    ta.SMA(TA::CLOSE, entry_iter, 20);
 
 	  try {
 

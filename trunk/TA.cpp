@@ -13,8 +13,7 @@
 using namespace std;
 
 
-TA::TA( const DB& db ) throw(TAException):
-  _db(db)
+TA::TA(void) throw(TAException)
 {
   TA_RetCode ta_ret;
 
@@ -29,24 +28,23 @@ TA::~TA( void )
 }
 
 
-double TA::SMA( SERIES_TYPE st, DB::const_iterator& iter, unsigned ma_period ) const throw(TAException)
+TA::SMARes TA::SMA(vDouble vSeries, unsigned ma_period) const throw(TAException)
 {
-  vDouble vSMA = getSeries(st, iter, ma_period);
-  if( vSMA.size() < ma_period )
+  if( vSeries.size() < ma_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSMA.size());
+  vDouble vOutReal(vSeries.size());
 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_MA(0, ma_period-1, &vSMA[0], ma_period, TA_MAType_SMA,
-                         &outBegIdx, &outNbElement, &vOutReal[0]);
+  TA_RetCode ta_ret = TA_MA(0, ma_period-1, &vSeries[0], ma_period, TA_MAType_SMA,
+                            &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
 
   if( outNbElement <= 0 )
-    throw TAException("No out elements");
+    throw TAException("No output elements");
 
   if( outNbElement > 1 )
     throw TAException("More than one element");
@@ -55,18 +53,17 @@ double TA::SMA( SERIES_TYPE st, DB::const_iterator& iter, unsigned ma_period ) c
 }
 
 
-TA::EMARes TA::EMA( SERIES_TYPE st, DB::const_iterator& iter, unsigned ma_period ) const throw(TAException)
+TA::EMARes TA::EMA( vDouble vSeries, unsigned ma_period ) const throw(TAException)
 {
-  vDouble vEMA = getSeries(st, iter, ma_period);
-  if( vEMA.size() < ma_period )
+  if( vSeries.size() < ma_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vEMA.size());
+  vDouble vOutReal(vSeries.size());
 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_MA(0, ma_period-1, &vEMA[0], ma_period, TA_MAType_EMA,
+  TA_RetCode ta_ret = TA_MA(0, ma_period-1, &vSeries[0], ma_period, TA_MAType_EMA,
                             &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -81,44 +78,17 @@ TA::EMARes TA::EMA( SERIES_TYPE st, DB::const_iterator& iter, unsigned ma_period
 }
 
 
-TA::RSIRes TA::RSI( SERIES_TYPE st, DB::const_iterator& iter, unsigned rsi_period ) const throw(TAException)
+TA::RSIRes TA::RSI( vDouble vSeries, unsigned rsi_period ) const throw(TAException)
 {
-  vDouble vRSI = getSeries(st, iter, rsi_period);
-  if( vRSI.size() < rsi_period )
+  if( vSeries.size() < rsi_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vRSI.size());
+  vDouble vOutReal(vSeries.size());
 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_RSI(0, rsi_period-1, &vRSI[0], rsi_period,
-                            &outBegIdx, &outNbElement, &vOutReal[0]);
-  if( ta_ret != TA_SUCCESS )
-    throw TAException(getError(ta_ret));
-
-  if( outNbElement <= 0 )
-    throw TAException("No out elements");
-
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
-
-  return vOutReal[0];
-}
-
-
-TA::RSIRes TA::ROC( SERIES_TYPE st, DB::const_iterator& iter, unsigned roc_period ) const throw(TAException)
-{
-  vDouble vROC = getSeries(st, iter, roc_period);
-  if( vROC.size() < roc_period )
-    throw TAException("Not enough data");
-
-  vDouble vOutReal(vROC.size());
-
-  int outBegIdx;
-  int outNbElement;
-
-  TA_RetCode ta_ret = TA_ROC(0, roc_period-1, &vROC[0], roc_period,
+  TA_RetCode ta_ret = TA_RSI(0, rsi_period-1, &vSeries[0], rsi_period,
                              &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -133,18 +103,42 @@ TA::RSIRes TA::ROC( SERIES_TYPE st, DB::const_iterator& iter, unsigned roc_perio
 }
 
 
-TA::RSIRes TA::ROCR( SERIES_TYPE st, DB::const_iterator& iter, unsigned rocr_period ) const throw(TAException)
+TA::ROCRes TA::ROC(vDouble vSeries, unsigned roc_period) const throw(TAException)
 {
-  vDouble vROC = getSeries(st, iter, rocr_period);
-  if( vROC.size() < rocr_period )
+  if( vSeries.size() < roc_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vROC.size());
+  vDouble vOutReal(vSeries.size());
 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_ROCR(0, rocr_period-1, &vROC[0], rocr_period,
+  TA_RetCode ta_ret = TA_ROC(0, roc_period-1, &vSeries[0], roc_period,
+                             &outBegIdx, &outNbElement, &vOutReal[0]);
+  if( ta_ret != TA_SUCCESS )
+    throw TAException(getError(ta_ret));
+
+  if( outNbElement <= 0 )
+    throw TAException("No out elements");
+
+  if( outNbElement > 1 )
+    throw TAException("More than one element");
+
+  return vOutReal[0];
+}
+
+
+TA::ROCRRes TA::ROCR(vDouble vSeries, unsigned rocr_period ) const throw(TAException)
+{
+  if( vSeries.size() < rocr_period )
+    throw TAException("Not enough data");
+
+  vDouble vOutReal(vSeries.size());
+
+  int outBegIdx;
+  int outNbElement;
+
+  TA_RetCode ta_ret = TA_ROCR(0, rocr_period-1, &vSeries[0], rocr_period,
                               &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -159,18 +153,17 @@ TA::RSIRes TA::ROCR( SERIES_TYPE st, DB::const_iterator& iter, unsigned rocr_per
 }
 
 
-TA::ROCPRes TA::ROCP( SERIES_TYPE st, DB::const_iterator& iter, unsigned rocp_period ) const throw(TAException)
+TA::ROCPRes TA::ROCP(vDouble vSeries, unsigned rocp_period ) const throw(TAException)
 {
-  vDouble vROCP = getSeries(st, iter, rocp_period);
-  if( vROCP.size() < rocp_period )
+  if( vSeries.size() < rocp_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vROCP.size());
+  vDouble vOutReal(vSeries.size());
 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_ROCP(0, rocp_period-1, &vROCP[0], rocp_period,
+  TA_RetCode ta_ret = TA_ROCP(0, rocp_period-1, &vSeries[0], rocp_period,
                               &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -185,18 +178,17 @@ TA::ROCPRes TA::ROCP( SERIES_TYPE st, DB::const_iterator& iter, unsigned rocp_pe
 }
 
 
-TA::STDDEVRes TA::STDDEV( SERIES_TYPE st, DB::const_iterator& iter, unsigned stddev_period, double sd ) const throw(TAException)
+TA::STDDEVRes TA::STDDEV( vDouble vSeries, unsigned stddev_period, double sd ) const throw(TAException)
 {
-  vDouble vSTDDEV = getSeries(st, iter, stddev_period);
-  if( vSTDDEV.size() < stddev_period )
+  if( vSeries.size() < stddev_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSTDDEV.size());
+  vDouble vOutReal(vSeries.size());
 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_STDDEV(0, stddev_period-1, &vSTDDEV[0], stddev_period, sd,
+  TA_RetCode ta_ret = TA_STDDEV(0, stddev_period-1, &vSeries[0], stddev_period, sd,
                                 &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -211,20 +203,19 @@ TA::STDDEVRes TA::STDDEV( SERIES_TYPE st, DB::const_iterator& iter, unsigned std
 }
 
 
-TA::BBRes TA::BBANDS( SERIES_TYPE st, DB::const_iterator& iter, unsigned ma_period, double sd_up, double sd_down ) const throw(TAException)
+TA::BBRes TA::BBANDS( vDouble vSeries, unsigned ma_period, double sd_up, double sd_down ) const throw(TAException)
 {
-  vDouble vSMA = getSeries(st, iter, ma_period);
-  if( vSMA.size() < ma_period )
+  if( vSeries.size() < ma_period )
     throw TAException("Not enough data");
 
-  vDouble vOutMB(vSMA.size());
-  vDouble vOutUB(vSMA.size());
-  vDouble vOutLB(vSMA.size());
+  vDouble vOutMB(vSeries.size());
+  vDouble vOutUB(vSeries.size());
+  vDouble vOutLB(vSeries.size());
 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_BBANDS(0, ma_period-1, &vSMA[0], ma_period, sd_up, sd_down, TA_MAType_SMA,
+  TA_RetCode ta_ret = TA_BBANDS(0, ma_period-1, &vSeries[0], ma_period, sd_up, sd_down, TA_MAType_SMA,
                                 &outBegIdx, &outNbElement, &vOutUB[0], &vOutMB[0], &vOutLB[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -236,36 +227,11 @@ TA::BBRes TA::BBANDS( SERIES_TYPE st, DB::const_iterator& iter, unsigned ma_peri
     throw TAException("More than one element");
 
   BBRes res;
-  res.upper_band = vOutUB[0];
+  res.upper_band  = vOutUB[0];
   res.middle_band = vOutMB[0];
-  res.lower_band = vOutLB[0];
+  res.lower_band  = vOutLB[0];
 
   return res;
-}
-
-
-TA::vDouble TA::getSeries(SERIES_TYPE st, DB::const_iterator& iter, unsigned len) const throw(TAException)
-{
-  switch( st )
-  {
-    case OPEN:
-      return _db.open(iter, len);
-
-    case CLOSE:
-      return _db.close(iter, len);
-
-    case HIGH:
-      return _db.high(iter, len);
-
-    case LOW:
-      return _db.low(iter, len);
-
-    case VOLUME:
-      return _db.volume(iter, len);
-
-    default:
-      throw TAException("Invalid series type");
-  }
 }
 
 
