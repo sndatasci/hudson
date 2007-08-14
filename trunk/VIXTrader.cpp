@@ -38,8 +38,6 @@ void VIXTrader::run(void) throw(TraderException)
 
       // 3. Check buy signal
       if( _miPositions.open().empty() && iter->second.close > resBBANDS3.upper_band ) {
-        //cout << "VIX gt 3 stddev UB on " << iter->first << " (VIX = " << iter->second.close << ", BB 3 stddev UB: " << resBBANDS3.upper_band << ")" << endl;
-
         // Buy at the open the next day
         DB::const_iterator iter_entry = _db.after(iter->first);
         if( iter_entry == _db.end() ) {
@@ -47,13 +45,11 @@ void VIXTrader::run(void) throw(TraderException)
           continue;
         }
 
-	      buy("VIX2STDEV", iter_entry->first, iter_entry->second.open);
+	      buy(_db.name(), iter_entry->first, iter_entry->second.open);
       } 
 
       // 4. Check sell signal
       if( ! _miPositions.open().empty() && iter->second.close < resBBANDS1.upper_band ) {
-        cout << "VIX lt 1 stddev UP on " << iter->first << " (VIX = " << iter->second.close << ", BB 1 stddev UB: " << resBBANDS1.upper_band << ")" << endl;
-
         // Get next bar
         DB::const_iterator iter_exit = _db.after(iter->first);
         if( iter_exit == _db.end() ) {
