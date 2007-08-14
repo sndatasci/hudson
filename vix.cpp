@@ -64,8 +64,8 @@ int main(int argc, char* argv[])
     * Load series data
     */
     YahooDriver yd;
-    DaySeries db("prices", yd);
-    DaySeries vixdb("vix", yd);
+    DaySeries db(dbfile, yd);
+    DaySeries vixdb(vix_dbfile, yd);
 
 	  date load_begin(from_simple_string(begin_date));
 	  if( load_begin.is_not_a_date() ) {
