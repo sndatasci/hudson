@@ -25,9 +25,8 @@ namespace po = boost::program_options;
 
 int main(int argc, char* argv[])
 {
-  int entry_days, exit_days;
   string begin_date, end_date;
-  string dbfile;
+  string dbfile, vix_dbfile;
 
   try {
 
@@ -37,11 +36,10 @@ int main(int argc, char* argv[])
 	  po::options_description desc("Allowed options");
 	  desc.add_options()
 	    ("help", "produce help message")
-	    ("series_file", po::value<string>(&dbfile),                       "series database")
-	    ("entry_days",  po::value<int>(&entry_days)->default_value(2),    "offset entry days from EOM")
-	    ("exit_days",   po::value<int>(&exit_days)->default_value(2),     "offset exit days from previous EOM")
-	    ("begin_date",  po::value<string>(&begin_date),                   "start of trading period (YYYY-MM-DD)")
-	    ("end_date",    po::value<string>(&end_date),                     "end of trading period (YYYY-MM-DD)")
+	    ("series_file",     po::value<string>(&dbfile),                       "series database")
+      ("vix_series_file", po::value<string>(&vix_dbfile),                   "VIX series database")
+	    ("begin_date",      po::value<string>(&begin_date),                   "start of trading period (YYYY-MM-DD)")
+	    ("end_date",        po::value<string>(&end_date),                     "end of trading period (YYYY-MM-DD)")
 	    ;
 
 	  po::variables_map vm;
@@ -53,22 +51,21 @@ int main(int argc, char* argv[])
 	    exit(0);
 	  }
 
-	  if( vm["series_file"].empty() ||
-		    vm["entry_days"].empty() || vm["exit_days"].empty() ||
+	  if( vm["series_file"].empty() || vm["vix_series_file"].empty() ||
 		    vm["begin_date"].empty() || vm["end_date"].empty() ) {
 	    cout << desc << endl;
 	    exit(1);
 	  }
 
-	  cout << "Entry days: " << entry_days << endl;
-	  cout << "Exit days: " << exit_days << endl;
 	  cout << "Series file: " << dbfile << endl;
+    cout << "VIX series file: " << vix_dbfile << endl;
 
     /*
     * Load series data
     */
     YahooDriver yd;
-    DaySeries db("myseries", yd);
+    DaySeries db("prices", yd);
+    DaySeries vixdb("vix", yd);
 
 	  date load_begin(from_simple_string(begin_date));
 	  if( load_begin.is_not_a_date() ) {
@@ -88,6 +85,12 @@ int main(int argc, char* argv[])
 	    exit(EXIT_FAILURE);
 	  }
 
+    cout << "Loading " << vix_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+    if( vixdb.load(vix_dbfile, load_begin, load_end) <= 0 ) {
+      cerr << "No records found" << endl;
+      exit(EXIT_FAILURE);
+    }
+
     cout << "Records: " << db.size() << endl;
     cout << "Period: " << db.period() << endl;
     cout << "Total days: " << db.duration().days() << endl;
@@ -95,8 +98,8 @@ int main(int argc, char* argv[])
     /*
     * Initialize and run strategy
     */
-    VIXTrader trader(db);
-    trader.run(entry_days, exit_days);
+    VIXTrader trader(db, vixdb);
+    trader.run();
     trader.positions().closed().print();
     cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
 
@@ -113,16 +116,6 @@ int main(int argc, char* argv[])
     cout << endl << "Position Excursions" << endl << "--" << endl;
     PositionsReport pr(pf);
     pr.print();
-
-    // BnH
-    cout << endl << "B&H" << endl << "--" << endl;
-    BnHTrader bnh(db);
-    bnh.run();
-    ReturnFactors bnh_rf(bnh.positions().closed(), db.duration().days(), 12);
-    Report bnh_rp(bnh_rf);
-
-    bnh_rp.roi();
-    bnh_rp.cagr();
 
   } catch( std::exception& ex ) {
 
