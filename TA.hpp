@@ -44,18 +44,18 @@ public:
   TA(void) throw(TAException);
   ~TA(void);
 
-  typedef double SMARes;
-  typedef double EMARes;
-  typedef double RSIRes;
-  typedef double ROCRes;
-  typedef double ROCRRes;
-  typedef double ROCPRes;
-  typedef double STDDEVRes;
+  typedef std::vector<double> SMARes;
+  typedef std::vector<double> EMARes;
+  typedef std::vector<double> RSIRes;
+  typedef std::vector<double> ROCRes;
+  typedef std::vector<double> ROCRRes;
+  typedef std::vector<double> ROCPRes;
+  typedef std::vector<double> STDDEVRes;
   typedef struct
   {
-    double upper_band;
-    double middle_band;
-    double lower_band;
+    std::vector<double> upper_band;
+    std::vector<double> middle_band;
+    std::vector<double> lower_band;
   } BBRes;
 
   SMARes    SMA(vDouble vSeries, unsigned ma_period) const throw(TAException);

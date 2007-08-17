@@ -33,7 +33,8 @@ TA::SMARes TA::SMA(vDouble vSeries, unsigned ma_period) const throw(TAException)
   if( vSeries.size() < ma_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSeries.size());
+  size_t results = vSeries.size() - (ma_period - 1);
+  vDouble vOutReal(results);
 
   int outBegIdx;
   int outNbElement;
@@ -46,10 +47,10 @@ TA::SMARes TA::SMA(vDouble vSeries, unsigned ma_period) const throw(TAException)
   if( outNbElement <= 0 )
     throw TAException("No output elements");
 
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
+  if( outNbElement != results )
+    throw TAException("Number of output elements doesn't match expected value");
 
-  return vOutReal[0];
+  return vOutReal;
 }
 
 
@@ -58,7 +59,8 @@ TA::EMARes TA::EMA( vDouble vSeries, unsigned ma_period ) const throw(TAExceptio
   if( vSeries.size() < ma_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSeries.size());
+  size_t results = vSeries.size() - (ma_period - 1);
+  vDouble vOutReal(results);
 
   int outBegIdx;
   int outNbElement;
@@ -71,10 +73,10 @@ TA::EMARes TA::EMA( vDouble vSeries, unsigned ma_period ) const throw(TAExceptio
   if( outNbElement <= 0 )
     throw TAException("No out elements");
 
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
+  if( outNbElement != results )
+    throw TAException("Number of output elements doesn't match expected value");
 
-  return vOutReal[0];
+  return vOutReal;
 }
 
 
@@ -83,7 +85,8 @@ TA::RSIRes TA::RSI( vDouble vSeries, unsigned rsi_period ) const throw(TAExcepti
   if( vSeries.size() < rsi_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSeries.size());
+  size_t results = vSeries.size() - (rsi_period - 1);
+  vDouble vOutReal(results);
 
   int outBegIdx;
   int outNbElement;
@@ -96,10 +99,10 @@ TA::RSIRes TA::RSI( vDouble vSeries, unsigned rsi_period ) const throw(TAExcepti
   if( outNbElement <= 0 )
     throw TAException("No out elements");
 
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
+  if( outNbElement != results )
+    throw TAException("Number of output elements doesn't match expected value");
 
-  return vOutReal[0];
+  return vOutReal;
 }
 
 
@@ -108,7 +111,8 @@ TA::ROCRes TA::ROC(vDouble vSeries, unsigned roc_period) const throw(TAException
   if( vSeries.size() < roc_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSeries.size());
+  size_t results = vSeries.size() - (roc_period - 1);
+  vDouble vOutReal(results);
 
   int outBegIdx;
   int outNbElement;
@@ -121,10 +125,10 @@ TA::ROCRes TA::ROC(vDouble vSeries, unsigned roc_period) const throw(TAException
   if( outNbElement <= 0 )
     throw TAException("No out elements");
 
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
+  if( outNbElement != results )
+    throw TAException("Number of output elements doesn't match expected value");
 
-  return vOutReal[0];
+  return vOutReal;
 }
 
 
@@ -133,7 +137,8 @@ TA::ROCRRes TA::ROCR(vDouble vSeries, unsigned rocr_period ) const throw(TAExcep
   if( vSeries.size() < rocr_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSeries.size());
+  size_t results = vSeries.size() - (rocr_period - 1);
+  vDouble vOutReal(results);
 
   int outBegIdx;
   int outNbElement;
@@ -146,10 +151,10 @@ TA::ROCRRes TA::ROCR(vDouble vSeries, unsigned rocr_period ) const throw(TAExcep
   if( outNbElement <= 0 )
     throw TAException("No out elements");
 
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
+  if( outNbElement != results )
+    throw TAException("Number of output elements doesn't match expected value");
 
-  return vOutReal[0];
+  return vOutReal;
 }
 
 
@@ -158,7 +163,8 @@ TA::ROCPRes TA::ROCP(vDouble vSeries, unsigned rocp_period ) const throw(TAExcep
   if( vSeries.size() < rocp_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSeries.size());
+  size_t results = vSeries.size() - (rocp_period - 1);
+  vDouble vOutReal(results);
 
   int outBegIdx;
   int outNbElement;
@@ -171,10 +177,10 @@ TA::ROCPRes TA::ROCP(vDouble vSeries, unsigned rocp_period ) const throw(TAExcep
   if( outNbElement <= 0 )
     throw TAException("No out elements");
 
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
+  if( outNbElement != results )
+    throw TAException("Number of output elements doesn't match expected value");
 
-  return vOutReal[0];
+  return vOutReal;
 }
 
 
@@ -183,7 +189,8 @@ TA::STDDEVRes TA::STDDEV( vDouble vSeries, unsigned stddev_period, double sd ) c
   if( vSeries.size() < stddev_period )
     throw TAException("Not enough data");
 
-  vDouble vOutReal(vSeries.size());
+  size_t results = vSeries.size() - (stddev_period - 1);
+  vDouble vOutReal(results);
 
   int outBegIdx;
   int outNbElement;
@@ -196,10 +203,10 @@ TA::STDDEVRes TA::STDDEV( vDouble vSeries, unsigned stddev_period, double sd ) c
   if( outNbElement <= 0 )
     throw TAException("No out elements");
 
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
+  if( outNbElement != results )
+    throw TAException("Number of output elements doesn't match expected value");
 
-  return vOutReal[0];
+  return vOutReal;
 }
 
 
@@ -208,9 +215,10 @@ TA::BBRes TA::BBANDS( vDouble vSeries, unsigned ma_period, double sd_up, double 
   if( vSeries.size() < ma_period )
     throw TAException("Not enough data");
 
-  vDouble vOutMB(vSeries.size());
-  vDouble vOutUB(vSeries.size());
-  vDouble vOutLB(vSeries.size());
+  size_t results = vSeries.size() - (ma_period - 1);
+  vDouble vOutMB(results);
+  vDouble vOutUB(results);
+  vDouble vOutLB(results);
 
   int outBegIdx;
   int outNbElement;
@@ -223,13 +231,13 @@ TA::BBRes TA::BBANDS( vDouble vSeries, unsigned ma_period, double sd_up, double 
   if( outNbElement <= 0 )
     throw TAException("No out elements");
 
-  if( outNbElement > 1 )
-    throw TAException("More than one element");
+  if( outNbElement != results )
+    throw TAException("Number of output elements doesn't match expected value");
 
   BBRes res;
-  res.upper_band  = vOutUB[0];
-  res.middle_band = vOutMB[0];
-  res.lower_band  = vOutLB[0];
+  res.upper_band  = vOutUB;
+  res.middle_band = vOutMB;
+  res.lower_band  = vOutLB;
 
   return res;
 }
@@ -241,4 +249,3 @@ string TA::getError(TA_RetCode code) const
   TA_SetRetCodeInfo(code, &ta_retinfo);
   return string(ta_retinfo.infoStr);
 }
-
