@@ -37,7 +37,7 @@ void VIXTrader::run(void) throw(TraderException)
       TA::BBRes resBBANDS1 = ta.BBANDS(_db.close(iter, 100), 100, 1, 1);
 
       // 3. Check buy signal
-      if( _miPositions.open().empty() && iter->second.close > resBBANDS3.upper_band ) {
+      if( _miPositions.open().empty() && iter->second.close > resBBANDS3.upper_band[0] ) {
         // Buy at the open the next day
         DB::const_iterator iter_entry = _db.after(iter->first);
         if( iter_entry == _db.end() ) {
@@ -49,7 +49,7 @@ void VIXTrader::run(void) throw(TraderException)
       } 
 
       // 4. Check sell signal
-      if( ! _miPositions.open().empty() && iter->second.close < resBBANDS1.upper_band ) {
+      if( ! _miPositions.open().empty() && iter->second.close < resBBANDS1.upper_band[0] ) {
         // Get next bar
         DB::const_iterator iter_exit = _db.after(iter->first);
         if( iter_exit == _db.end() ) {
