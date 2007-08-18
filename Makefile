@@ -3,9 +3,10 @@
 CXX=g++
 
 LIB=libhudson.a
-BIN=eom eow bow jan eom_matrix jan_matrix
+BIN=vix eom
 
 SRC=\
+	DaySeries.cpp \
 	YahooDriver.cpp \
 	ReturnFactors.cpp \
 	Position.cpp \
@@ -15,14 +16,17 @@ SRC=\
 	LongPosition.cpp \
 	ShortPosition.cpp \
 	Position.cpp \
-	PositionFactors.cpp \
-	PositionsFactors.cpp \
-	PositionsReport.cpp \
-	Price.cpp \
 	PositionSet.cpp \
+	PositionFactors.cpp \
+	PositionFactorsSet.cpp \
+	PositionsReport.cpp \
+	SeriesFactor.cpp \
+	SeriesFactorSet.cpp \
+	Price.cpp \
 	Trader.cpp \
 	BnHTrader.cpp \
 	StdAfx.cpp \
+	TA.cpp
 
 HDR=\
 	FileDriver.hpp \
@@ -38,14 +42,18 @@ HDR=\
 	LongPosition.hpp \
 	ShortPosition.hpp \
 	PositionSet.hpp \
-	PositionsFactors.hpp \
+	PositionFactors.hpp \
+	PositionFactorsSet.hpp \
 	PositionsReport.hpp \
+	SeriesFactor.hpp \
+	SeriesFactorSet.hpp \
 	Trader.hpp \
 	BnHTrader.hpp \
-	Price.hpp
+	Price.hpp \
+	TA.hpp
 
 
-LIBS=-lhudson -lboost_date_time -lboost_program_options -lgsl -lgslcblas
+LIBS=-lhudson -lboost_date_time -lboost_program_options -lta_common -lta_func -lgsl -lgslcblas
 
 LIBPATH= \
 	-L. \
@@ -58,7 +66,8 @@ RPATH= \
 INCLUDES= \
 	-I. \
 	-I/home/users/agiannetti/include \
-	-I/opt/local/include
+	-I/opt/local/include \
+	-I/opt/local/include/ta-lib
 
 CFLAGS=-g
 CPPFLASG=
@@ -90,6 +99,9 @@ bow: $(LIB) bow.o BOWTrader.o
 
 eom: $(LIB) eom.o EOMTrader.o
 	$(CXX) -o $@ $(LDFLAGS) eom.o EOMTrader.o $(LIBPATH) $(LIBS)
+
+vix: $(LIB) vix.o VIXTrader.o
+	$(CXX) -o $@ $(LDFLAGS) vix.o VIXTrader.o $(LIBPATH) $(LIBS)
 
 eom_matrix: $(LIB) eom_matrix.o EOMTrader.o
 	$(CXX) -o $@ $(LDFLAGS) eom_matrix.o EOMTrader.o $(LIBPATH) $(LIBS)
