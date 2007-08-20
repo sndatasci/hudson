@@ -44,6 +44,9 @@ void PositionsReport::print( void ) const
 
 void PositionsReport::max_cons_pos( void ) const
 {
+  if( _pf.num() == 0 )
+    return; // avoid exception in report
+
   const SeriesFactorSet sfs = _pf.max_cons_pos();
   cout << "Max cons pos: ";
   if( sfs.empty() ) {
@@ -60,6 +63,9 @@ void PositionsReport::max_cons_pos( void ) const
 
 void PositionsReport::max_cons_neg( void ) const
 {
+  if( _pf.num() == 0 )
+    return; // avoid exception in report
+
   const SeriesFactorSet sfs = _pf.max_cons_neg();
   cout << "Max cons neg: ";
   if( sfs.empty() ) {
@@ -76,6 +82,9 @@ void PositionsReport::max_cons_neg( void ) const
 
 void PositionsReport::best_excursion( void ) const
 {
+  if( _pf.num() == 0 )
+    return; // avoid exception in report
+
   const SeriesFactorSet& sfs = _pf.best_excursion();
   const SeriesFactor& sf_begin = *(sfs.get<from_key>().begin());
   const SeriesFactor& sf_end = *(sfs.get<to_key>().rbegin());
@@ -87,6 +96,9 @@ void PositionsReport::best_excursion( void ) const
 
 void PositionsReport::worst_excursion( void ) const
 {
+  if( _pf.num() == 0 )
+    return; // avoid exception in report
+
   const SeriesFactorSet& sfs = _pf.worst_excursion();
   const SeriesFactor& sf_begin = *(sfs.get<from_key>().begin());
   const SeriesFactor& sf_end = *(sfs.get<to_key>().rbegin());

@@ -60,8 +60,31 @@ void Report::print(void) const
 }
 
 
+void Report::best(void) const
+{
+  if( _rf.num() == 0 )
+    return; // avoid exception during report
+
+  const Position& pos = _rf.best();
+  std::cout << "Best: " << (pos.factor()-1)*100 << '%' << " [" << pos.first_exec().dt() << '/' << pos.last_exec().dt() << ']' << std::endl;
+}
+
+
+void Report::worst(void) const
+{
+  if( _rf.num() == 0 )
+    return; // avoid exception during report
+
+  const Position& pos = _rf.worst();
+  std::cout << "Worst: " << (pos.factor()-1)*100 << '%' << " [" << pos.first_exec().dt() << '/' << pos.last_exec().dt() << ']' << std::endl;
+}
+
+
 void Report::max_cons_pos( void ) const
 {
+  if( _rf.num() == 0 )
+    return; // avoid exception during report
+
   PositionSet pset = _rf.max_cons_pos();
   cout << "Max cons pos: ";
   if( pset.empty() ) {
@@ -78,6 +101,9 @@ void Report::max_cons_pos( void ) const
 
 void Report::max_cons_neg( void ) const
 {
+  if( _rf.num() == 0 )
+    return; // avoid exception during report
+
   PositionSet pset = _rf.max_cons_neg();
   cout << "Max cons neg: ";
   if( pset.empty() ) {
@@ -94,6 +120,9 @@ void Report::max_cons_neg( void ) const
 
 void Report::max_dd( void ) const
 {
+  if( _rf.num() == 0 )
+    return; // avoid exception during report
+
   PositionSet pset = _rf.dd();
   cout << "Max drawdown: ";
   if( pset.empty() ) {

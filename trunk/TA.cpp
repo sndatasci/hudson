@@ -243,6 +243,23 @@ TA::BBRes TA::BBANDS( vDouble vSeries, unsigned ma_period, double sd_up, double 
 }
 
 
+TA::FACTORRes TA::FACTORS( vDouble vSeries, unsigned period ) const throw(TAException)
+{
+  vDouble results;
+
+  if( vSeries.empty() || (period + 1) > vSeries.size() )
+    throw TAException("Not enough data");
+
+  double last_element = vSeries[0];
+  for( unsigned i = period; i < vSeries.size(); i += period ) {
+    results.push_back(vSeries[i] / last_element);
+    last_element = vSeries[i];
+  }
+
+  return results;
+}
+
+
 string TA::getError(TA_RetCode code) const
 {
   TA_RetCodeInfo ta_retinfo;

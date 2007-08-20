@@ -20,18 +20,18 @@
 
 class TAException: public std::exception
 {
-  public:
-    TAException(const std::string msg):
-      _Str("TAException: ")
-    {
-      _Str += msg;
-    }
+public:
+  TAException(const std::string& msg):
+    _Str("TAException: ")
+  {
+    _Str += msg;
+  }
 
-    virtual ~TAException(void) throw() { }
-    virtual const char *what() const throw() { return _Str.c_str(); }
+  virtual ~TAException(void) throw() { }
+  virtual const char *what(void) const throw() { return _Str.c_str(); }
 
-  protected:
-    std::string _Str;
+protected:
+  std::string _Str;
 };
 
 
@@ -51,6 +51,7 @@ public:
   typedef std::vector<double> ROCRRes;
   typedef std::vector<double> ROCPRes;
   typedef std::vector<double> STDDEVRes;
+  typedef std::vector<double> FACTORRes;
   typedef struct
   {
     std::vector<double> upper_band;
@@ -66,6 +67,7 @@ public:
   ROCPRes   ROCP(vDouble vSeries, unsigned rocp_period) const throw(TAException);
   STDDEVRes STDDEV(vDouble vSeries, unsigned stddev_period, double sd = 1) const throw(TAException);
   BBRes     BBANDS(vDouble vSeries, unsigned ma_period, double sd_up, double sd_down) const throw(TAException);
+  FACTORRes FACTORS(vDouble vSeries, unsigned period = 1) const throw(TAException);
 
 protected:
   std::string getError(TA_RetCode code) const;

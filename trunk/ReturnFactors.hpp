@@ -21,6 +21,23 @@
 #include "PositionSet.hpp"
 
 
+class ReturnFactorsException: public std::exception
+{
+public:
+  ReturnFactorsException(const std::string& msg):
+    _Str("ReturnFactorsException: ")
+  {
+    _Str += msg;
+  }
+
+  virtual ~ReturnFactorsException(void) throw() { }
+  virtual const char *what(void) const throw() { return _Str.c_str(); }
+
+protected:
+  std::string _Str;
+};
+
+
 class ReturnFactors
 {
 public:
@@ -38,16 +55,16 @@ public:
   double cagr(void) const;
   double gsd(void) const;
 
-  const Position& best(void) const;
-  const Position& worst(void) const;
-
-  PositionSet max_cons_pos(void) const; // max consecutive positive
-  PositionSet max_cons_neg(void) const; // max consecutive negative
-
   PositionSet pos(void) const;
   PositionSet neg(void) const;
 
-  PositionSet dd(void) const;
+  const Position& best(void) const throw(ReturnFactorsException);
+  const Position& worst(void) const throw(ReturnFactorsException);
+
+  PositionSet max_cons_pos(void) const throw(ReturnFactorsException);
+  PositionSet max_cons_neg(void) const throw(ReturnFactorsException);
+
+  PositionSet dd(void) const throw(ReturnFactorsException);
 
 private:
   struct variance_bf : public std::binary_function<double, double, double> {

@@ -234,36 +234,31 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::last_in_week(boost
 }
 
 
-std::vector<double> Series::DaySeries::open( const_iterator iter, unsigned num ) const
+std::vector<double> Series::DaySeries::open( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
-  if( !_isLoaded )
+  if( !_isLoaded || iter == end() )
     return v;
 
-  cout << "open series last value: " << iter->second.open << " (" << iter->first << ")" << endl;
-
-  // reverse iterator conversion skip the first element in series.
-  // manually last series element.
+  // reverse iterator init skips the first element in collection. We must manually insert the current element.
   v.insert(v.begin(), iter->second.open);
   unsigned i = 1;
   for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
     v.insert(v.begin(), rev_iter->second.open);
 
-  PRINT_ELEMENTS(v, "open series: ");
   return v; 
 }
 
 
-std::vector<double> Series::DaySeries::close( const_iterator iter, unsigned num ) const
+std::vector<double> Series::DaySeries::close( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
-  if( !_isLoaded )
+  if( !_isLoaded || iter == end() )
     return v;
 
-  // reverse iterator conversion skip the first element in series.
-  // manually last series element.
+  // reverse iterator init skips the first element in collection. We must manually insert the current element.
   v.insert(v.begin(), iter->second.close);
   unsigned i = 1;
   for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
@@ -273,15 +268,14 @@ std::vector<double> Series::DaySeries::close( const_iterator iter, unsigned num 
 }
 
 
-std::vector<double> Series::DaySeries::adjclose( const_iterator iter, unsigned num ) const
+std::vector<double> Series::DaySeries::adjclose( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
-  if( !_isLoaded )
+  if( !_isLoaded || iter == end() )
     return v;
 
-  // reverse iterator conversion skip the first element in series.
-  // manually last series element.
+  // reverse iterator init skips the first element in collection. We must manually insert the current element.
   v.insert(v.begin(), iter->second.adjclose);
   unsigned i = 1;
   for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
@@ -291,15 +285,14 @@ std::vector<double> Series::DaySeries::adjclose( const_iterator iter, unsigned n
 }
 
 
-std::vector<double> Series::DaySeries::high( const_iterator iter, unsigned num ) const
+std::vector<double> Series::DaySeries::high( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
-  if( !_isLoaded )
+  if( !_isLoaded || iter == end() )
     return v;
 
-  // reverse iterator conversion skip the first element in series.
-  // manually last series element.
+  // reverse iterator init skips the first element in collection. We must manually insert the current element.
   v.insert(v.begin(), iter->second.high);
   unsigned i = 1;
   for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
@@ -309,15 +302,14 @@ std::vector<double> Series::DaySeries::high( const_iterator iter, unsigned num )
 }
 
 
-std::vector<double> Series::DaySeries::low( const_iterator iter, unsigned num ) const
+std::vector<double> Series::DaySeries::low( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
-  if( !_isLoaded )
+  if( !_isLoaded || iter == end() )
     return v;
 
-  // reverse iterator conversion skip the first element in series.
-  // manually last series element.
+  // reverse iterator init skips the first element in collection. We must manually insert the current element.
   v.insert(v.begin(), iter->second.low);
   unsigned i = 1;
   for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
@@ -327,15 +319,14 @@ std::vector<double> Series::DaySeries::low( const_iterator iter, unsigned num ) 
 }
 
 
-std::vector<double> Series::DaySeries::volume( const_iterator iter, unsigned num ) const
+std::vector<double> Series::DaySeries::volume( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
-  if( !_isLoaded )
+  if( !_isLoaded || iter == end() )
     return v;
 
-  // reverse iterator conversion skip the first element in series.
-  // manually last series element.
+  // reverse iterator init skips the first element in collection. We must manually insert the current element.
   v.insert(v.begin(), iter->second.volume);
   unsigned i = 1;
   for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
@@ -343,3 +334,4 @@ std::vector<double> Series::DaySeries::volume( const_iterator iter, unsigned num
 
   return v;
 }
+
