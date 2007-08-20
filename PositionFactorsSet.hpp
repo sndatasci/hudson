@@ -21,19 +21,38 @@
 #include "SeriesFactorSet.hpp"
 
 
+class PositionFactorsSetException: public std::exception
+{
+public:
+  PositionFactorsSetException(const std::string& msg):
+    _Str("PositionFactorsSetException: ")
+  {
+    _Str += msg;
+  }
+
+  virtual ~PositionFactorsSetException(void) throw() { }
+  virtual const char *what(void) const throw() { return _Str.c_str(); }
+
+protected:
+  std::string _Str;
+};
+
+
 class PositionFactorsSet
 {
 public:
   PositionFactorsSet(const PositionSet& sPositions, const Series::DaySeries& db);
 
+  unsigned num(void) const { return _sPositions.size(); }
+
   double avg_neg_excursion(void) const; // average negative position excursion
   double avg_pos_excursion(void) const; // average positive position excursion
 
-  SeriesFactorSet max_cons_pos(void) const; // max consecutive positive series factors
-  SeriesFactorSet max_cons_neg(void) const; // max consecutive negative series factors
+  SeriesFactorSet max_cons_pos(void) const throw(PositionFactorsSetException); // max consecutive positive series factors
+  SeriesFactorSet max_cons_neg(void) const throw(PositionFactorsSetException); // max consecutive negative series factors
 
-  SeriesFactorSet worst_excursion(void) const; // worst position excursion
-  SeriesFactorSet best_excursion(void) const; // best position excursion
+  SeriesFactorSet worst_excursion(void) const throw(PositionFactorsSetException); // worst position excursion
+  SeriesFactorSet best_excursion(void) const throw(PositionFactorsSetException); // best position excursion
 
 private:
   struct SeriesFactorSetSizeLtCmp: public std::binary_function<SeriesFactorSet, SeriesFactorSet, bool>

@@ -24,6 +24,9 @@ PositionFactorsSet::PositionFactorsSet( const PositionSet& sPositions, const Ser
 
 double PositionFactorsSet::avg_neg_excursion( void ) const
 {
+  if( _sPositions.empty() )
+    return 0;
+
   double acc = 0;
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
     PositionFactors pf(*(*iter), _db);
@@ -36,6 +39,9 @@ double PositionFactorsSet::avg_neg_excursion( void ) const
 
 double PositionFactorsSet::avg_pos_excursion( void ) const
 {
+  if( _sPositions.empty() )
+    return 0;
+
   double acc = 0;
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
     PositionFactors pf(*(*iter), _db);
@@ -46,8 +52,11 @@ double PositionFactorsSet::avg_pos_excursion( void ) const
 }
 
 
-SeriesFactorSet PositionFactorsSet::worst_excursion( void ) const
+SeriesFactorSet PositionFactorsSet::worst_excursion( void ) const throw(PositionFactorsSetException)
 {
+  if( _sPositions.empty() )
+    throw PositionFactorsSetException("Empty positions set");
+
   vector<SeriesFactorSet> vsfs;
 
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
@@ -59,8 +68,11 @@ SeriesFactorSet PositionFactorsSet::worst_excursion( void ) const
 }
 
 
-SeriesFactorSet PositionFactorsSet::best_excursion( void ) const
+SeriesFactorSet PositionFactorsSet::best_excursion( void ) const throw(PositionFactorsSetException)
 {
+  if( _sPositions.empty() )
+    throw PositionFactorsSetException("Empty positions set");
+
   vector<SeriesFactorSet> vsfs;
 
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
@@ -72,8 +84,11 @@ SeriesFactorSet PositionFactorsSet::best_excursion( void ) const
 }
 
 
-SeriesFactorSet PositionFactorsSet::max_cons_pos( void ) const
+SeriesFactorSet PositionFactorsSet::max_cons_pos( void ) const throw(PositionFactorsSetException)
 {
+  if( _sPositions.empty() )
+    throw PositionFactorsSetException("Empty positions set");
+
   vector<SeriesFactorSet> vSFS;
 
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
@@ -85,8 +100,11 @@ SeriesFactorSet PositionFactorsSet::max_cons_pos( void ) const
 }
 
 
-SeriesFactorSet PositionFactorsSet::max_cons_neg( void ) const
+SeriesFactorSet PositionFactorsSet::max_cons_neg( void ) const throw(PositionFactorsSetException)
 {
+  if( _sPositions.empty() )
+    throw PositionFactorsSetException("Empty positions set");
+
   vector<SeriesFactorSet> vSFS;
 
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {

@@ -33,6 +33,13 @@ ReturnFactors::ReturnFactors(const PositionSet& sPositions, unsigned days, unsig
 {
   _years = (days == 0 ? 0 : days/(double)365);
 
+  if( _sPositions.empty() ) {
+    _fvalue = 0;
+    _mean = 0;
+    _stddev = 0;
+    return;
+  }
+
   // Initialize time-ordered position factors by last execution (position close)
   for( position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin(); iter != _sPositions.get<last_exec_key>().end(); ++iter )
     _vFactors.push_back((*iter)->factor());
@@ -91,14 +98,20 @@ double ReturnFactors::gsd(void) const
 }
 
 
-const Position& ReturnFactors::best(void) const
+const Position& ReturnFactors::best(void) const throw(ReturnFactorsException)
 {
+  if( _sPositions.empty() )
+    throw ReturnFactorsException("Empty positions set");
+
   return **max_element(_sPositions.begin(), _sPositions.end(), PositionLtCmp());
 }
 
 
-const Position& ReturnFactors::worst(void) const
+const Position& ReturnFactors::worst(void) const throw(ReturnFactorsException)
 {
+  if( _sPositions.empty() )
+    throw ReturnFactorsException("Empty positions set");
+
   return **min_element(_sPositions.begin(), _sPositions.end(), PositionLtCmp());
 }
 
@@ -133,8 +146,11 @@ int ReturnFactors::num(void) const
 }
 
 
-PositionSet ReturnFactors::max_cons_pos(void) const
+PositionSet ReturnFactors::max_cons_pos(void) const throw(ReturnFactorsException)
 {
+  if( _sPositions.empty() )
+    throw ReturnFactorsException("Empty positions set");
+ 
   vector<PositionSet> cons;
 
   position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
@@ -163,8 +179,11 @@ PositionSet ReturnFactors::max_cons_pos(void) const
 }
 
 
-PositionSet ReturnFactors::max_cons_neg(void) const
+PositionSet ReturnFactors::max_cons_neg(void) const throw(ReturnFactorsException)
 {
+  if( _sPositions.empty() )
+    throw ReturnFactorsException("Empty positions set");
+
   vector<PositionSet> cons;
   
   position_by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
@@ -193,10 +212,10 @@ PositionSet ReturnFactors::max_cons_neg(void) const
 }
 
 
-PositionSet ReturnFactors::dd(void) const
+PositionSet ReturnFactors::dd(void) const throw(ReturnFactorsException)
 {
   if( _sPositions.empty() )
-    return PositionSet();
+    throw ReturnFactorsException("Empty positions set");
 
   vector<PositionSet> dd; // all drawdowns
   // calculate drawdown from each position
