@@ -39,7 +39,7 @@ TA::SMARes TA::SMA(vDouble vSeries, unsigned ma_period) const throw(TAException)
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_MA(0, ma_period-1, &vSeries[0], ma_period, TA_MAType_SMA,
+  TA_RetCode ta_ret = TA_MA(0, vSeries.size()-1, &vSeries[0], ma_period, TA_MAType_SMA,
                             &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -65,7 +65,7 @@ TA::EMARes TA::EMA( vDouble vSeries, unsigned ma_period ) const throw(TAExceptio
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_MA(0, ma_period-1, &vSeries[0], ma_period, TA_MAType_EMA,
+  TA_RetCode ta_ret = TA_MA(0, vSeries.size()-1, &vSeries[0], ma_period, TA_MAType_EMA,
                             &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -85,13 +85,13 @@ TA::RSIRes TA::RSI( vDouble vSeries, unsigned rsi_period ) const throw(TAExcepti
   if( vSeries.size() < rsi_period )
     throw TAException("Not enough data");
 
-  size_t results = vSeries.size() - (rsi_period - 1);
+  size_t results = vSeries.size() - rsi_period; // TA_RSI() "eats" the first bar in series
   vDouble vOutReal(results);
 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_RSI(0, rsi_period-1, &vSeries[0], rsi_period,
+  TA_RetCode ta_ret = TA_RSI(0, vSeries.size()-1, &vSeries[0], rsi_period,
                              &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -143,7 +143,7 @@ TA::ROCRRes TA::ROCR(vDouble vSeries, unsigned rocr_period ) const throw(TAExcep
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_ROCR(0, rocr_period-1, &vSeries[0], rocr_period,
+  TA_RetCode ta_ret = TA_ROCR(0, vSeries.size()-1, &vSeries[0], rocr_period,
                               &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -169,7 +169,7 @@ TA::ROCPRes TA::ROCP(vDouble vSeries, unsigned rocp_period ) const throw(TAExcep
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_ROCP(0, rocp_period-1, &vSeries[0], rocp_period,
+  TA_RetCode ta_ret = TA_ROCP(0, vSeries.size()-1, &vSeries[0], rocp_period,
                               &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -195,7 +195,7 @@ TA::STDDEVRes TA::STDDEV( vDouble vSeries, unsigned stddev_period, double sd ) c
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_STDDEV(0, stddev_period-1, &vSeries[0], stddev_period, sd,
+  TA_RetCode ta_ret = TA_STDDEV(0, vSeries.size()-1, &vSeries[0], stddev_period, sd,
                                 &outBegIdx, &outNbElement, &vOutReal[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
@@ -223,7 +223,7 @@ TA::BBRes TA::BBANDS( vDouble vSeries, unsigned ma_period, double sd_up, double 
   int outBegIdx;
   int outNbElement;
 
-  TA_RetCode ta_ret = TA_BBANDS(0, ma_period-1, &vSeries[0], ma_period, sd_up, sd_down, TA_MAType_SMA,
+  TA_RetCode ta_ret = TA_BBANDS(0, vSeries.size()-1, &vSeries[0], ma_period, sd_up, sd_down, TA_MAType_SMA,
                                 &outBegIdx, &outNbElement, &vOutUB[0], &vOutMB[0], &vOutLB[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
