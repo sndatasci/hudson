@@ -3,7 +3,7 @@
 CXX=g++
 
 LIB=libhudson.a
-BIN=vix eom
+BIN=vix spx eom
 
 SRC=\
 	DaySeries.cpp \
@@ -102,6 +102,9 @@ eom: $(LIB) eom.o EOMTrader.o
 
 vix: $(LIB) vix.o VIXTrader.o
 	$(CXX) -o $@ $(LDFLAGS) vix.o VIXTrader.o $(LIBPATH) $(LIBS)
+
+spx: $(LIB) spx.o SPXTrader.o
+	$(CXX) -o $@ $(LDFLAGS) spx.o SPXTrader.o $(LIBPATH) $(LIBS)
 
 eom_matrix: $(LIB) eom_matrix.o EOMTrader.o
 	$(CXX) -o $@ $(LDFLAGS) eom_matrix.o EOMTrader.o $(LIBPATH) $(LIBS)
