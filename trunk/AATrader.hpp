@@ -15,6 +15,7 @@
 #include "DayPrice.hpp"
 #include "DaySeries.hpp"
 #include "Trader.hpp"
+#include "TA.hpp"
 
 
 class AATrader: public Trader
@@ -22,20 +23,20 @@ class AATrader: public Trader
   typedef Series::DaySeries DB;
 
 public:
-  AATrader(const DB& db);
+  AATrader(const DB& spx_db, const DB& tnx_db, const DB& djc_db, const DB& eafe_db, const DB& reit_db);
 
-  void run(unsigned entry_days, unsigned exit_days) throw(TraderException);
-
-  boost::gregorian::date first_entry(void) { return _first_entry; }
-  boost::gregorian::date last_exit(void) { return _last_exit; }
-  boost::gregorian::days invested_days(void) { return _invested_days; }
+  void run(void) throw(TraderException);
 
 private:
-  const DB& _db;
+  void spx_buy(DB::const_iterator& iter, const TA::MACDRes& macd, int i);
+  void spx_sell(DB::const_iterator& iter, const TA::MACDRes& macd, int i);
 
-  boost::gregorian::date _first_entry;
-  boost::gregorian::date _last_exit;
-  boost::gregorian::days _invested_days;
+private:
+  const DB& _spx_db;
+  const DB& _tnx_db;
+  const DB& _djc_db;
+  const DB& _eafe_db;
+  const DB& _reit_db;
 };
 
 #endif // _AATRADER_HPP_

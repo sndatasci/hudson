@@ -125,6 +125,9 @@
 				RelativePath=".\LongPosition.cpp">
 			</File>
 			<File
+				RelativePath=".\NAREITDriver.cpp">
+			</File>
+			<File
 				RelativePath=".\Position.cpp">
 			</File>
 			<File
@@ -209,6 +212,9 @@
 			</File>
 			<File
 				RelativePath=".\LongPosition.hpp">
+			</File>
+			<File
+				RelativePath=".\NAREITDriver.hpp">
 			</File>
 			<File
 				RelativePath=".\Position.hpp">

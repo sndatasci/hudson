@@ -37,7 +37,7 @@ size_t Series::DaySeries::load(const std::string& filename)
       if( ThisMap::insert(ThisMap::value_type(rec.key, rec)).second == false ) {
         cerr << "Duplicate record " << rec.key << endl;
         continue;
-        }
+      }
 
     } catch( DriverException& e ) {
       cerr << e.what() << endl;
@@ -251,6 +251,34 @@ std::vector<double> Series::DaySeries::open( const_iterator iter, unsigned long 
 }
 
 
+std::vector<double> Series::DaySeries::open( void ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  for( const_iterator iter(begin()); iter != end(); ++iter )
+    v.push_back(iter->second.open);
+
+  return v;
+}
+
+
+std::vector<double> Series::DaySeries::open( const_iterator itbegin, const_iterator itend ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded || itbegin == itend || itbegin == end() )
+    return v;
+
+  for( const_iterator iter(itbegin); iter != itend; ++iter )
+    v.push_back(iter->second.open);
+
+  return v;
+}
+
+
 std::vector<double> Series::DaySeries::close( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
@@ -263,6 +291,34 @@ std::vector<double> Series::DaySeries::close( const_iterator iter, unsigned long
   unsigned i = 1;
   for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
     v.insert(v.begin(), rev_iter->second.close);
+
+  return v;
+}
+
+
+std::vector<double> Series::DaySeries::close( void ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  for( const_iterator iter(begin()); iter != end(); ++iter )
+    v.push_back(iter->second.close);
+
+  return v;
+}
+
+
+std::vector<double> Series::DaySeries::close( const_iterator itbegin, const_iterator itend ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded || itbegin == itend || itbegin == end() )
+    return v;
+
+  for( const_iterator iter(itbegin); iter != itend; ++iter )
+    v.push_back(iter->second.close);
 
   return v;
 }
@@ -285,6 +341,34 @@ std::vector<double> Series::DaySeries::adjclose( const_iterator iter, unsigned l
 }
 
 
+std::vector<double> Series::DaySeries::adjclose( void ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  for( const_iterator iter(begin()); iter != end(); ++iter )
+    v.push_back(iter->second.adjclose);
+
+  return v;
+}
+
+
+std::vector<double> Series::DaySeries::adjclose( const_iterator itbegin, const_iterator itend ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded || itbegin == itend || itbegin == end() )
+    return v;
+
+  for( const_iterator iter(itbegin); iter != itend; ++iter )
+    v.push_back(iter->second.adjclose);
+
+  return v;
+}
+
+
 std::vector<double> Series::DaySeries::high( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
@@ -297,6 +381,34 @@ std::vector<double> Series::DaySeries::high( const_iterator iter, unsigned long 
   unsigned i = 1;
   for( const_reverse_iterator rev_iter(iter); i < num && rev_iter != rend(); ++rev_iter, ++i )
     v.insert(v.begin(), rev_iter->second.high);
+
+  return v;
+}
+
+
+std::vector<double> Series::DaySeries::high( void ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  for( const_iterator iter(begin()); iter != end(); ++iter )
+    v.push_back(iter->second.high);
+
+  return v;
+}
+
+
+std::vector<double> Series::DaySeries::high( const_iterator itbegin, const_iterator itend ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded || itbegin == itend || itbegin == end() )
+    return v;
+
+  for( const_iterator iter(itbegin); iter != itend; ++iter )
+    v.push_back(iter->second.high);
 
   return v;
 }
@@ -319,6 +431,34 @@ std::vector<double> Series::DaySeries::low( const_iterator iter, unsigned long n
 }
 
 
+std::vector<double> Series::DaySeries::low( void ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  for( const_iterator iter(begin()); iter != end(); ++iter )
+    v.push_back(iter->second.low);
+
+  return v;
+}
+
+
+std::vector<double> Series::DaySeries::low( const_iterator itbegin, const_iterator itend ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded || itbegin == itend || itbegin == end() )
+    return v;
+
+  for( const_iterator iter(itbegin); iter != itend; ++iter )
+    v.push_back(iter->second.low);
+
+  return v;
+}
+
+
 std::vector<double> Series::DaySeries::volume( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
@@ -335,3 +475,30 @@ std::vector<double> Series::DaySeries::volume( const_iterator iter, unsigned lon
   return v;
 }
 
+
+std::vector<double> Series::DaySeries::volume( void ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded )
+    return v;
+
+  for( const_iterator iter(begin()); iter != end(); ++iter )
+    v.push_back(iter->second.volume);
+
+  return v;
+}
+
+
+std::vector<double> Series::DaySeries::volume( const_iterator itbegin, const_iterator itend ) const
+{
+  vector<double> v;
+
+  if( !_isLoaded || itbegin == itend || itbegin == end() )
+    return v;
+
+  for( const_iterator iter(itbegin); iter != itend; ++iter )
+    v.push_back(iter->second.volume);
+
+  return v;
+}
