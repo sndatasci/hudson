@@ -89,7 +89,7 @@ bool Series::BarraDriver::next(DayPrice& dp) throw(Series::DriverException)
 	  switch( i ) {
 
 	    case DATE: {
-	      dp.key = from_string(field);
+	      dp.key = from_uk_string(field);
 	      if( dp.key.is_not_a_date() ) {
 		      stringstream ss;
 		      ss << "Invalid key at line " << _linenum;

@@ -4,68 +4,97 @@
 
 // Hudson
 #include "AATrader.hpp"
-#include "TA.hpp"
 #include "Print.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
 
 
-AATrader::AATrader(const DB& db):
-  _db(db),
-  _invested_days(0)
+AATrader::AATrader(const DB& spx_db, const DB& tnx_db, const DB& djc_db, const DB& eafe_db, const DB& reit_db):
+  _spx_db(spx_db),
+  _tnx_db(tnx_db),
+  _djc_db(djc_db),
+  _eafe_db(eafe_db),
+  _reit_db(reit_db)
 {
 }
 
 
-void AATrader::run(unsigned entry_days, unsigned exit_days) throw(TraderException)
+void AATrader::run(void) throw(TraderException)
 {
-  _invested_days = days(0);
+  TA ta;
 
-  date my_first_entry;
-  date my_last_exit;
+  DB::const_iterator spx_iter(_spx_db.begin());
+  DB::const_iterator tnx_iter(_tnx_db.begin());
+  DB::const_iterator djc_iter(_djc_db.begin());
+  DB::const_iterator eafe_iter(_eafe_db.begin());
+  DB::const_iterator reit_iter(_reit_db.begin());
 
-  for( month_iterator miter(_db.begin()->first); miter < _db.rbegin()->first; ++miter ) {
+  vector<double> series = _spx_db.close();
+  cout << "Total of " << series.size() << " bars in SPX series" << endl;
 
-	  if( (*miter).month() == _db.rbegin()->first.month() && (*miter).year() == _db.rbegin()->first.year() )
-	    // We're on the last month of database record, we don't have enough records to find next month exit date
-	    continue;
+  TA::MACDRes spxMACD = ta.MACD(_spx_db.close(), 12, 26, 9);
+  TA::MACDRes tnxMACD = ta.MACD(_tnx_db.close(), 12, 26, 9);
+  TA::MACDRes djcMACD = ta.MACD(_djc_db.close(), 12, 26, 9);
+  TA::MACDRes eafeMACD = ta.MACD(_eafe_db.close(), 12, 26, 9);
+  //TA::MACDRes reitMACD = ta.MACD(_reit_db.close(), 12, 26, 9);
 
-	  DB::const_iterator last_tradeday_iter = _db.last_in_month((*miter).year(), (*miter).month());
-	  if( last_tradeday_iter == _db.end() ) {
-	    cerr << "Can't find last trade day at date " << (*miter) << endl;
-	    continue;
-	  }
+  // Shift series iterator to the beginning of MACD signals in MACD results vector
+  advance(spx_iter, spxMACD.begIdx);
+  for( int i = 0; spx_iter != _spx_db.end(); ++spx_iter, ++i ) {
 
-	  DB::const_iterator entry_iter = _db.before(last_tradeday_iter->first, entry_days - 1);
-	  if( entry_iter == _db.end() ) {
-	    cerr << "Can't find actual entry date for AA " << last_tradeday_iter->first << endl;
-	    continue;
-	  }
+    cout << "On " << spx_iter->first
+      << " MACD " << spxMACD.macd[i]
+        << ", MACD Hist " << spxMACD.macd_hist[i]
+          << ", MACD signal " << spxMACD.macd_signal[i] << endl;
 
-	  DB::const_iterator exit_iter = _db.after(last_tradeday_iter->first, exit_days);
-	  if( exit_iter == _db.end() ) {
-	    cerr << "Can't find actual exit date for AA " << last_tradeday_iter->first << endl;
-	    continue;
-	  }
+    try {
 
-	  try {
+      spx_buy(spx_iter, spxMACD, i);
+      spx_sell(spx_iter, spxMACD, i);
 
-	    Position::ID id = buy("AA", entry_iter->first, entry_iter->second.close);
-	    close(id, exit_iter->first, exit_iter->second.close);
-  	
-	  } catch( std::exception& e ) {
-	    cerr << e.what() << endl;
-	    continue;
-	  }
+    } catch( std::exception& e ) {
 
-	  _invested_days = _invested_days + date_period(entry_iter->first, exit_iter->first).length();
-  	
-	  if( my_first_entry.is_not_a_date() ) my_first_entry = entry_iter->first;
-	    my_last_exit = exit_iter->first;
+      cerr << e.what() << endl;
+      continue;
 
-  }	// for each month in price database
+    } // try/catch
+  } // for( ; ; )
+}
 
-  _first_entry = my_first_entry;
-  _last_exit = my_last_exit;
+
+void AATrader::spx_buy( DB::const_iterator& iter, const TA::MACDRes& macd, int i )
+{
+  // Check buy signal
+  if( _miPositions.open().empty() && macd.macd_signal[i] > macd.macd[i] ) {
+    // Buy tomorrow's close
+    DB::const_iterator iter_entry = _spx_db.after(iter->first);
+    if( iter_entry == _spx_db.end() ) {
+      cerr << "Can't open position after " << iter->first << endl;
+      return;
+    }
+
+    buy(_spx_db.name(), iter_entry->first, iter_entry->second.open);
+  }
+}
+
+
+void AATrader::spx_sell( DB::const_iterator& iter, const TA::MACDRes& macd, int i )
+{
+  // Check sell signal
+  if( ! _miPositions.open().empty() && macd.macd_signal[i] < macd.macd[i] ) {
+    // Get next bar
+    DB::const_iterator iter_exit = _spx_db.after(iter->first);
+    if( iter_exit == _spx_db.end() ) {
+      cerr << "Can't close position after " << iter->first << endl;
+      return;
+    }
+
+    // Close all open positions at tomorrow's close
+    PositionSet ps = _miPositions.open();
+    for( PositionSet::const_iterator pos_iter = ps.begin(); pos_iter != ps.end(); ++pos_iter ) {
+      PositionPtr pPos = (*pos_iter);
+      close(pPos->id(), iter_exit->first, iter_exit->second.open);
+    } // end of all open positions
+  }
 }

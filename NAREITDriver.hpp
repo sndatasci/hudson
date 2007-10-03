@@ -2,8 +2,8 @@
  * NAREITDriver.hpp
  */
 
-#ifndef _BARRADRIVER_HPP_
-#define _BARRADRIVER_HPP_
+#ifndef _NAREITDRIVER_HPP_
+#define _NAREITDRIVER_HPP_
 
 #ifdef WIN32
 #pragma warning (disable:4290)
