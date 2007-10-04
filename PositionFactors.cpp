@@ -21,7 +21,7 @@ using namespace boost::gregorian;
 using namespace Series;
 
 
-PositionFactors::PositionFactors( const Position& pos, const DaySeries& db ):
+PositionFactors::PositionFactors( const Position& pos, const EODSeries& db ):
   _pos(pos),
   _db(db)
 {
@@ -35,7 +35,7 @@ PositionFactors::PositionFactors( const Position& pos, const DaySeries& db ):
   date curr_date;
 
   // Initialize all factors until the end of the series database
-  for( DaySeries::const_iterator iter = _db.after(_pos.first_exec().dt()); iter != _db.end(); ++iter ) {
+  for( EODSeries::const_iterator iter = _db.after(_pos.first_exec().dt()); iter != _db.end(); ++iter ) {
 
     // If position is closed we only initialize factors up to the last execution
     if( _pos.closed() && iter->first > _pos.last_exec().dt() )

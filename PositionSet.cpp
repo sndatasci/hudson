@@ -36,11 +36,41 @@ const PositionSet PositionSet::closed(void) const
 }
 
 
+const PositionSet PositionSet::closed( const std::string& symbol )
+{
+  PositionSet closedPos;
+
+  position_by_symbol::const_iterator symbol_key_end = get<symbol_key>().upper_bound(symbol);
+
+  for( position_by_symbol::const_iterator iter = get<symbol_key>().lower_bound(symbol);
+        iter != symbol_key_end; ++iter )
+    if( (*iter)->closed() )
+      closedPos.insert(*iter);
+
+  return closedPos;
+}
+
+
 const PositionSet PositionSet::open(void) const
 {
   PositionSet openPos;
 
   for( const_iterator iter = begin(); iter != end(); ++iter )
+    if( (*iter)->open() )
+      openPos.insert(*iter);
+
+  return openPos;
+}
+
+
+const PositionSet PositionSet::open( const std::string& symbol )
+{
+  PositionSet openPos;
+
+  position_by_symbol::const_iterator symbol_key_end = get<symbol_key>().upper_bound(symbol);
+
+  for( position_by_symbol::const_iterator iter = get<symbol_key>().lower_bound(symbol);
+        iter != symbol_key_end; ++iter )
     if( (*iter)->open() )
       openPos.insert(*iter);
 

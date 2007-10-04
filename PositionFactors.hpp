@@ -16,8 +16,7 @@
 #include <stdexcept>
 
 // Hudson
-#include "DaySeries.hpp"
-#include "DayPrice.hpp"
+#include "EODSeries.hpp"
 #include "Position.hpp"
 #include "SeriesFactor.hpp"
 #include "SeriesFactorSet.hpp"
@@ -26,7 +25,7 @@
 class PositionFactors
 {
   public:
-    PositionFactors(const Position& pos, const Series::DaySeries& db);
+    PositionFactors(const Position& pos, const Series::EODSeries& db);
 
     double avg(void) const;
     double stddev(void) const;
@@ -75,7 +74,7 @@ class PositionFactors
 
   private:
     const Position& _pos;
-    const Series::DaySeries& _db;
+    const Series::EODSeries& _db;
     SeriesFactorSet _sfs;
 
     typedef std::vector<double> doubleVector;

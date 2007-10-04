@@ -48,6 +48,9 @@ public:
   const PositionSet closed(void) const;
   const PositionSet open(void) const;
 
+  const PositionSet closed(const std::string& symbol);
+  const PositionSet open(const std::string& symbol);
+
   double realized(void) const;
   double unrealized(void) const;
 
