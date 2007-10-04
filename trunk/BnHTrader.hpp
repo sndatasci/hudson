@@ -8,14 +8,14 @@
 // STL
 #include <vector>
 
-#include "DayPrice.hpp"
-#include "DaySeries.hpp"
+// Hudson
+#include "EODSeries.hpp"
 #include "Trader.hpp"
 
 
 class BnHTrader: public Trader
 {
-  typedef Series::DaySeries DB;
+  typedef Series::EODSeries DB;
 
 public:
   BnHTrader(const DB& db);

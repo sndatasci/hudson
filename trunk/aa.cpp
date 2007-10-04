@@ -7,10 +7,8 @@
 
 // Hudson
 #include "YahooDriver.hpp"
-#include "BarraDriver.hpp"
-#include "NAREITDriver.hpp"
-#include "DaySeries.hpp"
-#include "DayPrice.hpp"
+#include "DMYCloseDriver.hpp"
+#include "EODSeries.hpp"
 #include "ReturnFactors.hpp"
 #include "PositionFactors.hpp"
 #include "AATrader.hpp"
@@ -76,14 +74,13 @@ int main(int argc, char* argv[])
     * Load series data
     */
     YahooDriver yd;
-    BarraDriver bd;
-    NAREITDriver nd;
+    DMYCloseDriver sd;
   
-    DaySeries spx_db("SPX", yd);
-    DaySeries tnx_db("TNX", yd);
-    DaySeries djc_db("DJC", yd);
-    DaySeries eafe_db("EAFE", bd);
-    DaySeries reit_db("REIT", nd);
+    EODSeries spx_db("SPX", yd);
+    EODSeries tnx_db("TNX", yd);
+    EODSeries djc_db("DJC", yd);
+    EODSeries eafe_db("EAFE", sd);
+    EODSeries reit_db("REIT", sd);
 
 	  date load_begin(from_simple_string(begin_date));
 	  if( load_begin.is_not_a_date() ) {

@@ -5,13 +5,13 @@
 #include "StdAfx.h"
 
 // Hudson
-#include "DaySeries.hpp"
+#include "EODSeries.hpp"
 #include "Print.hpp"
 
 using namespace std;
 
 
-Series::DaySeries::DaySeries(const std::string& name, Series::FileDriver& driver):
+Series::EODSeries::EODSeries(const std::string& name, Series::FileDriver& driver):
   _name(name),
   _isLoaded(false),
   _driver(driver)
@@ -19,7 +19,7 @@ Series::DaySeries::DaySeries(const std::string& name, Series::FileDriver& driver
 }
 
 
-size_t Series::DaySeries::load(const std::string& filename)
+size_t Series::EODSeries::load(const std::string& filename)
 {
   ThisMap::clear();
 
@@ -54,7 +54,7 @@ size_t Series::DaySeries::load(const std::string& filename)
 }
 
 
-size_t Series::DaySeries::load(const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end)
+size_t Series::EODSeries::load(const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end)
 {
   ThisMap::clear();
 
@@ -91,25 +91,25 @@ size_t Series::DaySeries::load(const std::string& filename, const boost::gregori
 }
 
 
-boost::gregorian::date_period Series::DaySeries::period(void) const
+boost::gregorian::date_period Series::EODSeries::period(void) const
 {
   return boost::gregorian::date_period(ThisMap::begin()->first, ThisMap::rbegin()->first);
 }
 
 
-boost::gregorian::date_duration Series::DaySeries::duration(void) const
+boost::gregorian::date_duration Series::EODSeries::duration(void) const
 {
   return boost::gregorian::date_duration(ThisMap::rbegin()->first - ThisMap::begin()->first);
 }
 
 
-long Series::DaySeries::days(void) const
+long Series::EODSeries::days(void) const
 {
   return boost::gregorian::date_duration(ThisMap::rbegin()->first - ThisMap::begin()->first).days();
 }
 
 
-Series::DaySeries::ThisMap::const_iterator Series::DaySeries::at_or_before(const boost::gregorian::date& k) const
+Series::EODSeries::ThisMap::const_iterator Series::EODSeries::at_or_before(const boost::gregorian::date& k) const
 {
   ThisMap::const_iterator iter;
   if( (iter = ThisMap::find(k)) != ThisMap::end() )
@@ -119,7 +119,7 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::at_or_before(const
 }
 
 
-Series::DaySeries::ThisMap::const_iterator Series::DaySeries::before(const boost::gregorian::date& k, unsigned recs) const
+Series::EODSeries::ThisMap::const_iterator Series::EODSeries::before(const boost::gregorian::date& k, unsigned recs) const
 {
   ThisMap::const_iterator iter;
   if( (iter = ThisMap::lower_bound(k)) == ThisMap::begin() && recs > 0 )
@@ -133,7 +133,7 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::before(const boost
 }
 
 
-Series::DaySeries::ThisMap::const_iterator Series::DaySeries::after(const boost::gregorian::date& k, unsigned recs) const
+Series::EODSeries::ThisMap::const_iterator Series::EODSeries::after(const boost::gregorian::date& k, unsigned recs) const
 {
   ThisMap::const_iterator iter;
   if( (iter = ThisMap::find(k)) == ThisMap::end() ) {
@@ -153,7 +153,7 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::after(const boost:
 }
 
 
-Series::DaySeries::ThisMap::const_iterator Series::DaySeries::first_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const
+Series::EODSeries::ThisMap::const_iterator Series::EODSeries::first_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const
 {
   // Call upper_bound() using the last calendar day for previous month to retrieve first record in requested month
   boost::gregorian::date request_date(year, month, 1); // first calendar day of requested month
@@ -169,7 +169,7 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::first_in_month(boo
 }
 
 
-Series::DaySeries::ThisMap::const_iterator Series::DaySeries::last_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const
+Series::EODSeries::ThisMap::const_iterator Series::EODSeries::last_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const
 {
   boost::gregorian::date request_date(year, month, 1);
   ThisMap::const_iterator iter = ThisMap::lower_bound(request_date);
@@ -183,7 +183,7 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::last_in_month(boos
 }
 
 
-Series::DaySeries::ThisMap::const_iterator Series::DaySeries::first_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const
+Series::EODSeries::ThisMap::const_iterator Series::EODSeries::first_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const
 {
   boost::gregorian::date request_date(year, month, day);
   boost::gregorian::date begin_of_week;	// Monday in requested date week
@@ -206,7 +206,7 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::first_in_week(boos
 }
 
 
-Series::DaySeries::ThisMap::const_iterator Series::DaySeries::last_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const
+Series::EODSeries::ThisMap::const_iterator Series::EODSeries::last_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const
 {
   boost::gregorian::date request_date(year, month, day);
   boost::gregorian::date end_of_week;
@@ -234,7 +234,7 @@ Series::DaySeries::ThisMap::const_iterator Series::DaySeries::last_in_week(boost
 }
 
 
-std::vector<double> Series::DaySeries::open( const_iterator iter, unsigned long num ) const
+std::vector<double> Series::EODSeries::open( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
@@ -251,7 +251,7 @@ std::vector<double> Series::DaySeries::open( const_iterator iter, unsigned long 
 }
 
 
-std::vector<double> Series::DaySeries::open( void ) const
+std::vector<double> Series::EODSeries::open( void ) const
 {
   vector<double> v;
 
@@ -265,7 +265,7 @@ std::vector<double> Series::DaySeries::open( void ) const
 }
 
 
-std::vector<double> Series::DaySeries::open( const_iterator itbegin, const_iterator itend ) const
+std::vector<double> Series::EODSeries::open( const_iterator itbegin, const_iterator itend ) const
 {
   vector<double> v;
 
@@ -279,7 +279,7 @@ std::vector<double> Series::DaySeries::open( const_iterator itbegin, const_itera
 }
 
 
-std::vector<double> Series::DaySeries::close( const_iterator iter, unsigned long num ) const
+std::vector<double> Series::EODSeries::close( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
@@ -296,7 +296,7 @@ std::vector<double> Series::DaySeries::close( const_iterator iter, unsigned long
 }
 
 
-std::vector<double> Series::DaySeries::close( void ) const
+std::vector<double> Series::EODSeries::close( void ) const
 {
   vector<double> v;
 
@@ -310,7 +310,7 @@ std::vector<double> Series::DaySeries::close( void ) const
 }
 
 
-std::vector<double> Series::DaySeries::close( const_iterator itbegin, const_iterator itend ) const
+std::vector<double> Series::EODSeries::close( const_iterator itbegin, const_iterator itend ) const
 {
   vector<double> v;
 
@@ -324,7 +324,7 @@ std::vector<double> Series::DaySeries::close( const_iterator itbegin, const_iter
 }
 
 
-std::vector<double> Series::DaySeries::adjclose( const_iterator iter, unsigned long num ) const
+std::vector<double> Series::EODSeries::adjclose( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
@@ -341,7 +341,7 @@ std::vector<double> Series::DaySeries::adjclose( const_iterator iter, unsigned l
 }
 
 
-std::vector<double> Series::DaySeries::adjclose( void ) const
+std::vector<double> Series::EODSeries::adjclose( void ) const
 {
   vector<double> v;
 
@@ -355,7 +355,7 @@ std::vector<double> Series::DaySeries::adjclose( void ) const
 }
 
 
-std::vector<double> Series::DaySeries::adjclose( const_iterator itbegin, const_iterator itend ) const
+std::vector<double> Series::EODSeries::adjclose( const_iterator itbegin, const_iterator itend ) const
 {
   vector<double> v;
 
@@ -369,7 +369,7 @@ std::vector<double> Series::DaySeries::adjclose( const_iterator itbegin, const_i
 }
 
 
-std::vector<double> Series::DaySeries::high( const_iterator iter, unsigned long num ) const
+std::vector<double> Series::EODSeries::high( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
@@ -386,7 +386,7 @@ std::vector<double> Series::DaySeries::high( const_iterator iter, unsigned long 
 }
 
 
-std::vector<double> Series::DaySeries::high( void ) const
+std::vector<double> Series::EODSeries::high( void ) const
 {
   vector<double> v;
 
@@ -400,7 +400,7 @@ std::vector<double> Series::DaySeries::high( void ) const
 }
 
 
-std::vector<double> Series::DaySeries::high( const_iterator itbegin, const_iterator itend ) const
+std::vector<double> Series::EODSeries::high( const_iterator itbegin, const_iterator itend ) const
 {
   vector<double> v;
 
@@ -414,7 +414,7 @@ std::vector<double> Series::DaySeries::high( const_iterator itbegin, const_itera
 }
 
 
-std::vector<double> Series::DaySeries::low( const_iterator iter, unsigned long num ) const
+std::vector<double> Series::EODSeries::low( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
@@ -431,7 +431,7 @@ std::vector<double> Series::DaySeries::low( const_iterator iter, unsigned long n
 }
 
 
-std::vector<double> Series::DaySeries::low( void ) const
+std::vector<double> Series::EODSeries::low( void ) const
 {
   vector<double> v;
 
@@ -445,7 +445,7 @@ std::vector<double> Series::DaySeries::low( void ) const
 }
 
 
-std::vector<double> Series::DaySeries::low( const_iterator itbegin, const_iterator itend ) const
+std::vector<double> Series::EODSeries::low( const_iterator itbegin, const_iterator itend ) const
 {
   vector<double> v;
 
@@ -459,7 +459,7 @@ std::vector<double> Series::DaySeries::low( const_iterator itbegin, const_iterat
 }
 
 
-std::vector<double> Series::DaySeries::volume( const_iterator iter, unsigned long num ) const
+std::vector<double> Series::EODSeries::volume( const_iterator iter, unsigned long num ) const
 {
   vector<double> v;
 
@@ -476,7 +476,7 @@ std::vector<double> Series::DaySeries::volume( const_iterator iter, unsigned lon
 }
 
 
-std::vector<double> Series::DaySeries::volume( void ) const
+std::vector<double> Series::EODSeries::volume( void ) const
 {
   vector<double> v;
 
@@ -490,7 +490,7 @@ std::vector<double> Series::DaySeries::volume( void ) const
 }
 
 
-std::vector<double> Series::DaySeries::volume( const_iterator itbegin, const_iterator itend ) const
+std::vector<double> Series::EODSeries::volume( const_iterator itbegin, const_iterator itend ) const
 {
   vector<double> v;
 

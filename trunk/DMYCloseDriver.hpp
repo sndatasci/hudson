@@ -1,9 +1,9 @@
 /*
- * NAREITDriver.hpp
+ * DMYCloseDriver.hpp
  */
 
-#ifndef _NAREITDRIVER_HPP_
-#define _NAREITDRIVER_HPP_
+#ifndef _DMYCLOSEDRIVER_HPP_
+#define _DMYCLOSEDRIVER_HPP_
 
 #ifdef WIN32
 #pragma warning (disable:4290)
@@ -23,11 +23,11 @@
 namespace Series
 {
 
-  class NAREITDriver: public FileDriver
+  class DMYCloseDriver: public FileDriver
   {
   public:
-	  NAREITDriver(void);
-	  ~NAREITDriver(void);
+	  DMYCloseDriver(void);
+	  ~DMYCloseDriver(void);
 
 	  virtual bool open(const std::string& filename);
 	  virtual void close(void);
@@ -48,4 +48,4 @@ namespace Series
 
 } // namespace Series
 
-#endif // _NAREITDriver_HPP_
+#endif // _DMYCLOSEDRIVER_HPP_

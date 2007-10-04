@@ -1,5 +1,5 @@
 /*
- * BarraDriver.cpp
+ * DMYCloseDriver.cpp
  */
 
 #include "StdAfx.h"
@@ -11,27 +11,27 @@
 #include <boost/tokenizer.hpp>
 
 // Series
-#include "BarraDriver.hpp"
+#include "DMYCloseDriver.hpp"
 
 using namespace std;
 using namespace boost;
 using namespace boost::gregorian;
 
 
-Series::BarraDriver::BarraDriver(void):
+Series::DMYCloseDriver::DMYCloseDriver(void):
   _linenum(0)
 {
 }
 
 
-Series::BarraDriver::~BarraDriver(void)
+Series::DMYCloseDriver::~DMYCloseDriver(void)
 {
   if( _infile.is_open() )
 	  _infile.close();
 }
 
 
-bool Series::BarraDriver::open(const std::string& filename)
+bool Series::DMYCloseDriver::open(const std::string& filename)
 {
   // Check if another file was open previously
   if( _infile.is_open() ) {
@@ -51,7 +51,7 @@ bool Series::BarraDriver::open(const std::string& filename)
 }
 
 
-void Series::BarraDriver::close(void)
+void Series::DMYCloseDriver::close(void)
 {
   if( _infile.is_open() )
 	  _infile.close();
@@ -62,7 +62,7 @@ void Series::BarraDriver::close(void)
 }
 
 
-bool Series::BarraDriver::next(DayPrice& dp) throw(Series::DriverException)
+bool Series::DMYCloseDriver::next(DayPrice& dp) throw(Series::DriverException)
 {
   if( _infile.eof() )
   	return false;
@@ -114,7 +114,7 @@ bool Series::BarraDriver::next(DayPrice& dp) throw(Series::DriverException)
 }
 
 
-bool Series::BarraDriver::eof(void)
+bool Series::DMYCloseDriver::eof(void)
 {
   return _infile.eof();
 }

@@ -2,8 +2,8 @@
  * DaySeries.hpp
  */
 
-#ifndef _SERIES_DAYSERIES_HPP_
-#define _SERIES_DAYSERIES_HPP_
+#ifndef _SERIES_EODSERIES_HPP_
+#define _SERIES_EODSERIES_HPP_
 
 #ifdef WIN32
 #pragma warning (disable:4290)
@@ -26,12 +26,12 @@
 namespace Series
 {
 
-  class DaySeries: public std::map<boost::gregorian::date, Series::DayPrice>
+  class EODSeries: public std::map<boost::gregorian::date, Series::DayPrice>
   {
 	  typedef std::map<boost::gregorian::date, DayPrice> ThisMap;
 
   public:
-	  DaySeries(const std::string& name, FileDriver& driver);
+	  EODSeries(const std::string& name, FileDriver& driver);
 
 	  std::string name(void) const { return _name; }
   	
@@ -45,8 +45,8 @@ namespace Series
 	  long days(void) const;
 
     // Extract weekly series
-    //DaySeries weekly(void);
-    //DaySeries monthly(void);
+    //EODSeries weekly(void);
+    //EODSeries monthly(void);
 
     // Extract monthly series
 
@@ -90,4 +90,4 @@ namespace Series
 
 } // namespace Series
 
-#endif // _SERIES_DAYSERIES_HPP_
+#endif // _SERIES_EODSERIES_HPP_

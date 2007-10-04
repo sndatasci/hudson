@@ -107,13 +107,13 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\BarraDriver.cpp">
-			</File>
-			<File
 				RelativePath=".\BnHTrader.cpp">
 			</File>
 			<File
-				RelativePath=".\DaySeries.cpp">
+				RelativePath=".\DMYCloseDriver.cpp">
+			</File>
+			<File
+				RelativePath=".\EODSeries.cpp">
 			</File>
 			<File
 				RelativePath=".\Execution.cpp">
@@ -123,9 +123,6 @@
 			</File>
 			<File
 				RelativePath=".\LongPosition.cpp">
-			</File>
-			<File
-				RelativePath=".\NAREITDriver.cpp">
 			</File>
 			<File
 				RelativePath=".\Position.cpp">
@@ -190,16 +187,16 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\BarraDriver.hpp">
-			</File>
-			<File
 				RelativePath=".\BnHTrader.hpp">
 			</File>
 			<File
 				RelativePath=".\DayPrice.hpp">
 			</File>
 			<File
-				RelativePath=".\DaySeries.hpp">
+				RelativePath=".\DMYCloseDriver.hpp">
+			</File>
+			<File
+				RelativePath=".\EODSeries.hpp">
 			</File>
 			<File
 				RelativePath=".\Execution.hpp">
@@ -212,9 +209,6 @@
 			</File>
 			<File
 				RelativePath=".\LongPosition.hpp">
-			</File>
-			<File
-				RelativePath=".\NAREITDriver.hpp">
 			</File>
 			<File
 				RelativePath=".\Position.hpp">

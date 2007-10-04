@@ -16,8 +16,7 @@
 
 // Hudson
 #include "PositionSet.hpp"
-#include "DaySeries.hpp"
-#include "DayPrice.hpp"
+#include "EODSeries.hpp"
 #include "SeriesFactorSet.hpp"
 
 
@@ -41,7 +40,7 @@ protected:
 class PositionFactorsSet
 {
 public:
-  PositionFactorsSet(const PositionSet& sPositions, const Series::DaySeries& db);
+  PositionFactorsSet(const PositionSet& sPositions, const Series::EODSeries& db);
 
   unsigned num(void) const { return _sPositions.size(); }
 
@@ -67,7 +66,7 @@ private:
 
 private:
   const PositionSet _sPositions;
-  const Series::DaySeries& _db;
+  const Series::EODSeries& _db;
 };
 
 #endif // _POSITIONSFACTORS_HPP_
