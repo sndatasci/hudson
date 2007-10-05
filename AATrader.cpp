@@ -24,36 +24,48 @@ void AATrader::run(void) throw(TraderException)
 {
   TA ta;
 
-  DB::const_iterator spx_iter(_spx_db.begin());
-  DB::const_iterator tnx_iter(_tnx_db.begin());
-  DB::const_iterator djc_iter(_djc_db.begin());
-  DB::const_iterator eafe_iter(_eafe_db.begin());
-  DB::const_iterator reit_iter(_reit_db.begin());
+  const DB spx_monthly_db = _spx_db.monthly();
+  //const DB tnx_monthly_db = _tnx_db.monthly();
+  //const DB djc_monthly_db = _djc_db.monthly();
+  //const DB eafe_monthly_db = _eafe_db.monthly();
+  //const DB reit_monthly_db = _reit_db.monthly();
 
-  TA::MACDRes spxMACD = ta.MACD(_spx_db.close(), 12, 26, 9);
-  TA::MACDRes tnxMACD = ta.MACD(_tnx_db.close(), 12, 26, 9);
-  TA::MACDRes djcMACD = ta.MACD(_djc_db.close(), 12, 26, 9);
-  //TA::MACDRes eafeMACD = ta.MACD(_eafe_db.close(), 12, 26, 9);
-  //TA::MACDRes reitMACD = ta.MACD(_reit_db.close(), 12, 26, 9);
+  DB::const_iterator spx_iter(spx_monthly_db.begin());
+  //DB::const_iterator tnx_iter(tnx_monthly_db.begin());
+  //DB::const_iterator djc_iter(djc_monthly_db.begin());
+  //DB::const_iterator eafe_iter(eafe_monthly_db.begin());
+  //DB::const_iterator reit_iter(reit_monthly_db.begin());
+
+  TA::MACDRes spxMACD = ta.MACD(spx_monthly_db.close(), 12, 26, 9);
+  //TA::MACDRes tnxMACD = ta.MACD(tnx_monthly_db.close(), 12, 26, 9);
+  //TA::MACDRes djcMACD = ta.MACD(djc_monthly_db.close(), 12, 26, 9);
+  //TA::MACDRes eafeMACD = ta.MACD(eafe_monthly_db.close(), 12, 26, 9);
+  //TA::MACDRes reitMACD = ta.MACD(reit_monthly_db.close(), 12, 26, 9);
 
   // Shift series iterator to the beginning of MACD signals in MACD results vector
   advance(spx_iter, spxMACD.begIdx);
-  advance(tnx_iter, tnxMACD.begIdx);
-  advance(djc_iter, djcMACD.begIdx);
+  //advance(tnx_iter, tnxMACD.begIdx);
+  //advance(djc_iter, djcMACD.begIdx);
   //advance(eafe_iter, eafeMACD.begIdx);
   //advance(reit_iter, reitMACD.begIdx);
 
-  for( int i = 0; spx_iter != _spx_db.end(); ++spx_iter, ++tnx_iter, ++djc_iter, ++i ) {
+  cout << "SPX monthly has " << spx_monthly_db.size() << " bars" << endl;
+  cout << "SPX monthly index starting at " << spxMACD.begIdx << endl;
+  for( int i = 0; spx_iter != spx_monthly_db.end(); ++spx_iter, ++i ) {
+
+    cout << "SPX bar key " << spx_iter->first << ", Open " << spx_iter->second.open
+      << ", Close " << spx_iter->second.close << ", High " << spx_iter->second.high
+      << ", Low " << spx_iter->second.low << ", Volume " << spx_iter->second.volume << endl;
 
     try {
 
-      check_buy(_spx_db, spx_iter, spxMACD, i);
-      check_buy(_tnx_db, tnx_iter, tnxMACD, i);
-      check_buy(_djc_db, djc_iter, djcMACD, i);
+      check_buy(spx_monthly_db, spx_iter, spxMACD, i);
+      //check_buy(tnx_monthly_db, tnx_iter, tnxMACD, i);
+      //check_buy(djc_monthly_db, djc_iter, djcMACD, i);
 
-      check_sell(_spx_db, spx_iter, spxMACD, i);
-      check_sell(_tnx_db, tnx_iter, tnxMACD, i);
-      check_sell(_djc_db, djc_iter, djcMACD, i);
+      check_sell(spx_monthly_db, spx_iter, spxMACD, i);
+      //check_sell(tnx_monthly_db, tnx_iter, tnxMACD, i);
+      //check_sell(djc_monthly_db, djc_iter, djcMACD, i);
 
     } catch( std::exception& e ) {
 

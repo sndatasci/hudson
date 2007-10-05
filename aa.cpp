@@ -36,13 +36,13 @@ int main(int argc, char* argv[])
 	  po::options_description desc("Allowed options");
 	  desc.add_options()
 	    ("help", "produce help message")
-	    ("spx_file", po::value<string>(&spx_dbfile),     "SPX series database")
-	    ("tnx_file", po::value<string>(&tnx_dbfile),     "TNX series database")
-	    ("djc_file", po::value<string>(&djc_dbfile),     "DJC series database")
-	    ("eafe_file", po::value<string>(&eafe_dbfile),   "EAFE series database")
-      ("reit_file", po::value<string>(&reit_dbfile),   "REIT series database")
-	    ("begin_date", po::value<string>(&begin_date),   "start of trading period (YYYY-MM-DD)")
-	    ("end_date", po::value<string>(&end_date),       "end of trading period (YYYY-MM-DD)")
+	    ("spx_file",   po::value<string>(&spx_dbfile),     "SPX series database")
+	    ("tnx_file",   po::value<string>(&tnx_dbfile),     "TNX series database")
+	    ("djc_file",   po::value<string>(&djc_dbfile),     "DJC series database")
+	    ("eafe_file",  po::value<string>(&eafe_dbfile),    "EAFE series database")
+      ("reit_file",  po::value<string>(&reit_dbfile),    "REIT series database")
+	    ("begin_date", po::value<string>(&begin_date),     "start of trading period (YYYY-MM-DD)")
+	    ("end_date",   po::value<string>(&end_date),       "end of trading period (YYYY-MM-DD)")
 	    ;
 
 	  po::variables_map vm;
@@ -76,11 +76,11 @@ int main(int argc, char* argv[])
     YahooDriver yd;
     DMYCloseDriver sd;
   
-    EODSeries spx_db("SPX", yd);
-    EODSeries tnx_db("TNX", yd);
-    EODSeries djc_db("DJC", yd);
-    EODSeries eafe_db("EAFE", sd);
-    EODSeries reit_db("REIT", sd);
+    EODSeries spx_db("SPX");
+    EODSeries tnx_db("TNX");
+    EODSeries djc_db("DJC");
+    EODSeries eafe_db("EAFE");
+    EODSeries reit_db("REIT");
 
 	  date load_begin(from_simple_string(begin_date));
 	  if( load_begin.is_not_a_date() ) {
@@ -95,39 +95,42 @@ int main(int argc, char* argv[])
 	  }
 
 	  cout << "Loading " << spx_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-	  if( spx_db.load(spx_dbfile, load_begin, load_end) <= 0 ) {
+	  if( spx_db.load(yd, spx_dbfile, load_begin, load_end) <= 0 ) {
 	    cerr << "No records found" << endl;
 	    exit(EXIT_FAILURE);
 	  }
 
+/*
     cout << "Loading " << tnx_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( tnx_db.load(tnx_dbfile, load_begin, load_end) <= 0 ) {
+    if( tnx_db.load(yd, tnx_dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
       exit(EXIT_FAILURE);
     }
 
     cout << "Loading " << djc_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( djc_db.load(djc_dbfile, load_begin, load_end) <= 0 ) {
+    if( djc_db.load(yd, djc_dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
       exit(EXIT_FAILURE);
     }
 
     cout << "Loading " << eafe_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( eafe_db.load(eafe_dbfile, load_begin, load_end) <= 0 ) {
+    if( eafe_db.load(sd, eafe_dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
       exit(EXIT_FAILURE);
     }
 
     cout << "Loading " << reit_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( reit_db.load(reit_dbfile, load_begin, load_end) <= 0 ) {
+    if( reit_db.load(sd, reit_dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
       exit(EXIT_FAILURE);
     }
+*/
 
     cout << "SPX Records: " << spx_db.size() << endl;
     cout << "SPX Period: " << spx_db.period() << endl;
     cout << "SPX Total days: " << spx_db.duration().days() << endl;
 
+/*
     cout << "TNX Records: " << tnx_db.size() << endl;
     cout << "TNX Period: " << tnx_db.period() << endl;
     cout << "TNX Total days: " << tnx_db.duration().days() << endl;
@@ -143,7 +146,7 @@ int main(int argc, char* argv[])
     cout << "REIT Records: " << reit_db.size() << endl;
     cout << "REIT Period: " << reit_db.period() << endl;
     cout << "REIT Total days: " << reit_db.duration().days() << endl;
-
+*/
     /*
     * Initialize and run strategy
     */

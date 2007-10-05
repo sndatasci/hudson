@@ -31,24 +31,21 @@ namespace Series
 	  typedef std::map<boost::gregorian::date, DayPrice> ThisMap;
 
   public:
-	  EODSeries(const std::string& name, FileDriver& driver);
+	  EODSeries(const std::string& name);
 
 	  std::string name(void) const { return _name; }
   	
     bool isLoaded(void) const { return _isLoaded; }
 
-	  std::size_t load(const std::string& filename); // load all records returned by the driver
-	  std::size_t load(const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
+	  std::size_t load(FileDriver& driver, const std::string& filename); // load all records returned by the driver
+	  std::size_t load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
 
 	  boost::gregorian::date_period period(void) const;
 	  boost::gregorian::date_duration duration(void) const;
 	  long days(void) const;
 
-    // Extract weekly series
-    //EODSeries weekly(void);
-    //EODSeries monthly(void);
-
-    // Extract monthly series
+    EODSeries weekly(void) const;
+    EODSeries monthly(void) const;
 
     // Extract entire series
     std::vector<double> open(void) const;
@@ -85,7 +82,6 @@ namespace Series
   private:
 	  std::string _name;
     bool _isLoaded;
-	  FileDriver& _driver;
   };
 
 } // namespace Series
