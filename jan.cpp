@@ -18,8 +18,7 @@
 
 // Series
 #include "YahooDriver.hpp"
-#include "DaySeries.hpp"
-#include "DayPrice.hpp"
+#include "EODSeries.hpp"
 #include "ReturnFactors.hpp"
 #include "Report.hpp"
 #include "JanTrader.hpp"
@@ -30,7 +29,7 @@ using namespace boost::gregorian;
 namespace po = boost::program_options;
 
 
-typedef Series::DaySeries<Series::DayPrice> DB;
+typedef Series::EODSeries DB;
 
 
 int main(int argc, char* argv[])
@@ -42,86 +41,86 @@ int main(int argc, char* argv[])
   int exit_offset = 0;
 
   try {
-	po::options_description desc("Allowed options");
-	desc.add_options()
-	  ("help", "produce help message")
-	  ("long_dbfile", po::value<string>(&long_dbfile), "long price database")
-	  ("hedge_dbfile", po::value<string>(&hedge_dbfile), "hedge price database")
-	  ("long_symbol", po::value<string>(&long_symbol), "long ticker")
-	  ("hedge_symbol", po::value<string>(&hedge_symbol), "hedge ticker")
-	  ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYY-MM-DD)")
-	  ("end_date", po::value<string>(&end_date), "end of trading period (YYYY-MM-DD)")
-	  ("entry_offset", po::value<int>(&entry_offset), "offset from canonical entry date")
-	  ("exit_offset", po::value<int>(&exit_offset), "offset from canonical exit date")
-	  ;
+    po::options_description desc("Allowed options");
+    desc.add_options()
+      ("help", "produce help message")
+      ("long_dbfile", po::value<string>(&long_dbfile), "long price database")
+      ("hedge_dbfile", po::value<string>(&hedge_dbfile), "hedge price database")
+      ("long_symbol", po::value<string>(&long_symbol), "long ticker")
+      ("hedge_symbol", po::value<string>(&hedge_symbol), "hedge ticker")
+      ("begin_date", po::value<string>(&begin_date), "start of trading period (YYYY-MM-DD)")
+      ("end_date", po::value<string>(&end_date), "end of trading period (YYYY-MM-DD)")
+      ("entry_offset", po::value<int>(&entry_offset), "offset from canonical entry date")
+      ("exit_offset", po::value<int>(&exit_offset), "offset from canonical exit date")
+      ;
 
-	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-	po::notify(vm);
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
+    
+    if( vm.count("help") ) {
+      cout << desc << endl;
+      exit(EXIT_FAILURE);
+    }
 
-	if( vm.count("help") ) {
-	  cout << desc << endl;
-	  exit(EXIT_FAILURE);
-	}
+    if( vm["long_dbfile"].empty() || vm["hedge_dbfile"].empty() ||
+	vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
+	vm["begin_date"].empty()  || vm["end_date"].empty() ) {
+      cout << desc << endl;
+      exit(EXIT_FAILURE);
+    }
 
-	if( vm["long_dbfile"].empty() || vm["hedge_dbfile"].empty() ||
-		vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
-		vm["begin_date"].empty()  || vm["end_date"].empty() ) {
-	  cout << desc << endl;
-	  exit(EXIT_FAILURE);
-	}
-
-	cout << "Long db file: " << long_dbfile << endl;
-	cout << "Hedge db file: " << hedge_dbfile << endl;
-	cout << "Entry days offset: " << entry_offset << endl;
-	cout << "Exit days offset: " << exit_offset << endl;
+    cout << "Long db file: " << long_dbfile << endl;
+    cout << "Hedge db file: " << hedge_dbfile << endl;
+    cout << "Entry days offset: " << entry_offset << endl;
+    cout << "Exit days offset: " << exit_offset << endl;
 
   } catch( exception& e) {
-	cerr << "Error: " << e.what() << endl;
-	exit(EXIT_FAILURE);
+    cerr << "Error: " << e.what() << endl;
+    exit(EXIT_FAILURE);
   }
 
   Series::YahooDriver yd;
-  DB long_db(long_symbol, yd);
-  DB hedge_db(hedge_symbol, yd);
+  DB long_db(long_symbol);
+  DB hedge_db(hedge_symbol);
 
   try {
 
-	date load_begin(from_simple_string(begin_date));
-	if( load_begin.is_not_a_date() ) {
-	  cerr << "Invalid begin date " << begin_date << endl;
-	  exit(EXIT_FAILURE);
-	}
+    date load_begin(from_simple_string(begin_date));
+    if( load_begin.is_not_a_date() ) {
+      cerr << "Invalid begin date " << begin_date << endl;
+      exit(EXIT_FAILURE);
+    }
 
-	date load_end(from_simple_string(end_date));
-	if( load_end.is_not_a_date() ) {
-	  cerr << "Invalid end date " << end_date << endl;
-	  exit(EXIT_FAILURE);
-	}
+    date load_end(from_simple_string(end_date));
+    if( load_end.is_not_a_date() ) {
+      cerr << "Invalid end date " << end_date << endl;
+      exit(EXIT_FAILURE);
+    }
 
-	cout << "Loading hedge db file " << hedge_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
-	if( hedge_db.load(hedge_dbfile, load_begin, load_end) <= 0) {
-	  cerr << "No records found in " << hedge_dbfile << endl;
-	  exit(EXIT_FAILURE);
-	}
+    cout << "Loading hedge db file " << hedge_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
+    if( hedge_db.load(yd, hedge_dbfile, load_begin, load_end) <= 0) {
+      cerr << "No records found in " << hedge_dbfile << endl;
+      exit(EXIT_FAILURE);
+    }
 
-	cout << "Loading long db file " << long_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
-	if( long_db.load(long_dbfile, load_begin, load_end) <= 0 ) {
-	  cerr << "No records found in" << long_dbfile << endl;
-	  exit(EXIT_FAILURE);
-	}
+    cout << "Loading long db file " << long_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
+    if( long_db.load(yd, long_dbfile, load_begin, load_end) <= 0 ) {
+      cerr << "No records found in" << long_dbfile << endl;
+      exit(EXIT_FAILURE);
+    }
 
   } catch( Series::DriverException& e ) {
-	cerr << "Driver error: " << e.what() << endl;
-	exit(EXIT_FAILURE);
+    cerr << "Driver error: " << e.what() << endl;
+    exit(EXIT_FAILURE);
 
   } catch( out_of_range& e ) {
-	cerr << "Can't get begin/end dates: " << e.what() << endl;
-	exit(EXIT_FAILURE);
+    cerr << "Can't get begin/end dates: " << e.what() << endl;
+    exit(EXIT_FAILURE);
 
   } catch( exception& e ) {
-	cerr << "Error: " << e.what() << endl;
-	exit(EXIT_FAILURE);
+    cerr << "Error: " << e.what() << endl;
+    exit(EXIT_FAILURE);
   }
 
   cout << "Records: " << long_db.size() << endl;
@@ -133,7 +132,7 @@ int main(int argc, char* argv[])
   trader.positions().closed().print();
   cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)long_db.days()) * 100 << "%)" << endl;
 
-  ReturnFactors rf(trader.factors(), long_db.days(), 12);
+  ReturnFactors rf(trader.positions().closed(), long_db.days(), 12);
   Report rp(rf);
 
   rp.trades();

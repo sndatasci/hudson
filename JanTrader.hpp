@@ -11,14 +11,13 @@
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 
-#include "DayPrice.hpp"
-#include "DaySeries.hpp"
+#include "EODSeries.hpp"
 #include "Trader.hpp"
 
 
 class JanTrader: public Trader
 {
-  typedef Series::DaySeries<Series::DayPrice> DB;
+  typedef Series::EODSeries DB;
 
 public:
   JanTrader(const DB& longdb,  const DB& hedgedb);

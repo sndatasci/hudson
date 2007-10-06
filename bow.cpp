@@ -18,8 +18,7 @@
 
 // Series
 #include "YahooDriver.hpp"
-#include "DaySeries.hpp"
-#include "DayPrice.hpp"
+#include "EODSeries.hpp"
 #include "ReturnFactors.hpp"
 #include "BOWTrader.hpp"
 #include "BnHTrader.hpp"
@@ -30,7 +29,7 @@ using namespace boost::gregorian;
 
 namespace po = boost::program_options;
 
-typedef Series::DaySeries<Series::DayPrice> DB;
+typedef Series::EODSeries DB;
 
 
 int main(int argc, char* argv[])
@@ -86,7 +85,7 @@ int main(int argc, char* argv[])
   }
 
   Series::YahooDriver yd;
-  DB db("myseries", yd);
+  DB db("myseries");
 
   try {
 
@@ -103,7 +102,7 @@ int main(int argc, char* argv[])
 	}
 
 	cout << "Loading " << dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-	if( db.load(dbfile, load_begin, load_end) <= 0 ) {
+	if( db.load(yd, dbfile, load_begin, load_end) <= 0 ) {
 	  cerr << "No records found" << endl;
 	  exit(EXIT_FAILURE);
 	}
@@ -130,7 +129,7 @@ int main(int argc, char* argv[])
   trader.positions().closed().print();
   cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
 
-  ReturnFactors rf(trader.positions().closed().factors(), db.duration().days(), 12);
+  ReturnFactors rf(trader.positions().closed(), db.duration().days(), 12);
 
   Report rp(rf);
   rp.print();
@@ -139,7 +138,7 @@ int main(int argc, char* argv[])
   cout << endl << "B&H" << endl << "--" << endl;
   BnHTrader bnh(db);
   bnh.run();
-  ReturnFactors bnh_rf(bnh.factors(), db.duration().days(), 12);
+  ReturnFactors bnh_rf(bnh.positions().closed(), db.duration().days(), 12);
   Report bnh_rp(bnh_rf);
 
   bnh_rp.roi();

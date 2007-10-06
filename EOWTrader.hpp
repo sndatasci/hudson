@@ -11,14 +11,14 @@
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 
-#include "DayPrice.hpp"
-#include "DaySeries.hpp"
+// Hudson
+#include "EODSeries.hpp"
 #include "Trader.hpp"
 
 
 class EOWTrader: public Trader
 {
-  typedef Series::DaySeries<Series::DayPrice> DB;
+  typedef Series::EODSeries DB;
 
 public:
   EOWTrader(const DB& db);

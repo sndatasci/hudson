@@ -28,21 +28,21 @@ namespace Series
 
   class EODSeries: public std::map<boost::gregorian::date, Series::DayPrice>
   {
-	  typedef std::map<boost::gregorian::date, DayPrice> ThisMap;
+    typedef std::map<boost::gregorian::date, DayPrice> ThisMap;
 
   public:
-	  EODSeries(const std::string& name);
+    EODSeries(const std::string& name);
 
-	  std::string name(void) const { return _name; }
+    std::string name(void) const { return _name; }
   	
     bool isLoaded(void) const { return _isLoaded; }
 
-	  std::size_t load(FileDriver& driver, const std::string& filename); // load all records returned by the driver
-	  std::size_t load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
+    std::size_t load(FileDriver& driver, const std::string& filename); // load all records returned by the driver
+    std::size_t load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
 
-	  boost::gregorian::date_period period(void) const;
-	  boost::gregorian::date_duration duration(void) const;
-	  long days(void) const;
+    boost::gregorian::date_period period(void) const;
+    boost::gregorian::date_duration duration(void) const;
+    long days(void) const;
 
     EODSeries weekly(void) const;
     EODSeries monthly(void) const;
@@ -71,16 +71,16 @@ namespace Series
     std::vector<double> low(const_iterator itbegin, const_iterator itend) const;
     std::vector<double> volume(const_iterator itbegin, const_iterator itend) const;
 
-	  ThisMap::const_iterator at_or_before(const boost::gregorian::date& k) const;
-	  ThisMap::const_iterator before(const boost::gregorian::date& k, unsigned recs = 1) const;
-	  ThisMap::const_iterator after(const boost::gregorian::date& k, unsigned recs = 1) const;
-	  ThisMap::const_iterator first_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const;
-	  ThisMap::const_iterator last_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const;
-	  ThisMap::const_iterator first_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
-	  ThisMap::const_iterator last_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
+    ThisMap::const_iterator at_or_before(const boost::gregorian::date& k) const;
+    ThisMap::const_iterator before(const boost::gregorian::date& k, unsigned recs = 1) const;
+    ThisMap::const_iterator after(const boost::gregorian::date& k, unsigned recs = 1) const;
+    ThisMap::const_iterator first_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const;
+    ThisMap::const_iterator last_in_month(boost::gregorian::greg_year year, boost::gregorian::greg_month month) const;
+    ThisMap::const_iterator first_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
+    ThisMap::const_iterator last_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
 
   private:
-	  std::string _name;
+    std::string _name;
     bool _isLoaded;
   };
 

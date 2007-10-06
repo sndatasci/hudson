@@ -7,8 +7,7 @@
 
 // Hudson
 #include "YahooDriver.hpp"
-#include "DaySeries.hpp"
-#include "DayPrice.hpp"
+#include "EODSeries.hpp"
 #include "ReturnFactors.hpp"
 #include "PositionFactors.hpp"
 #include "EOMTrader.hpp"
@@ -68,7 +67,7 @@ int main(int argc, char* argv[])
     * Load series data
     */
     YahooDriver yd;
-    DaySeries db("myseries", yd);
+    EODSeries db("myseries");
 
 	  date load_begin(from_simple_string(begin_date));
 	  if( load_begin.is_not_a_date() ) {
@@ -83,7 +82,7 @@ int main(int argc, char* argv[])
 	  }
 
 	  cout << "Loading " << dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-	  if( db.load(dbfile, load_begin, load_end) <= 0 ) {
+	  if( db.load(yd, dbfile, load_begin, load_end) <= 0 ) {
 	    cerr << "No records found" << endl;
 	    exit(EXIT_FAILURE);
 	  }
