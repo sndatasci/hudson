@@ -3,11 +3,12 @@
 CXX=g++
 
 LIB=libhudson.a
-BIN=vix spx eom
+BIN=vix spx eom eow bow jan aa
 
 SRC=\
-	DaySeries.cpp \
 	YahooDriver.cpp \
+	DMYCloseDriver.cpp \
+	EODSeries.cpp \
 	ReturnFactors.cpp \
 	Position.cpp \
 	Report.cpp \
@@ -31,16 +32,16 @@ SRC=\
 HDR=\
 	FileDriver.hpp \
 	DayPrice.hpp \
-	DaySeries.hpp \
+	EODSeries.hpp \
+	DMYCloseDriver.hpp \
 	YahooDriver.hpp \
 	ReturnFactors.hpp \
-	Position.hpp \
-	PositionFactors.hpp \
 	Report.hpp \
 	Execution.hpp \
 	ExecutionSet.hpp \
 	LongPosition.hpp \
 	ShortPosition.hpp \
+	Position.hpp \
 	PositionSet.hpp \
 	PositionFactors.hpp \
 	PositionFactorsSet.hpp \
@@ -111,6 +112,9 @@ eom_matrix: $(LIB) eom_matrix.o EOMTrader.o
 
 jan: $(LIB) jan.o JanTrader.o
 	$(CXX) -o $@ $(LDFLAGS) jan.o JanTrader.o $(LIBPATH) $(LIBS)
+
+aa: $(LIB) aa.o AATrader.o
+	$(CXX) -o $@ $(LDFLAGS) aa.o AATrader.o $(LIBPATH) $(LIBS)
 
 jan_matrix: $(LIB) jan_matrix.o JanTrader.o
 	$(CXX) -o $@ $(LDFLAGS) jan_matrix.o JanTrader.o $(LIBPATH) $(LIBS)
