@@ -27,5 +27,7 @@ void Position::print(void) const
 {
   cout << _symbol << ": ";
   _sExecutions.print();
-  cout << "Factor " << factor();
+
+  if( closed() )
+    cout << " - " << "Factor " << factor();
 }

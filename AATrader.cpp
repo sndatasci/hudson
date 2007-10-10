@@ -49,13 +49,7 @@ void AATrader::run(void) throw(TraderException)
   //advance(eafe_iter, eafeMACD.begIdx);
   //advance(reit_iter, reitMACD.begIdx);
 
-  cout << "SPX monthly has " << spx_monthly_db.size() << " bars" << endl;
-  cout << "SPX monthly index starting at " << spxMACD.begIdx << endl;
   for( int i = 0; spx_iter != spx_monthly_db.end(); ++spx_iter, ++i ) {
-
-    cout << "SPX bar key " << spx_iter->first << ", Open " << spx_iter->second.open
-      << ", Close " << spx_iter->second.close << ", High " << spx_iter->second.high
-      << ", Low " << spx_iter->second.low << ", Volume " << spx_iter->second.volume << endl;
 
     try {
 

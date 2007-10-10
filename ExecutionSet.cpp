@@ -22,8 +22,8 @@ ExecutionSet::ExecutionSet(void):
 void ExecutionSet::print(void) const
 {
   for( executions_by_date::iterator iter = _es.get<date_key>().begin(); iter != _es.get<date_key>().end(); ++iter ) {
+	  cout << " ";
 	  (*iter)->print();
-	  cout << ", ";
   }
 }
 

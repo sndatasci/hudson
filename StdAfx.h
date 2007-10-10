@@ -22,10 +22,14 @@
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/tag.hpp>
+
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <boost/program_options.hpp>
+
 #include <boost/tokenizer.hpp>
+
 #include <boost/shared_ptr.hpp>
 
 // TA-LIB
