@@ -44,6 +44,7 @@ namespace Series
     boost::gregorian::date_duration duration(void) const;
     long days(void) const;
 
+    // Scale to longer periods
     EODSeries weekly(void) const;
     EODSeries monthly(void) const;
 

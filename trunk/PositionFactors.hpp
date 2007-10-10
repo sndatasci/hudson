@@ -22,66 +22,81 @@
 #include "SeriesFactorSet.hpp"
 
 
+class PositionFactorsException: public std::exception
+{
+  public:
+    PositionFactorsException(const std::string& msg):
+      _Str("PositionFactorsException: ")
+    {
+      _Str += msg;
+    }
+
+    virtual ~PositionFactorsException(void) throw() { }
+    virtual const char *what() const throw() { return _Str.c_str(); }
+
+  protected:
+    std::string _Str;
+};
+
+
+/*!
+* Position daily factors. Used to analyze position adverse/favorable excursions.
+*/
 class PositionFactors
 {
   public:
+    /*!
+    * Initialize position factors by passing a position and the series database that encompass all execution dates for this position.
+    * \param pos The position that must be analyzed.
+    * \param db Series database. It should include data for all series from the first opening execution to the closing execution, or the
+    * current date if the position is still open.
+    */
     PositionFactors(const Position& pos, const Series::EODSeries& db);
 
-    double avg(void) const;
-    double stddev(void) const;
-
-    const SeriesFactor& best(void) const;
-    const SeriesFactor& worst(void) const;
-
+    //! Maximum consecutive positive daily factors
     SeriesFactorSet max_cons_pos(void) const;
+    //! Maximum consecutive negative daily factors
     SeriesFactorSet max_cons_neg(void) const;
 
-    unsigned num_pos(void) const;
-    unsigned num_neg(void) const;
-
-    SeriesFactorSet pk(void) const;
-    SeriesFactorSet dd(void) const;
-
-  private:
-    struct variance_bf: public std::binary_function<double, double, double>
-    {
-      variance_bf(double mean): _mean(mean) { }
-
-      // accumulate() doesn't accumulate when using a custom binary_function...
-      double operator()(double x, double y) { return x + ::pow(y - _mean, 2); }
-
-    private:
-      double _mean;
-    };
-
-    struct SeriesFactorLtCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
-    {
-      bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.factor() < sf2.factor(); }
-    };  
-
-    struct SeriesFactorSetSizeCmp: public std::binary_function<SeriesFactorSet, SeriesFactorSet, bool>
-    {
-      bool operator()(const SeriesFactorSet& set1, const SeriesFactorSet& set2) const { return set1.size() < set2.size(); }
-    };
-
-    struct SeriesFactorSetFactorCmp: public std::binary_function<SeriesFactorSet, SeriesFactorSet, bool>
-    {
-      bool operator()(const SeriesFactorSet& set1, const SeriesFactorSet& set2) const { return set1.factor() < set2.factor(); }
-    };
-
-    SeriesFactorSet _dd(series_factor_by_end_mark::const_iterator& start) const;
-    SeriesFactorSet _pk(series_factor_by_end_mark::const_iterator& start) const;
+    //! Best favorable excursion period for this position
+    SeriesFactorSet bfe(void) const throw(PositionFactorsException);
+    //! Worst adverse excursion period for this position
+    SeriesFactorSet wae(void) const throw(PositionFactorsException);
 
   private:
     const Position& _pos;
     const Series::EODSeries& _db;
-    SeriesFactorSet _sfs;
 
-    typedef std::vector<double> doubleVector;
-    doubleVector _vFactors; // time-ordered position factors for fast array calculations
+    // Must index SeriesFactor by date to speed up excursion calculations
+    struct SeriesFactorToTmCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
+    {
+      bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.to_tm() < sf2.to_tm(); }
+    };
 
-    double _mean;
-    double _stddev;
+    struct SeriesFactorFromTmCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
+    {
+      bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.from_tm() < sf2.from_tm(); }
+    };
+
+    typedef std::set<SeriesFactor, SeriesFactorToTmCmp>   SF_TOTM;
+    typedef std::set<SeriesFactor, SeriesFactorFromTmCmp> SF_FROMTM;
+
+    SF_TOTM   _sf_totm;
+    SF_FROMTM _sf_fromtm;    
+
+private:
+  struct PeriodFactor
+  {
+    PeriodFactor(void);
+    bool isValid(void) const;
+
+    double factor;
+    boost::posix_time::ptime from_tm;
+    boost::posix_time::ptime to_tm;
+  };
+
+  PeriodFactor _wae(SF_TOTM::const_iterator& start) const;
+  PeriodFactor _bfe(SF_TOTM::const_iterator& start) const;
 };
 
 

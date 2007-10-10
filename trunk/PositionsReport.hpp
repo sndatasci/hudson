@@ -25,14 +25,8 @@ class PositionsReport
 public:
   PositionsReport(const PositionFactorsSet& pf);
 
-  void avg_neg_excursion(void) const { std::cout << "Avg neg: " << _pf.avg_neg_excursion()*100 << '%' << std::endl; }
-  void avg_pos_excursion(void) const { std::cout << "Avg pos: " << _pf.avg_pos_excursion()*100 << '%' << std::endl; }
-
-  void max_cons_pos(void) const;
-  void max_cons_neg(void) const;
-
-  void best_excursion(void) const;
-  void worst_excursion(void) const;
+  void favorable(void) const;
+  void adverse(void) const;
 
   void print(void) const;
 

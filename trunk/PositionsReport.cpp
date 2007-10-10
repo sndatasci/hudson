@@ -18,7 +18,6 @@ using namespace std;
 PositionsReport::PositionsReport( const PositionFactorsSet& pf ):
   _pf(pf)
 {
-
 }
 
 
@@ -30,79 +29,71 @@ void PositionsReport::print( void ) const
   cout.precision(2);
   cout.setf(ios::fixed);
 
-  avg_neg_excursion();
-  avg_pos_excursion();
-  max_cons_pos();
-  max_cons_neg();
-  worst_excursion();
-  best_excursion();
+  adverse();
+  favorable();
 
   cout.precision(curr_precision);
   cout.flags(curr_flags);
 }
 
 
-void PositionsReport::max_cons_pos( void ) const
+void PositionsReport::favorable(void) const
 {
   if( _pf.num() == 0 )
     return; // avoid exception in report
 
-  const SeriesFactorSet sfs = _pf.max_cons_pos();
-  cout << "Max cons pos: ";
-  if( sfs.empty() ) {
+  PositionFactorsSet::ExcursionResults er = _pf.favorable();
+
+  // Consecutive positives
+  cout << "Longest favorable: ";
+  if( er.consecutive.empty() ) {
     cout << 0 << endl;
-    return;
+  } else {
+    const SeriesFactor& sf_begin = *(er.consecutive.get<to_key>().begin());
+    const SeriesFactor& sf_end   = *(er.consecutive.get<to_key>().rbegin());
+
+    cout << (int)er.consecutive.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
   }
 
-  const SeriesFactor& sf_begin = *(sfs.get<to_key>().begin());
-  const SeriesFactor& sf_end   = *(sfs.get<to_key>().rbegin());
+  // Average favorable excursion
+  std::cout << "Avg favorable: " << er.avg*100 << '%' << std::endl;
 
-  cout << (int)sfs.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
-}
+  // Best favorable excursion
+  const SeriesFactorSet& sfs = er.high;
+  const SeriesFactor& sf_begin = *(er.high.get<from_key>().begin());
+  const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
 
-
-void PositionsReport::max_cons_neg( void ) const
-{
-  if( _pf.num() == 0 )
-    return; // avoid exception in report
-
-  const SeriesFactorSet sfs = _pf.max_cons_neg();
-  cout << "Max cons neg: ";
-  if( sfs.empty() ) {
-    cout << 0 << endl;
-    return;
-  }
-
-  const SeriesFactor& sf_begin = *(sfs.get<to_key>().begin());
-  const SeriesFactor& sf_end   = *(sfs.get<to_key>().rbegin());
-
-  cout << (int)sfs.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
-}
-
-
-void PositionsReport::best_excursion( void ) const
-{
-  if( _pf.num() == 0 )
-    return; // avoid exception in report
-
-  const SeriesFactorSet& sfs = _pf.best_excursion();
-  const SeriesFactor& sf_begin = *(sfs.get<from_key>().begin());
-  const SeriesFactor& sf_end = *(sfs.get<to_key>().rbegin());
-
-  std::cout << "Best excursion: " << (sfs.factor()-1)*100 << '%';
+  std::cout << "Best favorable: " << (sfs.factor()-1)*100 << '%';
   std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << std::endl;
 }
 
 
-void PositionsReport::worst_excursion( void ) const
+void PositionsReport::adverse(void) const
 {
   if( _pf.num() == 0 )
     return; // avoid exception in report
 
-  const SeriesFactorSet& sfs = _pf.worst_excursion();
-  const SeriesFactor& sf_begin = *(sfs.get<from_key>().begin());
-  const SeriesFactor& sf_end = *(sfs.get<to_key>().rbegin());
+  PositionFactorsSet::ExcursionResults er = _pf.adverse();
 
-  std::cout << "Worst excursion: " << (sfs.factor()-1)*100 << '%';
+  // Consecutive adverse
+  cout << "Longest adverse: ";
+  if( er.consecutive.empty() ) {
+    cout << 0 << endl;
+  } else {
+    const SeriesFactor& sf_begin = *(er.consecutive.get<to_key>().begin());
+    const SeriesFactor& sf_end   = *(er.consecutive.get<to_key>().rbegin());
+
+    cout << (int)er.consecutive.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
+  }
+
+  // Average adverse excursion
+  std::cout << "Avg adverse: " << er.avg*100 << '%' << std::endl;
+
+  // Worst adverse excursion
+  const SeriesFactorSet& sfs = er.high;
+  const SeriesFactor& sf_begin = *(er.high.get<from_key>().begin());
+  const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
+
+  std::cout << "Worst adverse: " << (sfs.factor()-1)*100 << '%';
   std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << std::endl;
 }

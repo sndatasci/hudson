@@ -9,6 +9,10 @@
 #pragma warning (disable:4290)
 #endif
 
+// STL
+#include <stdexcept>
+#include <string>
+
 // Boost
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/mem_fun.hpp>
@@ -35,14 +39,52 @@ typedef boost::multi_index::multi_index_container<
 > __SeriesFactorSet;
 
 
-class SeriesFactorSet: public __SeriesFactorSet
+class SeriesFactorSetException: public std::exception
 {
 public:
-  double factor(void) const;
+  SeriesFactorSetException(const std::string& msg):
+    _Str("SeriesFactorSetException: ")
+  {
+    _Str += msg;
+  }
+
+  virtual ~SeriesFactorSetException(void) throw() { }
+  virtual const char *what() const throw() { return _Str.c_str(); }
+
+protected:
+  std::string _Str;
 };
 
 
-typedef SeriesFactorSet::index<from_key>::type series_factor_by_begin_mark;
-typedef SeriesFactorSet::index<to_key>::type series_factor_by_end_mark;
+class SeriesFactorSet: private __SeriesFactorSet
+{
+public:
+  // Export keys and iteration stuff
+  typedef __SeriesFactorSet::iterator iterator;
+  typedef __SeriesFactorSet::const_iterator const_iterator;
+  typedef __SeriesFactorSet::index<from_key>::type from_key;
+  typedef __SeriesFactorSet::index<to_key>::type to_key;
+
+  using __SeriesFactorSet::get;
+  using __SeriesFactorSet::size;
+  using __SeriesFactorSet::empty;
+  using __SeriesFactorSet::begin;
+  using __SeriesFactorSet::end;
+
+public:
+  SeriesFactorSet(void);
+
+  // Override insert() to cache factor value recalculation
+  bool insert(const SeriesFactor& sf);
+
+  double factor(void) const throw(SeriesFactorSetException);
+
+private:
+  double _factor;
+};
+
+
+typedef SeriesFactorSet::from_key series_factor_by_begin_mark;
+typedef SeriesFactorSet::to_key series_factor_by_end_mark;
 
 #endif // _SERIESFACTORSET_HPP_

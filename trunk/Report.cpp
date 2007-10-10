@@ -13,6 +13,12 @@
 using namespace std;
 
 
+Report::header(const std::string& title /* =  */)
+{
+  cout << endl << title << endl << "--" << endl;
+}
+
+
 Report::Report(const ReturnFactors& rf):
   _rf(rf),
   _rf_pos(rf.pos(), rf.days(), rf.yperiods()),

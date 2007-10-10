@@ -151,24 +151,29 @@ int main(int argc, char* argv[])
     * Initialize and run strategy
     */
     AATrader trader(spx_db, tnx_db, djc_db, eafe_db, reit_db);
-    
     trader.run();
+
+    // All trades (closed + open)
+    Report::header("Closed trades");
     trader.positions().closed().print();
 
-    // Print simulation reports
-    ReturnFactors rf(trader.positions().closed(), spx_db.duration().days(), 12);
-    PositionFactorsSet pf(trader.positions().closed(), spx_db);
+    Report::header("Open trades");
+    trader.positions().open().print();
 
+    // Print simulation reports
+    Report::header("Simulation");
+    ReturnFactors rf(trader.positions().closed(), spx_db.duration().days(), 12);
     Report rp(rf);
     rp.print();
 
-    // Positions excursion
-    cout << endl << "Position Excursions" << endl << "--" << endl;
+    // Position excursions
+    Report::header("Position excursions");
+    PositionFactorsSet pf(trader.positions().closed(), spx_db);
     PositionsReport pr(pf);
     pr.print();
 
     // BnH
-    cout << endl << "B&H" << endl << "--" << endl;
+    Report::header("BnH");
     BnHTrader bnh(spx_db);
     bnh.run();
     ReturnFactors bnh_rf(bnh.positions().closed(), spx_db.duration().days(), 12);
