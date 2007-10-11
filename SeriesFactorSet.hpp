@@ -62,8 +62,8 @@ public:
   // Export keys and iteration stuff
   typedef __SeriesFactorSet::iterator iterator;
   typedef __SeriesFactorSet::const_iterator const_iterator;
-  typedef __SeriesFactorSet::index<from_key>::type from_key;
-  typedef __SeriesFactorSet::index<to_key>::type to_key;
+  typedef __SeriesFactorSet::index<from_key>::type by_from;
+  typedef __SeriesFactorSet::index<to_key>::type by_to;
 
   using __SeriesFactorSet::get;
   using __SeriesFactorSet::size;
@@ -84,7 +84,7 @@ private:
 };
 
 
-typedef SeriesFactorSet::from_key series_factor_by_begin_mark;
-typedef SeriesFactorSet::to_key series_factor_by_end_mark;
+typedef SeriesFactorSet::by_from series_factor_by_begin_mark;
+typedef SeriesFactorSet::by_to series_factor_by_end_mark;
 
 #endif // _SERIESFACTORSET_HPP_

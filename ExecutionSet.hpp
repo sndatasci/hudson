@@ -36,8 +36,12 @@ typedef boost::multi_index::multi_index_container<
 > __ExecutionSet;
 
 
-class ExecutionSet
+class ExecutionSet: private __ExecutionSet
 {
+public:
+  using __ExecutionSet::size;
+  using __ExecutionSet::empty;
+
 public:
   ExecutionSet(void);
   ~ExecutionSet(void) { }
@@ -47,22 +51,17 @@ public:
   bool sell_short(boost::gregorian::date dt, const Price& price, unsigned size);
   bool cover(boost::gregorian::date dt, const Price& price, unsigned size);
 
-  size_t size(void) const { return _es.size(); }
-  bool empty(void) const { return _es.empty(); }
-
-  const Execution& first_by_date(void) const { return **(_es.get<date_key>().begin()); }
-  const Execution& last_by_date(void) const { return **(_es.get<date_key>().rbegin()); }
+  const Execution& first_by_date(void) const { return **(get<date_key>().begin()); }
+  const Execution& last_by_date(void) const { return **(get<date_key>().rbegin()); }
 
   void print(void) const;
 
 private:
   Execution::ID _eid;
 
-  __ExecutionSet _es;
-
 private:
-  typedef __ExecutionSet::index<side_key>::type executions_by_side;
-  typedef __ExecutionSet::index<date_key>::type executions_by_date;  
+  typedef __ExecutionSet::index<side_key>::type by_side;
+  typedef __ExecutionSet::index<date_key>::type by_date;  
 };
 
 #endif // _EXECUTIONSET_HPP_

@@ -192,3 +192,15 @@ void Trader::close(Position::ID id, const date& dt, const Price& price) throw(Tr
   if( _miPositions.replace(iter, pPos) == false )
 	  throw TraderException("Can't update position");
 }
+
+
+PositionSet Trader::positions( const std::string& symbol )
+{
+  PositionSet psSymbol;
+
+  for( PositionSet::iterator iter = _miPositions.begin(); iter != _miPositions.end(); ++iter )
+    if( symbol == (*iter)->symbol() )
+      psSymbol.insert(*iter);
+
+  return psSymbol;
+}

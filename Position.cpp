@@ -23,11 +23,10 @@ Position::Position(ID id, const string& symbol):
 }
 
 
-void Position::print(void) const
+void Position::print(double curr_price) const
 {
   cout << _symbol << ": ";
   _sExecutions.print();
 
-  if( closed() )
-    cout << " - " << "Factor " << factor();
+  cout << " - " << "Factor " << pfactor(*this, curr_price);
 }

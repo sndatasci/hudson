@@ -155,28 +155,28 @@ int main(int argc, char* argv[])
 
     // All trades (closed + open)
     Report::header("Closed trades");
-    trader.positions().closed().print();
+    trader.positions("SPX").closed().print();
 
     Report::header("Open trades");
-    trader.positions().open().print();
+    trader.positions("SPX").open().print(spx_db.rbegin()->second.close);
 
     // Print simulation reports
     Report::header("Simulation");
-    ReturnFactors rf(trader.positions().closed(), spx_db.duration().days(), 12);
+    ReturnFactors rf(trader.positions(), spx_db);
     Report rp(rf);
     rp.print();
 
     // Position excursions
-    Report::header("Position excursions");
-    PositionFactorsSet pf(trader.positions().closed(), spx_db);
-    PositionsReport pr(pf);
-    pr.print();
+    //Report::header("Position excursions");
+    //PositionFactorsSet pf(trader.positions().closed(), spx_db);
+    //PositionsReport pr(pf);
+    //pr.print();
 
     // BnH
     Report::header("BnH");
     BnHTrader bnh(spx_db);
     bnh.run();
-    ReturnFactors bnh_rf(bnh.positions().closed(), spx_db.duration().days(), 12);
+    ReturnFactors bnh_rf(bnh.positions(), spx_db);
     Report bnh_rp(bnh_rf);
 
     bnh_rp.roi();

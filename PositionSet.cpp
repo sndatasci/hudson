@@ -15,10 +15,10 @@
 using namespace std;
 
 
-void PositionSet::print(void) const
+void PositionSet::print(double curr_price) const
 {
   for( const_iterator iter = begin(); iter != end(); ++iter ) {
-	  (*iter)->print();
+	  (*iter)->print(curr_price);
 	  cout << endl;
   }
 }
@@ -40,9 +40,9 @@ const PositionSet PositionSet::closed( const std::string& symbol )
 {
   PositionSet closedPos;
 
-  position_by_symbol::const_iterator symbol_key_end = get<symbol_key>().upper_bound(symbol);
+  PositionSet::by_symbol::const_iterator symbol_key_end = get<symbol_key>().upper_bound(symbol);
 
-  for( position_by_symbol::const_iterator iter = get<symbol_key>().lower_bound(symbol);
+  for( PositionSet::by_symbol::const_iterator iter = get<symbol_key>().lower_bound(symbol);
         iter != symbol_key_end; ++iter )
     if( (*iter)->closed() )
       closedPos.insert(*iter);
@@ -67,9 +67,9 @@ const PositionSet PositionSet::open( const std::string& symbol )
 {
   PositionSet openPos;
 
-  position_by_symbol::const_iterator symbol_key_end = get<symbol_key>().upper_bound(symbol);
+  PositionSet::by_symbol::const_iterator symbol_key_end = get<symbol_key>().upper_bound(symbol);
 
-  for( position_by_symbol::const_iterator iter = get<symbol_key>().lower_bound(symbol);
+  for( PositionSet::by_symbol::const_iterator iter = get<symbol_key>().lower_bound(symbol);
         iter != symbol_key_end; ++iter )
     if( (*iter)->open() )
       openPos.insert(*iter);

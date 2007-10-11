@@ -21,8 +21,8 @@ Report::header(const std::string& title /* =  */)
 
 Report::Report(const ReturnFactors& rf):
   _rf(rf),
-  _rf_pos(rf.pos(), rf.days(), rf.yperiods()),
-  _rf_neg(rf.neg(), rf.days(), rf.yperiods()),
+  _rf_pos(rf.pos(), rf.db()),
+  _rf_neg(rf.neg(), rf.db()),
   _pos_percent(0),
   _neg_percent(0)
 {
@@ -101,7 +101,7 @@ void Report::max_cons_pos( void ) const
   PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
   PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
 
-  cout << (int)pset.size() << " [" << pFirstPos->last_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
+  cout << (int)pset.size() << " [" << pFirstPos->first_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
 }
 
 
@@ -120,7 +120,7 @@ void Report::max_cons_neg( void ) const
   PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
   PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
 
-  cout << (int)pset.size() << " [" << pFirstPos->last_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
+  cout << (int)pset.size() << " [" << pFirstPos->first_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
 }
 
 
@@ -141,6 +141,6 @@ void Report::max_dd( void ) const
 
   boost::gregorian::date_duration dur = pLastPos->last_exec().dt() - pFirstPos->first_exec().dt();
 
-  ReturnFactors ddrf(pset, dur.days(), 12);
-  cout << ddrf.roi()*100 << "% [" << pFirstPos->last_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
+  ReturnFactors ddrf(pset, _rf.db());
+  cout << ddrf.roi()*100 << "% [" << pFirstPos->first_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
 }

@@ -17,8 +17,12 @@
 #include <numeric>
 #include <functional>
 
+// Boost
+#include <boost/date_time/gregorian/gregorian.hpp>
+
 // Hudson
 #include "PositionSet.hpp"
+#include "EODSeries.hpp"
 
 
 class ReturnFactorsException: public std::exception
@@ -41,7 +45,9 @@ protected:
 class ReturnFactors
 {
 public:
-  ReturnFactors(const PositionSet& sPositions, unsigned days, unsigned yperiods);
+  ReturnFactors(const PositionSet& sPositions, const Series::EODSeries& db);
+
+  const Series::EODSeries& db(void) const { return _db; }
 
   unsigned days(void) const { return _days; }
   unsigned yperiods(void) const { return _yperiods; }
@@ -93,17 +99,32 @@ private:
 
   struct PositionGt: public std::binary_function<PositionPtr, double, bool> {
 
-    bool operator()(PositionPtr pPos, double x) const { return pPos->factor() > x; }
+    PositionGt(double curr_price): _curr_price(curr_price) { }
+
+    bool operator()(PositionPtr pPos, double x) const { return pfactor(*pPos, _curr_price) > x; }
+
+  private:
+    double _curr_price;
   };
 
   struct PositionLt: public std::binary_function<PositionPtr, double, bool> {
 
-    bool operator()(PositionPtr pPos, double x) const { return pPos->factor() < x; }
+    PositionLt(double curr_price): _curr_price(curr_price) { }
+
+    bool operator()(PositionPtr pPos, double x) const { return pfactor(*pPos, _curr_price) < x; }
+
+  private:
+    double _curr_price;
   };
 
   struct PositionLtCmp: public std::binary_function<PositionPtr, PositionPtr, bool> {
 
-    bool operator()(const PositionPtr pos1, const PositionPtr pos2) const { return pos1->factor() < pos2->factor(); }
+    PositionLtCmp(double curr_price): _curr_price(curr_price) { }
+
+    bool operator()(const PositionPtr pos1, const PositionPtr pos2) const { return pfactor(*pos1, _curr_price) < pfactor(*pos2, _curr_price); }
+
+  private:
+    double _curr_price;
   };
 
   struct PositionSetSizeCmp: public std::binary_function<PositionSet, PositionSet, bool> {
@@ -116,18 +137,25 @@ private:
     bool operator()(const PositionSet& pset1, const PositionSet& pset2) const { return pset1.realized() < pset2.realized(); }
   };
 
-  PositionSet _dd(position_by_last_exec::iterator& start) const;
+  PositionSet _dd(PositionSet::by_last_exec::iterator& start) const;
 
 private:
   PositionSet _sPositions;
+  const Series::EODSeries& _db;
+
+  PositionSet _sClosedPositions;
+  PositionSet _sOpenPositions;
+
+  double _last_close;
+  double _last_open;
 
   typedef std::vector<double> doubleVector;
   doubleVector _vFactors; // time-ordered position factors for fast array calculations
   doubleVector _vLogFactors; // time-ordered position log factors
 
   unsigned _days;			// time in days
-  unsigned _yperiods; // yearly factors (12 for monthly)
-  double _years;			// total time in years
+  double   _years;		// time in years + fraction
+  const unsigned _yperiods; // yearly factors
 
   double _fvalue;			// future value
   double _mean;				// factors average
@@ -135,4 +163,3 @@ private:
 };
 
 #endif // _RETURNFACTORS_HPP_
-
