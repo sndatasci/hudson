@@ -58,6 +58,7 @@ public:
   void close(Position::ID, const boost::gregorian::date& dt, const Price& price) throw(TraderException);
 
   const PositionSet& positions(void) const { return _miPositions; }
+  PositionSet positions(const std::string& symbol);
 
 protected:
   Position::ID _pid;

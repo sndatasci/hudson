@@ -42,8 +42,24 @@ typedef boost::multi_index::multi_index_container<
 > __PositionSet;
 
 
-class PositionSet: public __PositionSet
+class PositionSet: private __PositionSet
 {
+public:
+  typedef __PositionSet::iterator                     iterator;
+  typedef __PositionSet::const_iterator               const_iterator;
+  typedef __PositionSet::index<symbol_key>::type      by_symbol;
+  typedef __PositionSet::index<first_exec_key>::type  by_first_exec;
+  typedef __PositionSet::index<last_exec_key>::type   by_last_exec;
+
+  using __PositionSet::get;
+  using __PositionSet::size;
+  using __PositionSet::empty;
+  using __PositionSet::begin;
+  using __PositionSet::end;
+  using __PositionSet::insert;
+  using __PositionSet::find;
+  using __PositionSet::replace;
+
 public:
   const PositionSet closed(void) const;
   const PositionSet open(void) const;
@@ -54,13 +70,8 @@ public:
   double realized(void) const;
   double unrealized(void) const;
 
-  void print(void) const;
+  void print(double curr_price = 0) const;
 };
-
-
-typedef PositionSet::index<symbol_key>::type      position_by_symbol;
-typedef PositionSet::index<first_exec_key>::type  position_by_first_exec;
-typedef PositionSet::index<last_exec_key>::type   position_by_last_exec;
 
 
 struct pos_comp_id

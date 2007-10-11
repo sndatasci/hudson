@@ -59,7 +59,7 @@ public:
 
   bool open(void) const { return _size != 0; }
   bool closed(void) const { return !_sExecutions.empty() && !open(); }
-  void print(void) const;
+  void print(double curr_price = 0) const;
 
   virtual Type type(void) const = 0;
   virtual std::string type_str(void) const = 0;
@@ -89,5 +89,9 @@ protected:
 
   ExecutionSet _sExecutions;
 };
+
+
+inline double pfactor(const Position& pos, double curr_price) { return pos.closed() ? pos.factor() : pos.factor(Price(curr_price)); }
+
 
 #endif // _POSITION_HPP_
