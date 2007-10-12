@@ -59,7 +59,6 @@ public:
   double stddev(void) const;
   double skew(void) const;
   double cagr(void) const;
-  double gsd(void) const;
 
   PositionSet pos(void) const;
   PositionSet neg(void) const;
@@ -72,7 +71,7 @@ public:
 
   PositionSet dd(void) const throw(ReturnFactorsException);
 
-private:
+protected:
   struct variance_bf : public std::binary_function<double, double, double> {
     variance_bf(double mean): _mean(mean) { }
 
@@ -139,7 +138,7 @@ private:
 
   PositionSet _dd(PositionSet::by_last_exec::iterator& start) const;
 
-private:
+protected:
   PositionSet _sPositions;
   const Series::EODSeries& _db;
 
@@ -151,7 +150,6 @@ private:
 
   typedef std::vector<double> doubleVector;
   doubleVector _vFactors; // time-ordered position factors for fast array calculations
-  doubleVector _vLogFactors; // time-ordered position log factors
 
   unsigned _days;			// time in days
   double   _years;		// time in years + fraction

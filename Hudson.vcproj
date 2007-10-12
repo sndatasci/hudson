@@ -116,6 +116,12 @@
 				RelativePath=".\EODSeries.cpp">
 			</File>
 			<File
+				RelativePath=".\EOMReport.cpp">
+			</File>
+			<File
+				RelativePath=".\EOMReturnFactors.cpp">
+			</File>
+			<File
 				RelativePath=".\Execution.cpp">
 			</File>
 			<File
@@ -197,6 +203,12 @@
 			</File>
 			<File
 				RelativePath=".\EODSeries.hpp">
+			</File>
+			<File
+				RelativePath=".\EOMReport.hpp">
+			</File>
+			<File
+				RelativePath=".\EOMReturnFactors.hpp">
 			</File>
 			<File
 				RelativePath=".\Execution.hpp">
