@@ -59,7 +59,6 @@ void Report::print(void) const
   cout << endl;
   roi();
   cagr();
-  gsdm();
 
   cout.precision(curr_precision);
   cout.flags(curr_flags);

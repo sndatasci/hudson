@@ -56,10 +56,7 @@ ReturnFactors::ReturnFactors(const PositionSet& sPositions, const EODSeries& db)
 
   // Initialize time-ordered position factors by last execution (position close)
   for( PositionSet::by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin(); iter != _sPositions.get<last_exec_key>().end(); ++iter )
-    _vFactors.push_back( pfactor(*(*iter), _last_close) );
-
-  // Initialize factor logs vector
-  transform(_vFactors.begin(), _vFactors.end(), back_insert_iterator<doubleVector>(_vLogFactors), log10_uf());
+    _vFactors.push_back( pfactor(*(*iter), _last_close) ); // open position factors are calculated mark-to-market
 
   _fvalue = accumulate<doubleVector::const_iterator, double>( _vFactors.begin(), _vFactors.end(), 1, lmb::_1 * lmb::_2 );
   _mean = accumulate<doubleVector::const_iterator, double>( _vFactors.begin(), _vFactors.end(), 0 ) / _vFactors.size();
@@ -98,17 +95,6 @@ double ReturnFactors::skew(void) const
 double ReturnFactors::cagr(void) const
 {
   return _sPositions.empty() ? 0 : std::pow(_fvalue, 1/_years) - 1;
-}
-
-
-double ReturnFactors::gsd(void) const
-{
-  if( _sPositions.empty() )
-    return 0;
-
-  double lfavg = accumulate<doubleVector::const_iterator, double>( _vLogFactors.begin(), _vLogFactors.end(), 0 ) / _vLogFactors.size();
-  double lfstddev = ::sqrt( accumulate<doubleVector::const_iterator, double>( _vLogFactors.begin(), _vLogFactors.end(), 0, variance_bf(lfavg) ) / (_vLogFactors.size() - 1) );
-  return ::pow( (double)10, lfstddev * ::sqrt((double)_yperiods) ) - 1;
 }
 
 

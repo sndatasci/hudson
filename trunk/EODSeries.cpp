@@ -552,23 +552,23 @@ Series::EODSeries Series::EODSeries::monthly( void ) const
     // Find first and last entry for this month
     const_iterator first_in_month_iter = first_in_month((*miter).year(), (*miter).month());
     if( first_in_month_iter == end() ) {
-      cerr << "Warning: can't find series bar (BOM) for week of " << (*miter) << " in " << _name << endl;
+      cerr << "Warning: can't find series bar (BOM) for month of " << (*miter) << " in " << _name << endl;
       continue;
     }
 
     // Last entry for this month
     const_iterator last_in_month_iter = last_in_month((*miter).year(), (*miter).month());
     if( last_in_month_iter == end() ) {
-      cerr << "Warning: can't find series bar (EOM) for week of " << (*miter) << " in " << _name << endl;
+      cerr << "Warning: can't find series bar (EOM) for month of " << (*miter) << " in " << _name << endl;
       continue;
     }
 
     // Initialize monthly series (O,L,H,C,V)
     DayPrice dp;
-    dp.key = last_in_month_iter->first; // Key is EOW
-    dp.open = first_in_month_iter->second.open; // Open on first day of the week
-    dp.close = last_in_month_iter->second.close; // Close on last day of the week
-    dp.adjclose = last_in_month_iter->second.adjclose; // Adj. close on last day of the week
+    dp.key = last_in_month_iter->first; // Monthly series key is last bar in month
+    dp.open = first_in_month_iter->second.open; // Open on first day of the month
+    dp.close = last_in_month_iter->second.close; // Close on last day of the month
+    dp.adjclose = last_in_month_iter->second.adjclose; // Adj. close on last day of the month
     dp.high = 0;
     dp.low = 0;
     dp.volume = 0;
@@ -587,7 +587,7 @@ Series::EODSeries Series::EODSeries::monthly( void ) const
     dp.low = (highs.size() > 1 ? *min_element(lows.begin(), lows.end()) : first_in_month_iter->second.low );
 
     if( !volumes.empty() )
-    dp.volume = accumulate<vector<unsigned long>::const_iterator, unsigned long>(volumes.begin(), volumes.end(), 0);
+      dp.volume = accumulate<vector<unsigned long>::const_iterator, unsigned long>(volumes.begin(), volumes.end(), 0);
 
     monthly_series.insert(value_type(dp.key, dp));
   }

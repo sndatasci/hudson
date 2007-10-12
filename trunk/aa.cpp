@@ -9,11 +9,11 @@
 #include "YahooDriver.hpp"
 #include "DMYCloseDriver.hpp"
 #include "EODSeries.hpp"
-#include "ReturnFactors.hpp"
 #include "PositionFactors.hpp"
 #include "AATrader.hpp"
 #include "BnHTrader.hpp"
-#include "Report.hpp"
+#include "EOMReturnFactors.hpp"
+#include "EOMReport.hpp"
 #include "PositionsReport.hpp"
 
 using namespace std;
@@ -162,8 +162,8 @@ int main(int argc, char* argv[])
 
     // Print simulation reports
     Report::header("Simulation");
-    ReturnFactors rf(trader.positions(), spx_db);
-    Report rp(rf);
+    EOMReturnFactors rf(trader.positions("SPX"), spx_db);
+    EOMReport rp(rf);
     rp.print();
 
     // Position excursions
@@ -176,11 +176,12 @@ int main(int argc, char* argv[])
     Report::header("BnH");
     BnHTrader bnh(spx_db);
     bnh.run();
-    ReturnFactors bnh_rf(bnh.positions(), spx_db);
-    Report bnh_rp(bnh_rf);
+    EOMReturnFactors bnh_rf(bnh.positions(), spx_db);
+    EOMReport bnh_rp(bnh_rf);
 
     bnh_rp.roi();
     bnh_rp.cagr();
+    bnh_rp.gsdm();
 
   } catch( std::exception& ex ) {
 
