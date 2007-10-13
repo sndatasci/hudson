@@ -1,4 +1,6 @@
 -- TODO.txt
 
-* PositionSet inherits from multi_set, ExecutionSet contains multi_set??
+* Actual $ sim
+* Slippage, commissions
 * Exceptions in some of the Position methods when position is open or close
+
