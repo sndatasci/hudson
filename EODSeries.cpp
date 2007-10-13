@@ -1,6 +1,6 @@
 /*
-* DaySeries.cpp
-*/
+ * DaySeries.cpp
+ */
 
 #include "StdAfx.h"
 
@@ -192,7 +192,7 @@ Series::EODSeries::ThisMap::const_iterator Series::EODSeries::first_in_week(boos
 
   // Look for previous Monday in requested week
   begin_of_week = ( request_date.day_of_week() == boost::gregorian::Monday ) ? request_date :
-  boost::gregorian::first_day_of_the_week_before(boost::gregorian::Monday).get_date(request_date); // first Monday before request_date
+    boost::gregorian::first_day_of_the_week_before(boost::gregorian::Monday).get_date(request_date); // first Monday before request_date
 
   // Look for first available day in price database
   ThisMap::const_iterator iter = ThisMap::lower_bound(begin_of_week);
@@ -215,7 +215,7 @@ Series::EODSeries::ThisMap::const_iterator Series::EODSeries::last_in_week(boost
 
   // Look for first Friday starting from requested date (included)
   end_of_week = ( request_date.day_of_week() == boost::gregorian::Friday ) ? request_date :
-  boost::gregorian::first_day_of_the_week_after(boost::gregorian::Friday).get_date(request_date);	// first Friday of request_date
+    boost::gregorian::first_day_of_the_week_after(boost::gregorian::Friday).get_date(request_date);	// first Friday of request_date
 
   // Look for this Friday in price database
   ThisMap::const_iterator iter = ThisMap::lower_bound(end_of_week);
@@ -523,7 +523,7 @@ Series::EODSeries Series::EODSeries::weekly( void ) const
     vector<double> highs;
     vector<double> lows;
     vector<unsigned long> volumes;
-    for( const_iterator iter(first_in_week_iter); iter->first <= last_in_week_iter->first; ++iter ) {
+    for( const_iterator iter(first_in_week_iter); iter != end() && iter->first <= last_in_week_iter->first; ++iter ) {
       highs.push_back(iter->second.high);
       lows.push_back(iter->second.low);
       volumes.push_back(iter->second.volume);
@@ -577,10 +577,10 @@ Series::EODSeries Series::EODSeries::monthly( void ) const
     vector<double> highs;
     vector<double> lows;
     vector<unsigned long> volumes;
-    for( const_iterator iter(first_in_month_iter); iter->first <= last_in_month_iter->first; ++iter ) {
-      highs.push_back(iter->second.high);
-      lows.push_back(iter->second.low);
-      volumes.push_back(iter->second.volume);
+    for( const_iterator iter(first_in_month_iter); iter != end() && iter->first <= last_in_month_iter->first; ++iter ) {
+      highs.push_back((*iter).second.high);
+      lows.push_back((*iter).second.low);
+      volumes.push_back((*iter).second.volume);
     }
 
     dp.high = (highs.size() > 1 ? *max_element(highs.begin(), highs.end()) : first_in_month_iter->second.high );

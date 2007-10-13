@@ -19,12 +19,12 @@
 // Series
 #include "YahooDriver.hpp"
 #include "EODSeries.hpp"
-#include "ReturnFactors.hpp"
+#include "EOMReturnFactors.hpp"
 #include "PositionFactorsSet.hpp"
 #include "PositionsReport.hpp"
 #include "EOWTrader.hpp"
 #include "BnHTrader.hpp"
-#include "Report.hpp"
+#include "EOMReport.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -126,28 +126,43 @@ int main(int argc, char* argv[])
   cout << "Period: " << db.period() << endl;
   cout << "Total days: " << db.duration().days() << endl;
 
+  /*
+   * Initialize and run strategy
+   */
   EOWTrader trader(db);
   trader.run(entry_offset, entry_oc, exit_offset, exit_oc);
+
+  /*
+   * Print open/closed positions
+   */
+  Report::header("Closed trades");
   trader.positions().closed().print();
-  cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
 
-  ReturnFactors rf(trader.positions().closed(), db.duration().days(), 12);
-  PositionFactorsSet pf(trader.positions(), db);
+  Report::header("Open trades");
+  trader.positions().open().print(db.rbegin()->second.adjclose);
 
+  /*
+   * Print simulation reports
+   */
+  Report::header("Trade results");
+  ReturnFactors rf(trader.positions(), db);
   Report rp(rf);
   rp.print();
 
-  // Position excursion
-  cout << endl << "Position Excursions" << endl << "--" << endl;
+  /*
+   * Positions excursion
+   */
+  Report::header("Positions excursion");
+  PositionFactorsSet pf(trader.positions().closed(), db);
   PositionsReport pr(pf);
   pr.print();
 
   // BnH
-  cout << endl << "B&H" << endl << "--" << endl;
+  Report::header("BnH");
   BnHTrader bnh(db);
   bnh.run();
-  ReturnFactors bnh_rf(bnh.positions().closed(), db.duration().days(), 12);
-  Report bnh_rp(bnh_rf);
+  EOMReturnFactors bnh_rf(bnh.positions(), db);
+  EOMReport bnh_rp(bnh_rf);
 
   bnh_rp.roi();
   bnh_rp.cagr();

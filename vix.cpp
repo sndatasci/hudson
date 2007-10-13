@@ -99,20 +99,29 @@ int main(int argc, char* argv[])
     */
     VIXTrader trader(db, vixdb);
     trader.run();
-    trader.positions().closed().print();
-    cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)db.duration().days()) * 100 << "%)" << endl;
 
     /*
-    * Print simulation reports
-    */
-    ReturnFactors rf(trader.positions().closed(), db.duration().days(), 12);
-    PositionFactorsSet pf(trader.positions().closed(), db);
+     * Print open/closed positions
+     */
+    Report::header("Closed trades");
+    trader.positions().closed().print();
 
+    Report::header("Open trades");
+    trader.positions().open().print(vixdb.rbegin()->second.adjclose);
+
+    /*
+     * Print simulation reports
+     */
+    Report::header("Trade results");
+    ReturnFactors rf(trader.positions(), vixdb);
     Report rp(rf);
     rp.print();
 
-    // Positions excursion
-    cout << endl << "Position Excursions" << endl << "--" << endl;
+    /*
+     * Positions excursion
+     */
+    Report::header("Positions excursion");
+    PositionFactorsSet pf(trader.positions().closed(), vixdb);
     PositionsReport pr(pf);
     pr.print();
 

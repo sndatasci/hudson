@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
     trader.positions("SPX").closed().print();
 
     Report::header("Open trades");
-    trader.positions("SPX").open().print(spx_db.rbegin()->second.close);
+    trader.positions("SPX").open().print(spx_db.rbegin()->second.adjclose);
 
     // Print simulation reports
     Report::header("Simulation");
