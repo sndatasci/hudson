@@ -25,7 +25,7 @@ class Report
 public:
   Report(const ReturnFactors& rf);
 
-  static header(const std::string& title = "");
+  static void header(const std::string& title = "");
 
   void trades(void) const { std::cout << "Trades: " << _rf.num() << std::endl; }
   void avg_trade(void) const { std::cout << "Avg trade: " << _rf.avg()*100 << '%' << std::endl; }

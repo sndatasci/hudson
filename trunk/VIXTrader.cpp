@@ -38,13 +38,6 @@ void VIXTrader::run(void) throw(TraderException)
       TA::BBRes resBBANDS3 = ta.BBANDS(_vixdb.close(vix_iter, 100), 100, 3, 3);
       TA::BBRes resBBANDS1 = ta.BBANDS(_vixdb.close(vix_iter, 100), 100, 1, 1);
 
-      // Calculate RSI
-      DB::const_iterator db_iter = _db.at_or_before(vix_iter->first);
-      if( db_iter == _db.end() ) {
-        cerr << "Can't locate db iter on " << vix_iter->first << endl;
-        continue;
-      }
-
       // Check buy signal
       if( _miPositions.open().empty() && vix_iter->second.close > resBBANDS3.upper_band[0] ) {
         // Buy tomorrow's close

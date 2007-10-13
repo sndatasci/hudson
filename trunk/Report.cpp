@@ -13,7 +13,7 @@
 using namespace std;
 
 
-Report::header(const std::string& title /* =  */)
+void Report::header(const std::string& title /* =  */)
 {
   cout << endl << title << endl << "--" << endl;
 }

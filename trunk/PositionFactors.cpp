@@ -184,7 +184,7 @@ PositionFactors::PeriodFactor PositionFactors::_wae(SF_TOTM::const_iterator& sta
 }
 
 
-SeriesFactorSet PositionFactors::bfe(void) const throw(SeriesFactorSetException)
+SeriesFactorSet PositionFactors::bfe(void) const throw(PositionFactorsException)
 {
   // Look for worst position excursion period starting from each entry in daily series
   //cout << "Calculating best excursion period for position " << _pos.id() << endl;

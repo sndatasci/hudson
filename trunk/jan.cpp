@@ -19,8 +19,10 @@
 // Series
 #include "YahooDriver.hpp"
 #include "EODSeries.hpp"
-#include "ReturnFactors.hpp"
-#include "Report.hpp"
+#include "EOMReturnFactors.hpp"
+#include "EOMReport.hpp"
+#include "PositionFactorsSet.hpp"
+#include "PositionsReport.hpp"
 #include "JanTrader.hpp"
 
 using namespace std;
@@ -129,25 +131,28 @@ int main(int argc, char* argv[])
 
   JanTrader trader(long_db, hedge_db);
   trader.run(entry_offset, exit_offset); // canonical entry/exit dates (12/20 - 1/9)
+
+  /*
+   * Print open/closed positions
+   */
+  Report::header("Closed trades");
   trader.positions().closed().print();
-  cout << "Invested days: " << trader.invested_days() << " (" << (trader.invested_days().days()/(double)long_db.days()) * 100 << "%)" << endl;
 
-  ReturnFactors rf(trader.positions().closed(), long_db.days(), 12);
+  /*
+   * Print simulation reports
+   */
+  Report::header("Trade results");
+  ReturnFactors rf(trader.positions(), long_db);
   Report rp(rf);
+  rp.print();
 
-  rp.trades();
-  rp.avg_trade();
-  rp.std_dev();
-  rp.skew();
-  rp.pos_trades();
-  rp.neg_trades();
-  rp.avg_pos();
-  rp.avg_neg();
-  rp.best();
-  rp.worst();
-  rp.max_cons_pos();
-  rp.max_cons_neg();
-  rp.max_dd();
+  /*
+   * Positions excursion
+   */
+  Report::header("Positions excursion");
+  PositionFactorsSet pf(trader.positions().closed(), long_db);
+  PositionsReport pr(pf);
+  pr.print();
 
   return 0;
 }

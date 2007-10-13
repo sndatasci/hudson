@@ -10,8 +10,10 @@ SRC=\
 	DMYCloseDriver.cpp \
 	EODSeries.cpp \
 	ReturnFactors.cpp \
+	EOMReturnFactors.cpp \
 	Position.cpp \
 	Report.cpp \
+	EOMReport.cpp \
 	Execution.cpp \
 	ExecutionSet.cpp \
 	LongPosition.cpp \
@@ -36,7 +38,9 @@ HDR=\
 	DMYCloseDriver.hpp \
 	YahooDriver.hpp \
 	ReturnFactors.hpp \
+	EOMReturnFactors.hpp \
 	Report.hpp \
+	EOMReport.hpp \
 	Execution.hpp \
 	ExecutionSet.hpp \
 	LongPosition.hpp \
