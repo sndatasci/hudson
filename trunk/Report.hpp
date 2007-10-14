@@ -26,6 +26,8 @@ public:
   Report(const ReturnFactors& rf);
 
   static void header(const std::string& title = "");
+  static void precision(unsigned decimals = 2);
+  static unsigned get_precision(void);
 
   void trades(void) const { std::cout << "Trades: " << _rf.num() << std::endl; }
   void avg_trade(void) const { std::cout << "Avg trade: " << _rf.avg()*100 << '%' << std::endl; }
