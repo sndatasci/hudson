@@ -28,6 +28,7 @@ void EOMReport::print( void ) const
   cout.setf(ios::fixed);
 
   gsdm();
+  sharpe();
 
   cout.precision(curr_precision);
   cout.flags(curr_flags);

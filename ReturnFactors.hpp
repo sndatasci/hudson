@@ -9,7 +9,7 @@
 #pragma warning (disable:4290)
 #endif
 
-// STDLIB
+// STD
 #include <cmath>
 
 // STL
@@ -89,11 +89,6 @@ protected:
 
   private:
     double _mean;
-  };
-
-  struct log10_uf: public std::unary_function<double, double> {
-
-    double operator()(double x) { return ::log10(x); }
   };
 
   struct PositionGt: public std::binary_function<PositionPtr, double, bool> {

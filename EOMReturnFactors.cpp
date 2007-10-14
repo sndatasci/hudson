@@ -1,6 +1,6 @@
 /*
-* EOMReturnFactors.cpp
-*/
+ * EOMReturnFactors.cpp
+ */
 
 #include <StdAfx.h>
 
@@ -13,7 +13,9 @@ using namespace Series;
 
 EOMReturnFactors::EOMReturnFactors( const PositionSet& sPositions, const Series::EODSeries& db ):
   ReturnFactors(sPositions, db),
-  _monthly_db(_db.monthly())
+  _monthly_db(_db.monthly()),
+  _mmean(0),
+  _mstddev(0)
 {
   _calculateM2M();
 }
@@ -32,7 +34,8 @@ double EOMReturnFactors::gsd( void ) const
 
 double EOMReturnFactors::sharpe( double rf_rate ) const
 {
-  return 1;
+  double sharpe = (((_mmean-1)*12) - (rf_rate/100)) / (_mstddev*sqrt(12));
+  return sharpe;
 }
 
 
@@ -61,16 +64,22 @@ void EOMReturnFactors::_calculateM2M(void)
 
       // Calculate monthly factor for this position
       double f = _monthlyFactor(prev_em_mark, em_mark, *piter);
-      //cout << "Monthly factor for position " << (*piter)->id() << ": " << f << endl;
-      _vMFactors.push_back(f);
+      //cout << "Monthly factor for position " << (*piter)->id() << " (" << em_mark->first.month() << "): " << f << endl;
+
       f_acc *= f;
-    }
+    } // End of positions for this month
+
+    // Add monthly factor
+    //cout << em_mark->first << ", factor " << f_acc << endl;
+    _vMFactors.push_back(f_acc);
+    _vLogMFactors.push_back(::log10(f_acc));
+    _mDateMFactors.insert(DATEMFACTOR::value_type(em_mark->first, f_acc));
 
     prev_em_mark = em_mark;
   }
 
-  // Initialize factor logs vector
-  transform(_vMFactors.begin(), _vMFactors.end(), back_insert_iterator<doubleVector>(_vLogMFactors), log10_uf());
+  _mmean = accumulate<doubleVector::const_iterator, double>( _vMFactors.begin(), _vMFactors.end(), 0 ) / _vMFactors.size();
+  _mstddev = ::sqrt( accumulate<doubleVector::const_iterator, double>( _vMFactors.begin(), _vMFactors.end(), 0, variance_bf(_mmean) ) / (_vMFactors.size() - 1) );
 }
 
 

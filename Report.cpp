@@ -19,6 +19,19 @@ void Report::header(const std::string& title /* =  */)
 }
 
 
+void Report::precision(unsigned decimals)
+{
+  cout.precision(2);
+  cout.setf(ios::fixed);
+}
+
+
+unsigned Report::get_precision(void)
+{
+  return cout.precision();
+}
+
+
 Report::Report(const ReturnFactors& rf):
   _rf(rf),
   _rf_pos(rf.pos(), rf.db()),
