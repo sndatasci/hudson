@@ -23,7 +23,7 @@ public:
   EOMReport(const EOMReturnFactors& rf);
 
   void gsdm(void) const { std::cout << "GSDm: " << _eomrf.gsd()*100 << '%' << std::endl; }
-  void sharpe(void) const { std::cout << "Sharpe: " << _eomrf.sharpe(5) << std::endl; }
+  void sharpe(void) const { std::cout << "Sharpe: " << _eomrf.sharpe() << std::endl; }
 
   void print(void) const;
 

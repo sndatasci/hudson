@@ -48,6 +48,8 @@ public:
   ReturnFactors(const PositionSet& sPositions, const Series::EODSeries& db);
 
   const Series::EODSeries& db(void) const { return _db; }
+  const double last_open(void) const { return _last_open; }
+  const double last_close(void) const { return _last_close; }
 
   unsigned days(void) const { return _days; }
   unsigned yperiods(void) const { return _yperiods; }

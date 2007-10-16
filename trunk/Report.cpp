@@ -84,7 +84,8 @@ void Report::best(void) const
     return; // avoid exception during report
 
   const Position& pos = _rf.best();
-  std::cout << "Best: " << (pos.factor()-1)*100 << '%' << " [" << pos.first_exec().dt() << '/' << pos.last_exec().dt() << ']' << std::endl;
+  cout << "Best: " << (pfactor(pos, _rf.last_close())-1)*100 << '%';
+  _begin_end(pos);
 }
 
 
@@ -94,7 +95,8 @@ void Report::worst(void) const
     return; // avoid exception during report
 
   const Position& pos = _rf.worst();
-  std::cout << "Worst: " << (pos.factor()-1)*100 << '%' << " [" << pos.first_exec().dt() << '/' << pos.last_exec().dt() << ']' << std::endl;
+  cout << "Worst: " << (pfactor(pos, _rf.last_close())-1)*100 << '%';
+  _begin_end(pos);
 }
 
 
@@ -110,10 +112,8 @@ void Report::max_cons_pos( void ) const
     return;
   }
 
-  PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
-  PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
-
-  cout << (int)pset.size() << " [" << pFirstPos->first_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
+  cout << (int)pset.size();
+  _begin_end(pset);
 }
 
 
@@ -128,11 +128,9 @@ void Report::max_cons_neg( void ) const
     cout << 0 << endl;
     return;
   }
-
-  PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
-  PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
-
-  cout << (int)pset.size() << " [" << pFirstPos->first_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
+  
+  cout << (int)pset.size();
+  _begin_end(pset);
 }
 
 
@@ -148,11 +146,37 @@ void Report::max_dd( void ) const
     return;
   }
 
+  ReturnFactors ddrf(pset, _rf.db());
+  cout << ddrf.roi()*100 << '%';
+  _begin_end(pset);
+}
+
+
+void Report::_begin_end( const Position& pos ) const
+{
+  // Print begin/end transactions
+  cout << " [" << pos.first_exec().dt();
+  
+  if( pos.closed() )
+    cout << '/' << pos.last_exec().dt();
+  else
+    cout << " (Open)";
+    
+  cout << ']' << std::endl;
+}
+
+
+void Report::_begin_end( const PositionSet& pset ) const
+{
   PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
   PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
 
-  boost::gregorian::date_duration dur = pLastPos->last_exec().dt() - pFirstPos->first_exec().dt();
-
-  ReturnFactors ddrf(pset, _rf.db());
-  cout << ddrf.roi()*100 << "% [" << pFirstPos->first_exec().dt() << '/' << pLastPos->last_exec().dt() << ']' << endl;
+  cout << " [" << pFirstPos->first_exec().dt() << '/';
+  
+  if( pLastPos->closed() )
+    cout << pLastPos->last_exec().dt();
+  else
+    cout << " (Open)";
+    
+  cout << ']' << endl;
 }

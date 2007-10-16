@@ -6,6 +6,7 @@
 
 // STL
 #include <iostream>
+#include <iomanip>
 
 // Hudson
 #include "Price.hpp"
@@ -27,6 +28,10 @@ void Position::print(double curr_price) const
 {
   cout << _symbol << ": ";
   _sExecutions.print();
+  double factor = pfactor(*this, curr_price);
 
-  cout << " - " << "Factor " << pfactor(*this, curr_price);
+  if( open() )
+    cout << " (" << curr_price << ") ";
+    
+  cout << " - " << "Factor " << factor << " (" << ((factor-1)*100) << "%)";
 }

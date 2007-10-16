@@ -27,10 +27,10 @@
 class EOMReturnFactors: public ReturnFactors
 {
 public:
-  EOMReturnFactors(const PositionSet& sPositions, const Series::EODSeries& db);
+  EOMReturnFactors(const PositionSet& sPositions, const Series::EODSeries& db, double rf_rate = 3.0);
 
   double gsd(void) const;
-  double sharpe(double rf_rate = 5.0) const;
+  double sharpe(void) const;
 
 protected:
   void _calculateM2M(void);
@@ -38,6 +38,7 @@ protected:
 
 protected:
   const Series::EODSeries _monthly_db;
+  const double _rf_rate;
 
   std::vector<double> _vMFactors; // monthly factors
   std::vector<double> _vLogMFactors; // monthly log factors
@@ -47,6 +48,7 @@ protected:
 
   double _mmean;
   double _mstddev;
+  double _msharpe;
 
 protected:
   struct log10_uf: public std::unary_function<double, double> {

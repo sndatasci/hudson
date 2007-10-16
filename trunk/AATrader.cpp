@@ -72,8 +72,10 @@ void AATrader::run(void) throw(TraderException)
 
 void AATrader::check_buy( const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd, int i )
 {
+  //cout << "On " << iter->first << " MACD " << macd.macd[i] << " signal " << macd.macd_signal[i] << " hist " << macd.macd_hist[i] << endl;
+  
   // Buy on MACD > signal
-  if( _miPositions.open(db.name()).empty() && macd.macd[i] > macd.macd_signal[i] ) {
+  if( _miPositions.open(db.name()).empty() && /*macd.macd[i] > macd.macd_signal[i]*/ macd.macd_hist[i] >= 1 ) {
 
     // Buy tomorrow's open
     DB::const_iterator iter_entry = db.after(iter->first);
@@ -82,7 +84,8 @@ void AATrader::check_buy( const DB& db, DB::const_iterator& iter, const TA::MACD
       return;
     }
 
-    buy(db.name(), iter_entry->first, iter_entry->second.open);
+    //cout << "Buying on " << iter_entry->first << " at " << iter_entry->second.open << endl;
+    buy(db.name(), iter_entry->first, Price(iter_entry->second.open));
   }
 }
 
@@ -90,7 +93,7 @@ void AATrader::check_buy( const DB& db, DB::const_iterator& iter, const TA::MACD
 void AATrader::check_sell( const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd, int i )
 {
   // Sell on MACD < signal
-  if( ! _miPositions.open(db.name()).empty() && macd.macd[i] < macd.macd_signal[i] ) {
+  if( ! _miPositions.open(db.name()).empty() && /* macd.macd[i] < macd.macd_signal[i]*/ macd.macd_hist[i] <= -1 ) {
 
     DB::const_iterator iter_exit = db.after(iter->first);
     if( iter_exit == db.end() ) {
@@ -103,7 +106,8 @@ void AATrader::check_sell( const DB& db, DB::const_iterator& iter, const TA::MAC
     for( PositionSet::const_iterator pos_iter = ps.begin(); pos_iter != ps.end(); ++pos_iter ) {
       PositionPtr pPos = (*pos_iter);
       // Sell at tomorrow's open
-      close(pPos->id(), iter_exit->first, iter_exit->second.open);
+      //cout << "Selling on " << iter_exit->first << " at " << iter_exit->second.open << endl;
+      close(pPos->id(), iter_exit->first, Price(iter_exit->second.open));
     } // end of all open positions
   }
 }
