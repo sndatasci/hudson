@@ -4,6 +4,9 @@
 
 #include <StdAfx.h>
 
+// CSTD
+#include <cmath>
+
 // Hudson
 #include "EOMReturnFactors.hpp"
 
@@ -11,11 +14,13 @@ using namespace std;
 using namespace Series;
 
 
-EOMReturnFactors::EOMReturnFactors( const PositionSet& sPositions, const Series::EODSeries& db ):
+EOMReturnFactors::EOMReturnFactors( const PositionSet& sPositions, const Series::EODSeries& db, double rf_rate ):
   ReturnFactors(sPositions, db),
   _monthly_db(_db.monthly()),
+  _rf_rate(rf_rate),
   _mmean(0),
-  _mstddev(0)
+  _mstddev(0),
+  _msharpe(0)
 {
   _calculateM2M();
 }
@@ -32,10 +37,9 @@ double EOMReturnFactors::gsd( void ) const
 }
 
 
-double EOMReturnFactors::sharpe( double rf_rate ) const
+double EOMReturnFactors::sharpe( void ) const
 {
-  double sharpe = (((_mmean-1)*12) - (rf_rate/100)) / (_mstddev*sqrt(12));
-  return sharpe;
+  return _msharpe;
 }
 
 
@@ -80,6 +84,7 @@ void EOMReturnFactors::_calculateM2M(void)
 
   _mmean = accumulate<doubleVector::const_iterator, double>( _vMFactors.begin(), _vMFactors.end(), 0 ) / _vMFactors.size();
   _mstddev = ::sqrt( accumulate<doubleVector::const_iterator, double>( _vMFactors.begin(), _vMFactors.end(), 0, variance_bf(_mmean) ) / (_vMFactors.size() - 1) );
+  _msharpe = (((_mmean-1)*12) - (_rf_rate/100)) / (_mstddev*::sqrt((double)12));
 }
 
 

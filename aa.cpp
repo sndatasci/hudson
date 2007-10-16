@@ -2,6 +2,11 @@
  * aa.cpp
  */
 
+#include "StdAfx.h"
+
+// STL
+#include <strstream>
+
 // Boost
 #include <boost/program_options.hpp>
 
@@ -59,16 +64,10 @@ int main(int argc, char* argv[])
         vm["djc_file"].empty() ||
         vm["eafe_file"].empty() ||
         vm["reit_file"].empty() ||
-	vm["begin_date"].empty() || vm["end_date"].empty() ) {
+	      vm["begin_date"].empty() || vm["end_date"].empty() ) {
       cout << desc << endl;
       exit(1);
     }
-
-    cout << "SPX file: " << spx_dbfile << endl;
-    cout << "TNX file: " << tnx_dbfile << endl;
-    cout << "DJC file: " << djc_dbfile << endl;
-    cout << "EAFE file: " << eafe_dbfile << endl;
-    cout << "REIT file: " << reit_dbfile << endl;
 
     /*
      * Load series data
@@ -155,8 +154,9 @@ int main(int argc, char* argv[])
     Report::header("Closed trades");
     trader.positions("SPX").closed().print();
 
+    double last_price = spx_db.rbegin()->second.adjclose;
     Report::header("Open trades");
-    trader.positions("SPX").open().print(spx_db.rbegin()->second.adjclose);
+    trader.positions("SPX").open().print(last_price);
 
     // Print simulation reports
     Report::header("Simulation");
@@ -165,14 +165,14 @@ int main(int argc, char* argv[])
     rp.print();
 
     // Position excursions
-    //Report::header("Position excursions");
-    //PositionFactorsSet pf(trader.positions().closed(), spx_db);
-    //PositionsReport pr(pf);
-    //pr.print();
+    Report::header("Positions");
+    PositionFactorsSet pf(trader.positions().closed(), spx_db);
+    PositionsReport pr(pf);
+    pr.print();
 
     // BnH
     Report::header("BnH");
-    BnHTrader bnh(spx_db);
+    BnHTrader bnh(spx_db); 
     bnh.run();
     EOMReturnFactors bnh_rf(bnh.positions(), spx_db);
     EOMReport bnh_rp(bnh_rf);

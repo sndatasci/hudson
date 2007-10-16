@@ -99,7 +99,7 @@ bool Series::DMYCloseDriver::next(DayPrice& dp) throw(Series::DriverException)
 	    break;
 
 	    case CLOSE:
-	      dp.close = atof(field.c_str());
+	      dp.close = dp.adjclose = atof(field.c_str());
 	      break;
 
 	    default: {

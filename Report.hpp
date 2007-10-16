@@ -56,6 +56,10 @@ private:
 
   double _pos_percent;
   double _neg_percent;
+  
+private:
+  void _begin_end(const Position& pos) const;
+  void _begin_end(const PositionSet& pset) const;
 };
 
 #endif // _REPORT_HPP_
