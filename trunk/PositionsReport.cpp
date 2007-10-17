@@ -44,6 +44,9 @@ void PositionsReport::favorable(void) const
 
   PositionFactorsSet::ExcursionResults er = _pf.favorable();
 
+  // Average peak
+  std::cout << "Avg peak: " << er.avg*100 << '%' << std::endl;
+  
   // Consecutive positives
   cout << "Longest peak: ";
   if( er.consecutive.empty() ) {
@@ -55,10 +58,7 @@ void PositionsReport::favorable(void) const
     cout << (int)er.consecutive.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
   }
 
-  // Average favorable excursion
-  std::cout << "Avg peak: " << er.avg*100 << '%' << std::endl;
-
-  // Best favorable excursion
+  // Best peak
   const SeriesFactorSet& sfs = er.high;
   const SeriesFactor& sf_begin = *(er.high.get<from_key>().begin());
   const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
@@ -75,6 +75,9 @@ void PositionsReport::adverse(void) const
 
   PositionFactorsSet::ExcursionResults er = _pf.adverse();
 
+  // Average adverse excursion
+  std::cout << "Avg drawdown: " << er.avg*100 << '%' << std::endl;
+  
   // Consecutive adverse
   cout << "Longest drawdown: ";
   if( er.consecutive.empty() ) {
@@ -85,9 +88,6 @@ void PositionsReport::adverse(void) const
 
     cout << (int)er.consecutive.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
   }
-
-  // Average adverse excursion
-  std::cout << "Avg drawdown: " << er.avg*100 << '%' << std::endl;
 
   // Worst adverse excursion
   const SeriesFactorSet& sfs = er.high;

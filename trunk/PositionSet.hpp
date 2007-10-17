@@ -21,6 +21,7 @@
 
 // Hudson
 #include "Position.hpp"
+#include "Price.hpp"
 
 
 struct symbol_key { };
@@ -70,7 +71,7 @@ public:
   double realized(void) const;
   double unrealized(void) const;
 
-  void print(double curr_price = 0) const;
+  void print(Price curr_price) const;
 };
 
 
