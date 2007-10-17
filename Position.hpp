@@ -59,7 +59,7 @@ public:
 
   bool open(void) const { return _size != 0; }
   bool closed(void) const { return !_sExecutions.empty() && !open(); }
-  void print(double curr_price = 0) const;
+  void print(Price curr_price) const;
 
   virtual Type type(void) const = 0;
   virtual std::string type_str(void) const = 0;

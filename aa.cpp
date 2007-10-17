@@ -15,6 +15,7 @@
 #include "DMYCloseDriver.hpp"
 #include "EODSeries.hpp"
 #include "PositionFactors.hpp"
+#include "PositionFactorsSet.hpp"
 #include "AATrader.hpp"
 #include "BnHTrader.hpp"
 #include "EOMReturnFactors.hpp"
@@ -99,13 +100,13 @@ int main(int argc, char* argv[])
       exit(EXIT_FAILURE);
     }
 
-    /*
-      cout << "Loading " << tnx_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-      if( tnx_db.load(yd, tnx_dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-      }
+    //cout << "Loading " << tnx_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+    //if( tnx_db.load(yd, tnx_dbfile, load_begin, load_end) <= 0 ) {
+    //  cerr << "No records found" << endl;
+    //  exit(EXIT_FAILURE);
+    //}
 
+    /*
       cout << "Loading " << djc_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
       if( djc_db.load(yd, djc_dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
@@ -129,11 +130,11 @@ int main(int argc, char* argv[])
     cout << "SPX Period: " << spx_db.period() << endl;
     cout << "SPX Total days: " << spx_db.duration().days() << endl;
 
-    /*
-      cout << "TNX Records: " << tnx_db.size() << endl;
-      cout << "TNX Period: " << tnx_db.period() << endl;
-      cout << "TNX Total days: " << tnx_db.duration().days() << endl;
-
+    //cout << "TNX Records: " << tnx_db.size() << endl;
+    //cout << "TNX Period: " << tnx_db.period() << endl;
+    //cout << "TNX Total days: " << tnx_db.duration().days() << endl;
+    
+  /*
       cout << "DJC Records: " << djc_db.size() << endl;
       cout << "DJC Period: " << djc_db.period() << endl;
       cout << "DJC Total days: " << djc_db.duration().days() << endl;
@@ -151,31 +152,32 @@ int main(int argc, char* argv[])
     trader.run();
 
     // All trades (closed + open)
+    Price lastPrice(spx_db.rbegin()->second.adjclose);
     Report::header("Closed trades");
-    trader.positions("SPX").closed().print();
+    trader.positions("SPX").closed().print(lastPrice);
 
-    double last_price = spx_db.rbegin()->second.adjclose;
     Report::header("Open trades");
-    trader.positions("SPX").open().print(last_price);
+    trader.positions("SPX").open().print(lastPrice);
 
     // Print simulation reports
     Report::header("Simulation");
-    EOMReturnFactors rf(trader.positions("SPX"), spx_db);
-    EOMReport rp(rf);
+    EOMReturnFactors eomrf(trader.positions("SPX"), spx_db);
+    EOMReport rp(eomrf);
     rp.print();
 
-    // Position excursions
-    Report::header("Positions");
-    PositionFactorsSet pf(trader.positions().closed(), spx_db);
-    PositionsReport pr(pf);
-    pr.print();
+    // Positions analysis
+    //Report::header("Positions");
+    //PositionFactorsSet pfs(trader.positions(), spx_db);
+    //PositionsReport pr(pfs);
+    //pr.print();
 
     // BnH
-    Report::header("BnH");
+    Report::header("SPX BnH");
     BnHTrader bnh(spx_db); 
     bnh.run();
-    EOMReturnFactors bnh_rf(bnh.positions(), spx_db);
-    EOMReport bnh_rp(bnh_rf);
+    bnh.positions().print(lastPrice);
+    EOMReturnFactors bnh_eomrf(bnh.positions(), spx_db);
+    EOMReport bnh_rp(bnh_eomrf);
 
     Report::precision(2);
     bnh_rp.roi();

@@ -24,14 +24,14 @@ Position::Position(ID id, const string& symbol):
 }
 
 
-void Position::print(double curr_price) const
+void Position::print(Price curr_price) const
 {
   cout << _symbol << ": ";
   _sExecutions.print();
-  double factor = pfactor(*this, curr_price);
+  double factor = pfactor(*this, curr_price.value());
 
   if( open() )
-    cout << " (" << curr_price << ") ";
+    cout << " (" << curr_price.value() << ") ";
     
   cout << " - " << "Factor " << factor << " (" << ((factor-1)*100) << "%)";
 }

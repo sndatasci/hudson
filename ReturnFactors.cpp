@@ -102,7 +102,7 @@ const Position& ReturnFactors::best(void) const throw(ReturnFactorsException)
 {
   if( _sPositions.empty() )
     throw ReturnFactorsException("Empty positions set");
-
+  
   return **max_element(_sPositions.begin(), _sPositions.end(), PositionLtCmp(_last_close));
 }
 

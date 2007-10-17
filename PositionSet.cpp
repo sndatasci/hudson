@@ -15,7 +15,7 @@
 using namespace std;
 
 
-void PositionSet::print(double curr_price) const
+void PositionSet::print(Price curr_price) const
 {
   for( const_iterator iter = begin(); iter != end(); ++iter ) {
 	  (*iter)->print(curr_price);
