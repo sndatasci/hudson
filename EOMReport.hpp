@@ -22,6 +22,7 @@ class EOMReport: public Report
 public:
   EOMReport(const EOMReturnFactors& rf);
 
+  void cagr(void) const { std::cout << "CAGR: " << _eomrf.cagr()*100 << '%' << std::endl; }
   void gsdm(void) const { std::cout << "GSDm: " << _eomrf.gsd()*100 << '%' << std::endl; }
   void sharpe(void) const { std::cout << "Sharpe: " << _eomrf.sharpe() << std::endl; }
 

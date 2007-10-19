@@ -22,13 +22,15 @@
 // Hudson
 #include "ReturnFactors.hpp"
 #include "PositionSet.hpp"
+#include "EODSeries.hpp"
 
 
 class EOMReturnFactors: public ReturnFactors
 {
 public:
   EOMReturnFactors(const PositionSet& sPositions, const Series::EODSeries& db, double rf_rate = 3.0);
-
+  
+  double cagr(void) const;
   double gsd(void) const;
   double sharpe(void) const;
 
@@ -37,6 +39,7 @@ protected:
   double _monthlyFactor(Series::EODSeries::const_iterator prev_em_mark, Series::EODSeries::const_iterator em_mark, const PositionPtr pos);
 
 protected:
+  const Series::EODSeries& _db;
   const Series::EODSeries _monthly_db;
   const double _rf_rate;
 
@@ -49,6 +52,9 @@ protected:
   double _mmean;
   double _mstddev;
   double _msharpe;
+  
+  unsigned _days;
+  double   _years;
 
 protected:
   struct log10_uf: public std::unary_function<double, double> {

@@ -34,8 +34,8 @@ unsigned Report::get_precision(void)
 
 Report::Report(const ReturnFactors& rf):
   _rf(rf),
-  _rf_pos(rf.pos(), rf.db()),
-  _rf_neg(rf.neg(), rf.db()),
+  _rf_pos(rf.pos(), rf.last()),
+  _rf_neg(rf.neg(), rf.last()),
   _pos_percent(0),
   _neg_percent(0)
 {
@@ -71,7 +71,6 @@ void Report::print(void) const
 
   cout << endl;
   roi();
-  cagr();
 
   cout.precision(curr_precision);
   cout.flags(curr_flags);
@@ -84,7 +83,7 @@ void Report::best(void) const
     return; // avoid exception during report
 
   const Position& pos = _rf.best();
-  cout << "Best: " << (pfactor(pos, _rf.last_close())-1)*100 << '%';
+  cout << "Best: " << (pfactor(pos, _rf.last().value())-1)*100 << '%';
   _begin_end(pos);
 }
 
@@ -95,7 +94,7 @@ void Report::worst(void) const
     return; // avoid exception during report
 
   const Position& pos = _rf.worst();
-  cout << "Worst: " << (pfactor(pos, _rf.last_close())-1)*100 << '%';
+  cout << "Worst: " << (pfactor(pos, _rf.last().value())-1)*100 << '%';
   _begin_end(pos);
 }
 
@@ -146,7 +145,7 @@ void Report::max_dd( void ) const
     return;
   }
 
-  ReturnFactors ddrf(pset, _rf.db());
+  ReturnFactors ddrf(pset, _rf.last());
   cout << ddrf.roi()*100 << '%';
   _begin_end(pset);
 }

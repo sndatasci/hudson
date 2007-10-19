@@ -21,6 +21,9 @@
 #include "EOMReturnFactors.hpp"
 #include "EOMReport.hpp"
 #include "PositionsReport.hpp"
+#include "PortfolioReturns.hpp"
+#include "PortfolioReport.hpp"
+
 
 using namespace std;
 using namespace boost::gregorian;
@@ -100,82 +103,127 @@ int main(int argc, char* argv[])
       exit(EXIT_FAILURE);
     }
 
-    //cout << "Loading " << tnx_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    //if( tnx_db.load(yd, tnx_dbfile, load_begin, load_end) <= 0 ) {
-    //  cerr << "No records found" << endl;
-    //  exit(EXIT_FAILURE);
-    //}
-
-    /*
-      cout << "Loading " << djc_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-      if( djc_db.load(yd, djc_dbfile, load_begin, load_end) <= 0 ) {
+    cout << "Loading " << tnx_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+    if( tnx_db.load(yd, tnx_dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
       exit(EXIT_FAILURE);
-      }
+    }
 
-      cout << "Loading " << eafe_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-      if( eafe_db.load(sd, eafe_dbfile, load_begin, load_end) <= 0 ) {
+    cout << "Loading " << djc_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+    if( djc_db.load(yd, djc_dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
       exit(EXIT_FAILURE);
-      }
-
-      cout << "Loading " << reit_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-      if( reit_db.load(sd, reit_dbfile, load_begin, load_end) <= 0 ) {
+    }
+    
+    cout << "Loading " << eafe_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+    if( eafe_db.load(sd, eafe_dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
       exit(EXIT_FAILURE);
-      }
-    */
+    }
 
+    cout << "Loading " << reit_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+    if( reit_db.load(sd, reit_dbfile, load_begin, load_end) <= 0 ) {
+      cerr << "No records found" << endl;
+      exit(EXIT_FAILURE);
+    }
+    
     cout << "SPX Records: " << spx_db.size() << endl;
     cout << "SPX Period: " << spx_db.period() << endl;
     cout << "SPX Total days: " << spx_db.duration().days() << endl;
 
-    //cout << "TNX Records: " << tnx_db.size() << endl;
-    //cout << "TNX Period: " << tnx_db.period() << endl;
-    //cout << "TNX Total days: " << tnx_db.duration().days() << endl;
+    cout << "TNX Records: " << tnx_db.size() << endl;
+    cout << "TNX Period: " << tnx_db.period() << endl;
+    cout << "TNX Total days: " << tnx_db.duration().days() << endl;
     
-  /*
-      cout << "DJC Records: " << djc_db.size() << endl;
-      cout << "DJC Period: " << djc_db.period() << endl;
-      cout << "DJC Total days: " << djc_db.duration().days() << endl;
+    cout << "DJC Records: " << djc_db.size() << endl;
+    cout << "DJC Period: " << djc_db.period() << endl;
+    cout << "DJC Total days: " << djc_db.duration().days() << endl;
 
-      cout << "EAFE Records: " << eafe_db.size() << endl;
-      cout << "EAFE Period: " << eafe_db.period() << endl;
-      cout << "EAFE Total days: " << eafe_db.duration().days() << endl;
+    cout << "EAFE Records: " << eafe_db.size() << endl;
+    cout << "EAFE Period: " << eafe_db.period() << endl;
+    cout << "EAFE Total days: " << eafe_db.duration().days() << endl;
 
-      cout << "REIT Records: " << reit_db.size() << endl;
-      cout << "REIT Period: " << reit_db.period() << endl;
-      cout << "REIT Total days: " << reit_db.duration().days() << endl;
-    */
+    cout << "REIT Records: " << reit_db.size() << endl;
+    cout << "REIT Period: " << reit_db.period() << endl;
+    cout << "REIT Total days: " << reit_db.duration().days() << endl;
+    
     // Initialize and run strategy
     AATrader trader(spx_db, tnx_db, djc_db, eafe_db, reit_db);
     trader.run();
 
     // All trades (closed + open)
-    Price lastPrice(spx_db.rbegin()->second.adjclose);
+    Price spx_lastPrice(spx_db.rbegin()->second.adjclose);
+    Price tnx_lastPrice(tnx_db.rbegin()->second.adjclose);
+    Price djc_lastPrice(tnx_db.rbegin()->second.adjclose);
+    Price eafe_lastPrice(eafe_db.rbegin()->second.adjclose);
+    Price reit_lastPrice(reit_db.rbegin()->second.adjclose);
+    
     Report::header("Closed trades");
-    trader.positions("SPX").closed().print(lastPrice);
-
+    trader.positions("SPX").closed().print(spx_lastPrice);
+    trader.positions("TNX").closed().print(tnx_lastPrice);
+    trader.positions("DJC").closed().print(djc_lastPrice);
+    trader.positions("EAFE").closed().print(eafe_lastPrice);
+    trader.positions("REIT").closed().print(reit_lastPrice);
+    
     Report::header("Open trades");
-    trader.positions("SPX").open().print(lastPrice);
-
-    // Print simulation reports
-    Report::header("Simulation");
-    EOMReturnFactors eomrf(trader.positions("SPX"), spx_db);
-    EOMReport rp(eomrf);
+    trader.positions("SPX").open().print(spx_lastPrice);
+    trader.positions("TNX").open().print(tnx_lastPrice);
+    trader.positions("DJC").open().print(djc_lastPrice);
+    trader.positions("EAFE").open().print(eafe_lastPrice);
+    trader.positions("REIT").open().print(reit_lastPrice);
+            
+    // SPX stats
+    Report::header("SPX Stats");
+    EOMReturnFactors spx_eomrf(trader.positions("SPX"), spx_db);
+    EOMReport rp(spx_eomrf);
     rp.print();
-
+    
+    // TNX stats
+    Report::header("TNX Stats");
+    EOMReturnFactors tnx_eomrf(trader.positions("TNX"), tnx_db);
+    EOMReport tnx_rp(tnx_eomrf);
+    tnx_rp.print();
+    
+    // DJC stats
+    Report::header("DJC Stats");
+    EOMReturnFactors djc_eomrf(trader.positions("DJC"), djc_db);
+    EOMReport djc_rp(djc_eomrf);
+    djc_rp.print();
+    
+    // EAFE stats
+    Report::header("EAFE Stats");
+    EOMReturnFactors eafe_eomrf(trader.positions("EAFE"), eafe_db);
+    EOMReport eafe_rp(eafe_eomrf);
+    eafe_rp.print();
+    
+    // REIT stats
+    Report::header("REIT Stats");
+    EOMReturnFactors reit_eomrf(trader.positions("REIT"), reit_db);
+    EOMReport reit_rp(reit_eomrf);
+    reit_rp.print();
+    
     // Positions analysis
     //Report::header("Positions");
     //PositionFactorsSet pfs(trader.positions(), spx_db);
     //PositionsReport pr(pfs);
     //pr.print();
+    
+    // Portfolio stats
+    Report::header("Portfolio Stats");
+    PortfolioReturns pr;
+    pr.add(&spx_eomrf);
+    pr.add(&tnx_eomrf);
+    pr.add(&djc_eomrf);
+    pr.add(&eafe_eomrf);
+    pr.add(&reit_eomrf);
+    PortfolioReport preport(pr);
+    preport.print();
 
     // BnH
     Report::header("SPX BnH");
     BnHTrader bnh(spx_db); 
     bnh.run();
-    bnh.positions().print(lastPrice);
+    bnh.positions().print(spx_lastPrice);
     EOMReturnFactors bnh_eomrf(bnh.positions(), spx_db);
     EOMReport bnh_rp(bnh_eomrf);
 

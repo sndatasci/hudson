@@ -22,7 +22,7 @@
 
 // Hudson
 #include "PositionSet.hpp"
-#include "EODSeries.hpp"
+#include "Price.hpp"
 
 
 class ReturnFactorsException: public std::exception
@@ -45,22 +45,16 @@ protected:
 class ReturnFactors
 {
 public:
-  ReturnFactors(const PositionSet& sPositions, const Series::EODSeries& db);
-
-  const Series::EODSeries& db(void) const { return _db; }
-  const double last_open(void) const { return _last_open; }
-  const double last_close(void) const { return _last_close; }
-
-  unsigned days(void) const { return _days; }
-  unsigned yperiods(void) const { return _yperiods; }
+  ReturnFactors(const PositionSet& sPositions, Price last);
 
   int num(void) const;
 
+  Price last(void) const;
+  
   double roi(void) const;
   double avg(void) const;
   double stddev(void) const;
   double skew(void) const;
-  double cagr(void) const;
 
   PositionSet pos(void) const;
   PositionSet neg(void) const;
@@ -137,20 +131,13 @@ protected:
 
 protected:
   PositionSet _sPositions;
-  const Series::EODSeries& _db;
+  Price _last;
 
   PositionSet _sClosedPositions;
   PositionSet _sOpenPositions;
 
-  double _last_close;
-  double _last_open;
-
   typedef std::vector<double> doubleVector;
   doubleVector _vFactors; // time-ordered position factors for fast array calculations
-
-  unsigned _days;			// time in days
-  double   _years;		// time in years + fraction
-  const unsigned _yperiods; // yearly factors
 
   double _fvalue;			// future value
   double _mean;				// factors average

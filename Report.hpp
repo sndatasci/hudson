@@ -45,7 +45,6 @@ public:
   void max_cons_neg(void) const;
   void max_dd(void) const;
   void roi(void) const { std::cout << "ROI: " << _rf.roi()*100 << '%' << std::endl; }
-  void cagr(void) const { std::cout << "CAGR: " << _rf.cagr()*100 << '%' << std::endl; }
 
   void print(void) const;
 

@@ -40,62 +40,64 @@ void AATrader::run(void) throw(TraderException)
   TA ta;
 
   const DB spx_monthly_db = _spx_db.monthly();
-  //const DB tnx_monthly_db = _tnx_db.monthly();
-  //const DB djc_monthly_db = _djc_db.monthly();
-  //const DB eafe_monthly_db = _eafe_db.monthly();
-  //const DB reit_monthly_db = _reit_db.monthly();
+  const DB tnx_monthly_db = _tnx_db.monthly();
+  const DB djc_monthly_db = _djc_db.monthly();
+  const DB eafe_monthly_db = _eafe_db.monthly();
+  const DB reit_monthly_db = _reit_db.monthly();
 
   DB::const_iterator spx_iter(spx_monthly_db.begin());
-  //DB::const_iterator tnx_iter(tnx_monthly_db.begin());
-  //DB::const_iterator djc_iter(djc_monthly_db.begin());
-  //DB::const_iterator eafe_iter(eafe_monthly_db.begin());
-  //DB::const_iterator reit_iter(reit_monthly_db.begin());
+  DB::const_iterator tnx_iter(tnx_monthly_db.begin());
+  DB::const_iterator djc_iter(djc_monthly_db.begin());
+  DB::const_iterator eafe_iter(eafe_monthly_db.begin());
+  DB::const_iterator reit_iter(reit_monthly_db.begin());
 
-  TA::MACDRes spxMACD = ta.MACD(spx_monthly_db.close(), 12, 26, 9);
-  //TA::MACDRes tnxMACD = ta.MACD(tnx_monthly_db.close(), 12, 26, 9);
-  //TA::MACDRes djcMACD = ta.MACD(djc_monthly_db.close(), 12, 26, 9);
-  //TA::MACDRes eafeMACD = ta.MACD(eafe_monthly_db.close(), 12, 26, 9);
-  //TA::MACDRes reitMACD = ta.MACD(reit_monthly_db.close(), 12, 26, 9);
+  TA::SMARes spxSMA = ta.SMA(spx_monthly_db.close(), 10);
+  TA::SMARes tnxSMA = ta.SMA(tnx_monthly_db.close(), 10);
+  TA::SMARes djcSMA = ta.SMA(djc_monthly_db.close(), 10);
+  TA::SMARes eafeSMA = ta.SMA(eafe_monthly_db.close(), 10);
+  TA::SMARes reitSMA = ta.SMA(reit_monthly_db.close(), 10);
 
-  // Shift series iterator to the beginning of MACD signals in MACD results vector
-  advance(spx_iter, spxMACD.begIdx);
-  //advance(tnx_iter, tnxMACD.begIdx);
-  //advance(djc_iter, djcMACD.begIdx);
-  //advance(eafe_iter, eafeMACD.begIdx);
-  //advance(reit_iter, reitMACD.begIdx);
+  // Shift series iterator to the beginning of SMA signals in SMA results vector
+  advance(spx_iter, spxSMA.begIdx);
+  advance(tnx_iter, tnxSMA.begIdx);
+  advance(djc_iter, djcSMA.begIdx);
+  advance(eafe_iter, eafeSMA.begIdx);
+  advance(reit_iter, reitSMA.begIdx);
+  
+  trade(spx_monthly_db, spx_iter, spxSMA);
+  trade(tnx_monthly_db, tnx_iter, tnxSMA);
+  trade(djc_monthly_db, djc_iter, djcSMA);
+  trade(eafe_monthly_db, eafe_iter, eafeSMA);
+  trade(reit_monthly_db, reit_iter, reitSMA);
+}
 
-  for( int i = 0; spx_iter != spx_monthly_db.end(); ++spx_iter, ++i ) {
+
+void AATrader::trade(const DB& db, DB::const_iterator& iter, const TA::SMARes& sma)
+{
+  for( int i = 0; iter != db.end(); ++iter, ++i ) {
 
     try {
 
-      check_buy(spx_monthly_db, spx_iter, spxMACD, i);
-      //check_buy(tnx_monthly_db, tnx_iter, tnxMACD, i);
-      //check_buy(djc_monthly_db, djc_iter, djcMACD, i);
-
-      check_sell(spx_monthly_db, spx_iter, spxMACD, i);
-      //check_sell(tnx_monthly_db, tnx_iter, tnxMACD, i);
-      //check_sell(djc_monthly_db, djc_iter, djcMACD, i);
+      check_buy(db, iter, sma, i);
+      check_sell(db, iter, sma, i);
 
     } catch( std::exception& e ) {
 
       cerr << e.what() << endl;
       continue;
-    } // try/catch
-  } // for( ; ; )
+    }
+  }
 }
 
 
-void AATrader::check_buy( const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd, int i )
+void AATrader::check_buy( const DB& db, DB::const_iterator& iter, const TA::SMARes& sma, int i )
 {
-  //cout << "On " << iter->first << " MACD " << macd.macd[i] << " signal " << macd.macd_signal[i] << " hist " << macd.macd_hist[i] << endl;
-  
-  // Buy on MACD > signal
-  if( _miPositions.open(db.name()).empty() && /*macd.macd[i] > macd.macd_signal[i]*/ macd.macd_hist[i] >= 1 ) {
+  if( _miPositions.open(db.name()).empty() && iter->second.close > sma.ma[i] ) {
 
     // Buy tomorrow's open
     DB::const_iterator iter_entry = db.after(iter->first);
     if( iter_entry == db.end() ) {
-      cerr << "Can't open position after " << iter->first << endl;
+      cerr << "Warning: can't open " << db.name() << " position after " << iter->first << endl;
       return;
     }
 
@@ -105,14 +107,13 @@ void AATrader::check_buy( const DB& db, DB::const_iterator& iter, const TA::MACD
 }
 
 
-void AATrader::check_sell( const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd, int i )
+void AATrader::check_sell( const DB& db, DB::const_iterator& iter, const TA::SMARes& sma, int i )
 {
-  // Sell on MACD < signal
-  if( ! _miPositions.open(db.name()).empty() && /* macd.macd[i] < macd.macd_signal[i]*/ macd.macd_hist[i] <= -1 ) {
+  if( ! _miPositions.open(db.name()).empty() && iter->second.close < sma.ma[i] ) {
 
     DB::const_iterator iter_exit = db.after(iter->first);
     if( iter_exit == db.end() ) {
-      cerr << "Can't close position after " << iter->first << endl;
+      cerr << "Warning: can't close " << db.name() << " position after " << iter->first << endl;
       return;
     }
 
@@ -126,3 +127,4 @@ void AATrader::check_sell( const DB& db, DB::const_iterator& iter, const TA::MAC
     } // end of all open positions
   }
 }
+
