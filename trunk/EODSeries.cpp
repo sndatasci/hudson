@@ -573,7 +573,7 @@ Series::EODSeries Series::EODSeries::monthly( void ) const
     dp.low = 0;
     dp.volume = 0;
 
-    // Store all highs, lows, volume to determine weekly values
+    // Store all highs, lows, volume to determine monthly values
     vector<double> highs;
     vector<double> lows;
     vector<unsigned long> volumes;

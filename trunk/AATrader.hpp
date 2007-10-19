@@ -27,8 +27,9 @@ public:
   void run(void) throw(TraderException);
 
 private:
-  void check_buy(const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd, int i);
-  void check_sell(const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd, int i);
+  void check_buy(const DB& db, DB::const_iterator& iter, const TA::SMARes& sma, int i);
+  void check_sell(const DB& db, DB::const_iterator& iter, const TA::SMARes& sma, int i);
+  void trade(const DB& db, DB::const_iterator& iter, const TA::SMARes& sma);
 
 private:
   const DB& _spx_db;

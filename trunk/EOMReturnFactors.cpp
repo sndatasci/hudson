@@ -15,14 +15,26 @@ using namespace Series;
 
 
 EOMReturnFactors::EOMReturnFactors( const PositionSet& sPositions, const Series::EODSeries& db, double rf_rate ):
-  ReturnFactors(sPositions, db),
+  ReturnFactors(sPositions, db.rbegin()->second.close),
+  _db(db),
   _monthly_db(_db.monthly()),
   _rf_rate(rf_rate),
   _mmean(0),
   _mstddev(0),
-  _msharpe(0)
+  _msharpe(0),
+  _days(0),
+  _years(0)
 {
+  _days = _db.duration().days();
+  _years = (_days == 0 ? 0 : _days/(double)365);
+  
   _calculateM2M();
+}
+
+
+double EOMReturnFactors::cagr(void) const
+{
+  return _sPositions.empty() ? 0 : std::pow(_fvalue, 1/_years) - 1;
 }
 
 
@@ -33,12 +45,15 @@ double EOMReturnFactors::gsd( void ) const
 
   double lfavg = accumulate<doubleVector::const_iterator, double>( _vLogMFactors.begin(), _vLogMFactors.end(), 0 ) / _vLogMFactors.size();
   double lfstddev = ::sqrt( accumulate<doubleVector::const_iterator, double>( _vLogMFactors.begin(), _vLogMFactors.end(), 0, variance_bf(lfavg) ) / (_vLogMFactors.size() - 1) );
-  return ::pow( (double)10, lfstddev * ::sqrt((double)_yperiods) ) - 1;
+  return ::pow( (double)10, lfstddev * ::sqrt((double)12) ) - 1;
 }
 
 
 double EOMReturnFactors::sharpe( void ) const
 {
+  if( _sPositions.empty() )
+    return 0;
+    
   return _msharpe;
 }
 

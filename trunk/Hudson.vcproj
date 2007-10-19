@@ -131,6 +131,12 @@
 				RelativePath=".\LongPosition.cpp">
 			</File>
 			<File
+				RelativePath=".\PortfolioReport.cpp">
+			</File>
+			<File
+				RelativePath=".\PortfolioReturns.cpp">
+			</File>
+			<File
 				RelativePath=".\Position.cpp">
 			</File>
 			<File
@@ -221,6 +227,12 @@
 			</File>
 			<File
 				RelativePath=".\LongPosition.hpp">
+			</File>
+			<File
+				RelativePath=".\PortfolioReport.hpp">
+			</File>
+			<File
+				RelativePath=".\PortfolioReturns.hpp">
 			</File>
 			<File
 				RelativePath=".\Position.hpp">
