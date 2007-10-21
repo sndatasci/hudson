@@ -136,20 +136,24 @@ int main(int argc, char* argv[])
    * Print open/closed positions
    */
   Report::header("Closed trades");
-  trader.positions().closed().print();
+  Price long_last(long_db.rbegin()->second.adjclose);
+  Price hedge_last(hedge_db.rbegin()->second.adjclose);
+  trader.positions(long_symbol).closed().print(long_last);
+  trader.positions(hedge_symbol).closed().print(hedge_last);
 
   /*
    * Print simulation reports
    */
   Report::header("Trade results");
-  ReturnFactors rf(trader.positions(), long_db);
+
+  ReturnFactors rf(trader.positions(), long_last);
   Report rp(rf);
   rp.print();
 
   /*
-   * Positions excursion
+   * Positions stats
    */
-  Report::header("Positions excursion");
+  Report::header("Positions stats");
   PositionFactorsSet pf(trader.positions().closed(), long_db);
   PositionsReport pr(pf);
   pr.print();

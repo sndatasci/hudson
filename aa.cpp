@@ -5,7 +5,7 @@
 #include "StdAfx.h"
 
 // STL
-#include <strstream>
+#include <sstream>
 
 // Boost
 #include <boost/program_options.hpp>

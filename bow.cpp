@@ -135,17 +135,18 @@ int main(int argc, char* argv[])
   /*
    * Print open/closed positions
    */
+  Price last(db.rbegin()->second.adjclose);
   Report::header("Closed trades");
-  trader.positions().closed().print();
+  trader.positions().closed().print(last);
 
   Report::header("Open trades");
-  trader.positions().open().print(db.rbegin()->second.adjclose);
+  trader.positions().open().print(last);
 
   /*
    * Print simulation reports
    */
   Report::header("Trade results");
-  ReturnFactors rf(trader.positions(), db);
+  ReturnFactors rf(trader.positions(), last);
   Report rp(rf);
   rp.print();
 

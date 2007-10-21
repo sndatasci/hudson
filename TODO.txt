@@ -1,6 +1,5 @@
--- TODO.txt
-
-* Actual $ sim
-* Slippage, commissions
-* Exceptions in some of the Position methods when position is open or close
-
+- Data series database (right now only flat files are supported).
+- Improve positions peak and drawdown calculation performances. Add excursion statistics.
+- Actual $ simulation.
+- Slippage and commissions.
+- Support intraday series.
