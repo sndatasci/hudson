@@ -26,6 +26,8 @@ SRC=\
 	SeriesFactor.cpp \
 	SeriesFactorSet.cpp \
 	Price.cpp \
+	PortfolioReturns.cpp \
+	PortfolioReport.cpp \
 	Trader.cpp \
 	BnHTrader.cpp \
 	StdAfx.cpp \
@@ -50,6 +52,8 @@ HDR=\
 	PositionFactors.hpp \
 	PositionFactorsSet.hpp \
 	PositionsReport.hpp \
+	PortfolioReturns.hpp \
+	PortfolioReport.hpp \
 	SeriesFactor.hpp \
 	SeriesFactorSet.hpp \
 	Trader.hpp \
