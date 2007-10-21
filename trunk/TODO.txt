@@ -1,5 +1,7 @@
 - Data series database (right now only flat files are supported).
-- Improve positions peak and drawdown calculation performances. Add excursion statistics.
+- Improve positions peak and drawdown calculation performances. Add excursion statistics (MAE MFE).
 - Actual $ simulation.
 - Slippage and commissions.
 - Support intraday series.
+- Add real risk-free rate of return (currently default 3%).
+
