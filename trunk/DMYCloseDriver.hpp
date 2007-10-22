@@ -37,15 +37,34 @@
 
 namespace Series
 {
-
+  /*!
+    DMYCloseDriver is a simple file parser that reads lines in the following format:
+    DD-MMM-YYYY, Close.
+    All fields should be comma separated. The first line in the file is a descriptive
+    of the columns and will be skipped by the parser.
+    
+    Some examples of day price entries are:
+    31-Dec-1971,101.22
+    26-Feb-1999,89.58
+  */
   class DMYCloseDriver: public FileDriver
   {
   public:
 	  DMYCloseDriver(void);
 	  ~DMYCloseDriver(void);
 
+    //! Open a file for parsing.
+    /*!
+      \param filename The path to the file containing the data series.
+    */
 	  virtual bool open(const std::string& filename);
+	  //! Close the file.
 	  virtual void close(void);
+	  /*!
+	    Parse one line in the file. Store contents in dp.
+	    Throws DriverException if parsed values are invalid or have a wrong format.
+	    \param dp EOD data storage.
+	  */
 	  virtual bool next(DayPrice& dp) throw(DriverException);
 	  virtual bool eof(void);
 

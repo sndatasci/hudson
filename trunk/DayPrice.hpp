@@ -31,17 +31,21 @@
 namespace Series
 {
 
+  //! EOD price record.
+  /*!
+    Basic price record used in EOD series. 
+  */
   class DayPrice
   {
   public:
 	  boost::gregorian::date key;
 
-	  double high;
-	  double low;
-	  double open;
-	  double close;
-	  double adjclose;
-	  unsigned long volume;
+	  double high; //! High price.
+	  double low; //! Low price.
+	  double open; //! Open price.
+	  double close; //! Close price.
+	  double adjclose; //! Adjusted closed. This is the adjusted price to account for split and dividends.
+	  unsigned long volume; //! Day volume.
   };
 
 } // namespace Series

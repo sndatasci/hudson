@@ -27,14 +27,26 @@
 #include "EODSeries.hpp"
 #include "Trader.hpp"
 
-
+//! Buy and hold trader.
+/*!
+  BnHTrader is a simple trading simulation that only executes two trades: buy at the open on the
+  first bar in the historical data series and sell at the last bar adjusted close.
+  The main purpose of this class is to calculate benchmark statistics for a specific symbol.
+  \see ReturnFactors
+  \see Report
+*/
 class BnHTrader: public Trader
 {
   typedef Series::EODSeries DB;
 
 public:
+  /*!
+    Build a Buy and Hold trader.
+    \param db historical data series.
+  */
   BnHTrader(const DB& db);
 
+  //! Run the trader and execute transactions.
   void run(void);
 
 private:
