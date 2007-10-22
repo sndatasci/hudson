@@ -30,6 +30,12 @@ PortfolioReturns::PortfolioReturns( void )
 }
 
 
+void PortfolioReturns::add( const EOMReturnFactors* rf)
+{
+  _vRF.push_back(rf);
+}
+
+
 double PortfolioReturns::roi( void ) const
 {
   if( _vRF.empty() )
@@ -40,12 +46,6 @@ double PortfolioReturns::roi( void ) const
     acc_cagr += _vRF[i]->roi();
 
   return acc_cagr/_vRF.size();
-}
-
-
-void PortfolioReturns::add( const EOMReturnFactors* rf)
-{
-  _vRF.push_back(rf);
 }
 
 
