@@ -20,18 +20,16 @@ TA-LIB is a free, open-source financial series technical analysis library mainta
 INSTALLATION
 ============
 
-Hudson has been tested on Windows2000 compiling with VisualStudio 2003, version
-7.1.6030 and Mac OS X Tiger 10.3 with g++ 4.1.
+Hudson has been tested on VisualStudio 2003 (7.1.6030)/Windows2000,
+and g++ 4.0.1 on Mac OS X 10.4 (Tiger).
 I haven't tried other OSes, but it should run on any Linux or Unix platform.
 
-Compilation should be straighforward:
+1. Install GSL, Boost and TA-LIB on your system.
+2. Modify the Makefile or the VS solution file to point to your system
+   library location(s).
+3. 'make' on Linux/MacOS or run the VS builder.
 
-1. Install the GSL, Boost and TA-LIB on your system.
-2. Modify the Makefile or the VS solution file to point to the location where you
-   installed the libraries on your system.
-3. Compile: 'make' on 
-
-That's it. You should be able to run any of the examples like this:
+All code compiles in the current directory. You should be able to run any of the examples using these command lines:
 
 
 aa --spx_file db/SPX.csv --tnx_file db/TNX.csv --djc_file db/DJC.csv --eafe_file db/EAFE.csv --reit_file db/NAREIT_All.csv --begin_date 1991-1-1 --end_date 2007-1-1
