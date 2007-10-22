@@ -1,7 +1,21 @@
 /*
- * BOWTrader.hpp
- */
-
+* Copyright (C) 2007, Alberto Giannetti
+*
+* This file is part of Hudson.
+*
+* Hudson is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Hudson is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "BOWTrader.hpp"
 
@@ -74,7 +88,7 @@ void BOWTrader::run(unsigned entry_offset, char entry_oc, unsigned exit_offset, 
 	} catch( TraderException& te ) {
 	  cerr << "Trader error: " << te.what() << endl;
 	  continue;
-	
+
 	} catch( std::exception& e ) {
 	  cerr << "Standard exception: " << e.what() << endl;
 	  continue;
@@ -84,7 +98,7 @@ void BOWTrader::run(unsigned entry_offset, char entry_oc, unsigned exit_offset, 
 	if( dpl == days(0) )
 	  dpl = days(1); // some open/close same-day trade...
 	_invested_days = _invested_days + dpl;
-	
+
 	if( my_first_entry.is_not_a_date() ) my_first_entry = entry_iter->first;
 	my_last_exit = exit_iter->first;
 

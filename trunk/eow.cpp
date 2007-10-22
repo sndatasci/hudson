@@ -1,6 +1,21 @@
 /*
- * eow.cpp
- */
+* Copyright (C) 2007, Alberto Giannetti
+*
+* This file is part of Hudson.
+*
+* Hudson is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Hudson is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 // Posix
 #include <ctime>
@@ -53,7 +68,7 @@ int main(int argc, char* argv[])
       ("entry_oc",     po::value<char>(&entry_oc)->default_value('c'), "entry open/close")
       ("exit_oc",      po::value<char>(&exit_oc)->default_value('c'), "exit open/close")
       ;
-    
+
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -73,14 +88,14 @@ int main(int argc, char* argv[])
       cerr << "entry_offset < exit_offset" << endl;
       exit(EXIT_FAILURE);
     }
-    
+
     if( entry_offset > 6 || exit_offset > 6 ) {
       cerr << "entry/exit offset too large" << endl;
       exit(EXIT_FAILURE);
     }
-    
+
     cout << "Series file: " << dbfile << endl;
-    
+
   } catch( exception& e ) {
     cerr << "Error: " << e.what() << endl;
     exit(EXIT_FAILURE);
@@ -96,27 +111,27 @@ int main(int argc, char* argv[])
       cerr << "Invalid begin date " << begin_date << endl;
       exit(EXIT_FAILURE);
     }
-    
+
     date load_end(from_simple_string(end_date));
     if( load_end.is_not_a_date() ) {
       cerr << "Invalid end date " << end_date << endl;
       exit(EXIT_FAILURE);
     }
-    
+
     cout << "Loading " << dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
     if( db.load(yd, dbfile, load_begin, load_end) <= 0 ) {
       cerr << "No records found" << endl;
       exit(EXIT_FAILURE);
     }
-    
+
   } catch( Series::DriverException& e ) {
     cerr << "Driver error: " << e.what() << endl;
     exit(EXIT_FAILURE);
-    
+
   } catch( out_of_range& e ) {
     cerr << "Can't get begin/end dates: " << e.what() << endl;
     exit(EXIT_FAILURE);
-    
+
   } catch( exception& e ) {
     cerr << "Error: " << e.what() << endl;
     exit(EXIT_FAILURE);
