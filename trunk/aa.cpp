@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
     EOMReport reit_rp(reit_eomrf);
     reit_rp.print();
     
-    // Positions analysis
+    // Position analysis
     //Report::header("Positions");
     //PositionFactorsSet pfs(trader.positions(), spx_db);
     //PositionsReport pr(pfs);

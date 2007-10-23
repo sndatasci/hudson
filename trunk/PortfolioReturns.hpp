@@ -30,6 +30,22 @@
 // Hudson
 #include "EOMReturnFactors.hpp"
 
+class PortfolioReturnsException: public std::exception
+{
+public:
+  PortfolioReturnsException(const std::string& msg):
+      _Str("PortfolioReturnsException: ")
+      {
+        _Str += msg;
+      }
+
+      virtual ~PortfolioReturnsException(void) throw() { }
+      virtual const char *what(void) const throw() { return _Str.c_str(); }
+
+protected:
+  std::string _Str;
+};
+
 
 //! Aggregate EOMReturns for multiple securities and calculate Portfolio statistics.
 class PortfolioReturns
@@ -45,12 +61,29 @@ public:
   double gsd(void) const;
   
   //! Add EOMReturnFactors for a specific symbol.
-  void add(const EOMReturnFactors* rf);
+  /*!
+    A weight coefficient in the range 0-1 should be specified for each EOMReturnFactors. Portfolio
+    return statistics will be calculated according to the weight specified for each EOMReturnFactors object.
+    If all objects inserted have 0 weight, then all EOMReturnFactors are assumed to have the same weight.
+    \param rf Month-to-Month returns for a specific symbol.
+    \param weight The symbol weight in the portfolio. Valid values are in 0-1 range.
+  */
+  void add(EOMReturnFactors* rf, double weight = 0) throw(PortfolioReturnsException);
+  
   //! Returns the number of EOMReturnFactors included in this PortfolioReturns.
   unsigned series(void) const { return (unsigned)_vRF.size(); }
   
-public:
-  std::vector<const EOMReturnFactors*> _vRF;
+protected:
+  struct EOMRFWeight
+  {
+    EOMRFWeight(EOMReturnFactors* pEOMRF_, double w_);
+    
+    EOMReturnFactors* pEOMRF;
+    double w;
+  };
+  
+  std::vector<EOMRFWeight> _vRF;
+  double _accWeight;
 };
 
 #endif // _PORTFOLIORETURNS_HPP_

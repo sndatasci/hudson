@@ -1,12 +1,14 @@
 Hudson is a free, open-source C++ trading strategies backtester. This software is open source. You are required to redistribute any change you make to the original distribution following the GPLv3 license agreement. Please read the COPYING file for more information on GPL licensing.
 
-Hudson calculates various statistics, including coumpound annualized growth rate, % winners/losers, realized drawdown, single positions unrealized drawdown/peak analysis, month-to-month returns, Sharpe ratio and geometric standard deviation of monthly returns.
+Hudson calculates various statistics, including compound annualized growth rate, % winners/losers, realized drawdown, single positions unrealized drawdown/peak analysis, month-to-month returns, Sharpe ratio and geometric standard deviation of monthly returns.
 
 All statistics reports are easily extensible by inheriting from the Report class and adding your own calculation based on raw transactions and historical data.
 
-The trader API support functions to backtest any custom long/short trading strategy in C++, including portfolio backtesting of multiple symbols, pairs-trading and spread-trading. For an example of a spread trade, check the January trader example, a strategy that tries to exploit a seasonal microcap outperformance effect that occurs around the end of the year.
+The trader API support functions to backtest any custom long/short trading strategy in C++, including portfolio backtesting of multiple symbols, pairs-trading and spread-trading. For a spread trading example, check the January trader. This class implements a strategy that exploits a seasonal microcap effect that occurs around the end of the year.
 
 The Asset Allocator example evaluates the performance of 5 asset classes (World Equities, SP500, Commodities, US Bonds and REIT) on a monthly basis. The goal is to improve buy and hold SP500 risk-adjusted returns.
+
+Please understand that the goal of this project is to provide a set of open source tools to create and improve your own trading strategies, NOT to offer trading advice.
 
 Hudson requires the GNU Scientific Library (GSL), TA-Lib, and Boost.
 
@@ -14,22 +16,4 @@ The GSL is a free library developed by the FSF offering over 1000 numerical func
 
 Boost provides free portable C++ libraries implementing a wide range of functionalities from a complete set of date and time functions to multi-array and serialization: http://www.boost.org/libs/libraries.htm.
 
-TA-LIB is a free, open-source financial series technical analysis library maintained by Mario Fortier. It offers support to more than 150 technical analysis indicators in C++, Java, Excel, .NET and other languages: http://ta-lib.org.
-
-
-INSTALLATION
-============
-
-Hudson has been tested on VisualStudio 2003 (7.1.6030)/Windows2000,
-and g++ 4.0.1 on Mac OS X 10.4 (Tiger).
-I haven't tried other OSes, but it should run on any Linux or Unix platform.
-
-1. Install GSL, Boost and TA-LIB on your system.
-2. Modify the Makefile or the VS solution file to point to your system
-   library location(s).
-3. 'make' on Linux/MacOS or run the VS builder.
-
-All code compiles in the current directory. You should be able to run any of the examples using these command lines:
-
-
-aa --spx_file db/SPX.csv --tnx_file db/TNX.csv --djc_file db/DJC.csv --eafe_file db/EAFE.csv --reit_file db/NAREIT_All.csv --begin_date 1991-1-1 --end_date 2007-1-1
+TA-LIB is a free, open-source financial series technical analysis library maintained by Mario Fortier. It offers support to more than 150 technical analysis indicators in C++, Java, Excel, .NET and other languages: http://ta-lib.org. 
