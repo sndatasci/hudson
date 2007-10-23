@@ -25,14 +25,25 @@
 using namespace std;
 
 
-PortfolioReturns::PortfolioReturns( void )
+PortfolioReturns::PortfolioReturns( void ):
+  _accWeight(0)
 {
 }
 
 
-void PortfolioReturns::add( const EOMReturnFactors* rf)
+void PortfolioReturns::add( EOMReturnFactors* rf, double weight) throw(PortfolioReturnsException)
 {
-  _vRF.push_back(rf);
+  if( weight < 0 )
+    throw PortfolioReturnsException("Invalid EOM return factors weight");
+    
+  if( (_accWeight + weight) > 1 )
+    throw PortfolioReturnsException("EOM return factors weight exceeding portfolio size");
+    
+  _accWeight += weight;
+  
+  EOMRFWeight rfw(rf, weight);
+    
+  _vRF.push_back(rfw);
 }
 
 
@@ -43,9 +54,9 @@ double PortfolioReturns::roi( void ) const
 
   double acc_cagr = 0;
   for( size_t i = 0; i < _vRF.size(); ++i )
-    acc_cagr += _vRF[i]->roi();
+    acc_cagr += (_vRF[i].pEOMRF->roi() * (_accWeight ? _vRF[i].w : 1));
 
-  return acc_cagr/_vRF.size();
+  return acc_cagr / (_accWeight ? 1 : _vRF.size());
 }
 
 
@@ -56,9 +67,9 @@ double PortfolioReturns::cagr( void ) const
 
   double acc_cagr = 0;
   for( size_t i = 0; i < _vRF.size(); ++i )
-    acc_cagr += _vRF[i]->cagr();
+    acc_cagr += (_vRF[i].pEOMRF->cagr() * (_accWeight ? _vRF[i].w : 1));
 
-  return acc_cagr/_vRF.size();
+  return acc_cagr / (_accWeight ? 1 : _vRF.size());
 }
 
 
@@ -69,8 +80,14 @@ double PortfolioReturns::gsd( void ) const
 
   double acc_cagr = 0;
   for( size_t i = 0; i < _vRF.size(); ++i )
-    acc_cagr += _vRF[i]->gsd();
+    acc_cagr += (_vRF[i].pEOMRF->gsd() * (_accWeight ? _vRF[i].w : 1));
 
-  return acc_cagr/_vRF.size();
+  return acc_cagr / (_accWeight ? 1 : _vRF.size());
 }
 
+
+PortfolioReturns::EOMRFWeight::EOMRFWeight( EOMReturnFactors* pEOMRF_, double w_ ):
+  pEOMRF(pEOMRF_),
+  w(w_)
+{
+}
