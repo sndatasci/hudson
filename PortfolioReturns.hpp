@@ -31,16 +31,22 @@
 #include "EOMReturnFactors.hpp"
 
 
+//! Aggregate EOMReturns for multiple securities and calculate Portfolio statistics.
 class PortfolioReturns
 {
 public:
   PortfolioReturns(void);
   
+  //! Returns Return On Investments.
   double roi(void) const;
+  //! Returns Compounded Annualized Growth Rate.
   double cagr(void) const;
+  //! Returns Geometric Standard Deviation of Monthly Returns.
   double gsd(void) const;
   
+  //! Add EOMReturnFactors for a specific symbol.
   void add(const EOMReturnFactors* rf);
+  //! Returns the number of EOMReturnFactors included in this PortfolioReturns.
   unsigned series(void) const { return (unsigned)_vRF.size(); }
   
 public:

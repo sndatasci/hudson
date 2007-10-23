@@ -52,24 +52,44 @@ protected:
 };
 
 
+/*!
+  A collection of PositionFactors. Calculates peak/drawdown Position statistics for a set of PositionFactors.
+  \see PositionFactors.
+*/
 class PositionFactorsSet
 {
 public:
+  /*!
+    ExcursionResults includes calculated data for the PositionSet passed into the PositionFactorsSet constructor. high and consecutive
+    data assumes different meanings for values returned by a favorable() or adverse() calls.
+    For favorable data, high is the best unrealized Position peak, consecutive is the longest unrealized Position peak.
+    For adverse data, high is the worst unrealized Position drawdown, consecutive is the longest unrealized Position drawdown.
+    \see favorable()
+    \see adverse()
+  */
   struct ExcursionResults 
   {
     ExcursionResults(void);
 
-    double avg;
-    SeriesFactorSet high;
-    SeriesFactorSet consecutive;
+    double avg; //! Average excursion.
+    SeriesFactorSet high; //! Best/Worst unrealized Position peak/drawdown.
+    SeriesFactorSet consecutive; //! Longest/Shortest unrealized Position peak/drawdown.
   };
 
 public:
+  /*!
+    \param sPositions The set of Positions that will be used to calculate peak/drawdown statistics.
+    \param db EODSeries relative to the positions in sPositions.
+  */
   PositionFactorsSet(const PositionSet& sPositions, const Series::EODSeries& db);
 
+  //! Returns the total number of positions included in the analysis.
   unsigned num(void) const { return (unsigned)_sPositions.size(); }
 
+  //! Returns favorable (peak) unrealized excursion statistics.
   ExcursionResults favorable(void) const throw(PositionFactorsSetException);
+  
+  //! Returns adverse (drawdown) unrealized excursion statistics.
   ExcursionResults adverse(void) const throw(PositionFactorsSetException);
 
 private:

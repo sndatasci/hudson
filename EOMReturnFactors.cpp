@@ -118,16 +118,18 @@ void EOMReturnFactors::_calculateM2M(void)
 }
 
 
-double EOMReturnFactors::_monthlyFactor(EODSeries::const_iterator prev_em_mark, EODSeries::const_iterator em_mark, const PositionPtr pos)
+double EOMReturnFactors::_monthlyFactor(Series::EODSeries::const_iterator prev_em_mark, Series::EODSeries::const_iterator em_mark, const PositionPtr pos)
 {
   // XXX: Factors should be calculated for each execution in the position, not using entry/exit averages
 
   //cout << "Calculating position " << pos->id() << " from " << prev_em_mark->first << " to " << em_mark->first << endl;
 
   double begin_price = 0;
+  // If position opening execution is before month-begin mark, us month-begin price
   if( pos->first_exec().dt() <= prev_em_mark->first ) {
     begin_price = prev_em_mark->second.adjclose;
     //cout << "Position opened before or at previous EOM mark price, using " << prev_em_mark->first << " adjclose" << endl;
+  // Else if position opening position is after month-begin mark, use opening execution price
   } else if( pos->first_exec().dt() > prev_em_mark->first && pos->first_exec().dt() <= em_mark->first ) {
     begin_price = pos->avgEntryPrice();
     //cout << "Position opened after previous EOM mark price, using position avg entry price" << endl;
@@ -137,9 +139,11 @@ double EOMReturnFactors::_monthlyFactor(EODSeries::const_iterator prev_em_mark, 
   }
 
   double end_price = 0;
+  // If position closing execution is after end-month mark, use end-month price
   if( pos->open() || pos->last_exec().dt() > em_mark->first ) {
     end_price = em_mark->second.adjclose;
     //cout << "Position still open or closed after EOM mark price, using " << em_mark->first << " adjclose" << endl;
+  // Else if position closing execution is before end-month mark, use execution price
   } else if( pos->last_exec().dt() <= em_mark->first ) {
     end_price = pos->avgExitPrice();
     //cout << "Position closed before EOM mark price, using position avg exit price" << endl;

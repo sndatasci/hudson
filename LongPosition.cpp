@@ -49,7 +49,7 @@ LongPosition::LongPosition(ID id, const string& symbol, const date& dt, const Pr
 }
 
 
-void LongPosition::buy(const date& dt, const Price& price, unsigned size) throw(PositionException)
+void LongPosition::buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException)
 {
   if( closed() )
 	  throw PositionException("Position is closed");
@@ -70,7 +70,7 @@ void LongPosition::buy(const date& dt, const Price& price, unsigned size) throw(
 }
 
 
-void LongPosition::sell(const date& dt, const Price& price, unsigned size) throw(PositionException)
+void LongPosition::sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException)
 {
   if( closed() )
 	  throw PositionException("Position is closed");
@@ -91,7 +91,7 @@ void LongPosition::sell(const date& dt, const Price& price, unsigned size) throw
 }
 
 
-void LongPosition::close(const date& dt, const Price& price) throw(PositionException)
+void LongPosition::close(const boost::gregorian::date& dt, const Price& price) throw(PositionException)
 {
   if( closed() )
 	  throw PositionException("Position is closed");
@@ -100,13 +100,13 @@ void LongPosition::close(const date& dt, const Price& price) throw(PositionExcep
 }
 
 
-void LongPosition::sell_short(const date& dt, const Price& price, unsigned size) throw(PositionException)
+void LongPosition::sell_short(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException)
 {
   throw PositionException("Invalid side");
 }
 
 
-void LongPosition::cover(const date& dt, const Price& price, unsigned size) throw(PositionException)
+void LongPosition::cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException)
 {
   throw PositionException("Invalid side");
 }

@@ -40,13 +40,30 @@
 #include "EODSeries.hpp"
 
 
+//! Collection of Month-to-Month returns
+/*!
+  EOMReturnFactors calculates monthly return factors for the positions specified in the constructor.
+  The current implementation reads position prices from the historical database passed in the constructor, which is
+  specific to one security. Positions used to initialize this class should all be relative to the same security and
+  the symbol should match the EODSeries prices.
+  To aggregate multiple symbols EOMReturns, see PortfolioReturns.
+  \see PortfolioReturns.
+*/
 class EOMReturnFactors: public ReturnFactors
 {
 public:
+  /*!
+    \param sPositions A set of positions for a specific symbol.
+    \param db EODSeries for a specific symbol. Security should match positions symbol.
+    \param rf_rate Fixed risk-free rate. Used to calculate Sharpe ratio.
+  */
   EOMReturnFactors(const PositionSet& sPositions, const Series::EODSeries& db, double rf_rate = 3.0);
   
+  //! Returns compounded annualized growth rate.
   double cagr(void) const;
+  //! Returns geometric standard deviation of monthly returns.
   double gsd(void) const;
+  //! Returns sharpe ratio.
   double sharpe(void) const;
 
 protected:
