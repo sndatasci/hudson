@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
     // All trades (closed + open)
     Price spx_lastPrice(spx_db.rbegin()->second.adjclose);
     Price tnx_lastPrice(tnx_db.rbegin()->second.adjclose);
-    Price djc_lastPrice(tnx_db.rbegin()->second.adjclose);
+    Price djc_lastPrice(djc_db.rbegin()->second.adjclose);
     Price eafe_lastPrice(eafe_db.rbegin()->second.adjclose);
     Price reit_lastPrice(reit_db.rbegin()->second.adjclose);
     

@@ -4,4 +4,5 @@
 - Slippage and commissions.
 - Support intraday series.
 - Add real risk-free rate of return (currently default 3%).
+- Add cash returns.
 
