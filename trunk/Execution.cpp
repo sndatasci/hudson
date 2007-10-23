@@ -29,7 +29,7 @@ using namespace std;
 using namespace boost::gregorian;
 
 
-Execution::Execution(ID id, const date& dt, const Price& price, unsigned size):
+Execution::Execution(Execution::ID id, const date& dt, const Price& price, unsigned size):
   _id(id),
   _dt(dt),
   _price(price),
@@ -48,25 +48,25 @@ void Execution::print(void) const
 }
 
 
-BuyExecution::BuyExecution(ID id, const date& dt, const Price& price, unsigned size):
+BuyExecution::BuyExecution(Execution::ID id, const date& dt, const Price& price, unsigned size):
   Execution(id, dt, price, size)
 {
 }
 
 
-SellExecution::SellExecution(ID id, const date& dt, const Price& price, unsigned size):
+SellExecution::SellExecution(Execution::ID id, const date& dt, const Price& price, unsigned size):
   Execution(id, dt, price, size)
 {
 }
 
 
-SellShortExecution::SellShortExecution(ID id, const date& dt, const Price& price, unsigned size):
+SellShortExecution::SellShortExecution(Execution::ID id, const date& dt, const Price& price, unsigned size):
   Execution(id, dt, price, size)
 {
 }
 
 
-CoverExecution::CoverExecution(ID id, const date& dt, const Price& price, unsigned size):
+CoverExecution::CoverExecution(Execution::ID id, const date& dt, const Price& price, unsigned size):
   Execution(id, dt, price, size)
 {
 }

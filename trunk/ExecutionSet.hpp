@@ -51,6 +51,11 @@ typedef boost::multi_index::multi_index_container<
 > __ExecutionSet;
 
 
+/*!
+  ExecutionSet is a multi index collection containing a set of transactions. The collection can be indexed by Execution ID,
+  execution date or execution side.
+  \see Execution
+*/
 class ExecutionSet: private __ExecutionSet
 {
 public:
@@ -61,14 +66,21 @@ public:
   ExecutionSet(void);
   ~ExecutionSet(void) { }
 
+  //! Add a long transaction.
   bool buy(boost::gregorian::date dt, const Price& price, unsigned size);
+  //! Add a sell transaction. 
   bool sell(boost::gregorian::date dt, const Price& price, unsigned size);
+  //! Add a short transaction.
   bool sell_short(boost::gregorian::date dt, const Price& price, unsigned size);
+  //! Add a cover transaction.
   bool cover(boost::gregorian::date dt, const Price& price, unsigned size);
 
+  //! Return the first Execution by date.
   const Execution& first_by_date(void) const { return **(get<date_key>().begin()); }
+  //! Return the last Execution by date.
   const Execution& last_by_date(void) const { return **(get<date_key>().rbegin()); }
 
+  //! Print all Execution data in this collection.
   void print(void) const;
 
 private:

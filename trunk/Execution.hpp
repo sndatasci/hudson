@@ -37,7 +37,7 @@
 class Execution
 {
 public:
-  enum Side {
+  enum Side { //! Execution type.
 	  BUY,
 	  SELL,
 	  SHORT,
@@ -47,16 +47,21 @@ public:
   typedef unsigned long ID;
 
 public:
+  //! Executions will be ordered by their ID.
   bool operator<(const Execution& e) const { return _id < e._id; }
 
+  //! Execution unique identifier.
   ID id(void) const { return _id; }
   boost::gregorian::date dt(void) const { return _dt; }
   Price price(void) const { return _price; }
   unsigned size(void) const { return _size; }
 
+  //! Print all execution data.
   void print(void) const;
-
+  
+  //! Simple string describing the execution side.
   virtual std::string action(void) const = 0;
+  //! Execution side as a numeric identifier.
   virtual Side side(void) const = 0;
 
 protected:
@@ -72,7 +77,7 @@ protected:
 class BuyExecution: public Execution
 {
 public:
-  BuyExecution(ID id, const boost::gregorian::date& dt, const Price& price, unsigned size);
+  BuyExecution(Execution::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size);
 
   virtual std::string action(void) const { return "Bought"; }
   virtual Side side(void) const { return BUY; }
@@ -82,7 +87,7 @@ public:
 class SellExecution: public Execution
 {
 public:
-  SellExecution(ID id, const boost::gregorian::date& dt, const Price& price, unsigned size);
+  SellExecution(Execution::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size);
 
   virtual std::string action(void) const { return "Sold"; }
   virtual Side side(void) const { return SELL; }
@@ -92,7 +97,7 @@ public:
 class SellShortExecution: public Execution
 {
 public:
-  SellShortExecution(ID id, const boost::gregorian::date& dt, const Price& price, unsigned size);
+  SellShortExecution(Execution::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size);
 
   virtual std::string action(void) const { return "Shorted"; }
   virtual Side side(void) const { return SHORT; }
@@ -102,7 +107,7 @@ public:
 class CoverExecution: public Execution
 {
 public:
-  CoverExecution(ID id, const boost::gregorian::date& dt, const Price& price, unsigned size);
+  CoverExecution(Execution::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size);
 
   virtual std::string action(void) const { return "Covered"; }
   virtual Side side(void) const { return COVER; }

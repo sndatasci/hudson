@@ -55,27 +55,27 @@ class PositionFactorsException: public std::exception
 
 
 /*!
-* Position daily factors. Used to analyze position adverse/favorable excursions.
+* Position daily factors. Used to calculate Position unrealized peak/drawdown statistics.
 */
 class PositionFactors
 {
   public:
     /*!
-    * Initialize position factors by passing a position and the series database that encompass all execution dates for this position.
-    * \param pos The position that must be analyzed.
-    * \param db Series database. It should include data for all series from the first opening execution to the closing execution, or the
-    * current date if the position is still open.
+    * Initialize position daily factors for this position.
+    * \param pos Position that must be analyzed.
+    * \param db Series database. It should include data for all daily series from the opening execution to the closing execution,
+      or the current date bar if the Position is still open.
     */
     PositionFactors(const Position& pos, const Series::EODSeries& db);
 
-    //! Maximum consecutive positive daily factors
+    //! Maximum consecutive positive daily factors.
     SeriesFactorSet max_cons_pos(void) const;
-    //! Maximum consecutive negative daily factors
+    //! Maximum consecutive negative daily factors.
     SeriesFactorSet max_cons_neg(void) const;
 
-    //! Best favorable excursion period for this position
+    //! Best daily peak.
     SeriesFactorSet bfe(void) const throw(PositionFactorsException);
-    //! Worst adverse excursion period for this position
+    //! Worst daily drawdown.
     SeriesFactorSet wae(void) const throw(PositionFactorsException);
 
   private:

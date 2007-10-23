@@ -24,8 +24,11 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 /*!
-* Single daily factor. Includes opening/close date and time associated to factor value.
-* \see PositionFactors().
+* Single daily factor. SeriesFactor and SeriesFactorSet are used in PositionFactors class to calculate single-position
+* unrealized return statistics.
+* Includes the opening/close date and time used to calculate this factor value.
+* \see PositionFactors.
+* \see SeriesFactorSet.
 */
 class SeriesFactor
 {

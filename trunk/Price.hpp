@@ -51,6 +51,7 @@ protected:
 class Price
 {
   public:
+    //! Initialize Price with value and checks for valid value > 0.
     Price(double value) throw(PriceException);
     Price(const Price& src);
 

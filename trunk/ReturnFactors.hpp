@@ -56,30 +56,54 @@ protected:
   std::string _Str;
 };
 
-
+//! Calculate return factor statistics for a set of positions.
+/*!
+  ReturnFactors are relative to a number of positions and calculate statistics for realized loss/profits. ReturnFactors
+  should not be confused with PositionFactors, which are the daily factor for a single position and are used to calculate
+  unrealized factors statistics.
+  \see PositionFactors.
+  \see PositionFactorsSet.
+*/
 class ReturnFactors
 {
 public:
+  /*!
+    \param sPositions The set of positions used to calculate these return factors.
+    \param last The price of the last bar. Required to calculate factors for open positions.
+  */
   ReturnFactors(const PositionSet& sPositions, Price last);
 
+  //! Return the total number of positions passed in the constructor. \see ReturnFactors().
   int num(void) const;
 
+  //! Return the last series price passed in the constructor. \see ReturnFactors().
   Price last(void) const;
   
+  //! Return the return on investment.
   double roi(void) const;
+  //! Return the average factors return.
   double avg(void) const;
+  //! Return the factors return standard deviation.
   double stddev(void) const;
+  //! Return the factors return skew.
   double skew(void) const;
 
+  //! Return all positive positions.
   PositionSet pos(void) const;
+  //! Return all negative positions.
   PositionSet neg(void) const;
 
+  //! Return the Position with the best (highest) return factor.
   const Position& best(void) const throw(ReturnFactorsException);
+  //! Return the Position with the worst (lowest) return factor.
   const Position& worst(void) const throw(ReturnFactorsException);
 
+  //! Return the longest series of consecutive positive positions.
   PositionSet max_cons_pos(void) const throw(ReturnFactorsException);
+  //! Return the longest series of consecutive negative positions.
   PositionSet max_cons_neg(void) const throw(ReturnFactorsException);
 
+  //! Return the sequence of consecutive positions experience the lowest realized drawdown.
   PositionSet dd(void) const throw(ReturnFactorsException);
 
 protected:

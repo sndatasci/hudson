@@ -34,15 +34,22 @@
 #include "PositionFactorsSet.hpp"
 #include "SeriesFactor.hpp"
 
-
+//! Positions report.
 class PositionsReport
 {
 public:
+  /*!
+    PositionReport is initialized with unrealized factors statistics for a set of positions.
+    \param pf Daily factors data for a set of Positions.
+  */
   PositionsReport(const PositionFactorsSet& pf);
 
+  //! Print favorable, or unrealized peak, statistics.
   void favorable(void) const;
+  //! Print adverse, or unrealized drawdown, statistics.
   void adverse(void) const;
 
+  //! Print favorable and adverse statistics.
   void print(void) const;
 
 private:

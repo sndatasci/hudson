@@ -34,14 +34,17 @@
 #include "ReturnFactors.hpp"
 #include "Position.hpp"
 
-
+//! Print ReturnFactors statistics.
 class Report
 {
 public:
   Report(const ReturnFactors& rf);
 
+  //! Print report title.
   static void header(const std::string& title = "");
+  //! Set decimal digits precision.
   static void precision(unsigned decimals = 2);
+  //! Return decimal digits precision.
   static unsigned get_precision(void);
 
   void trades(void) const { std::cout << "Trades: " << _rf.num() << std::endl; }

@@ -19,7 +19,6 @@
 
 // Hudson
 #include "AATrader.hpp"
-#include "Print.hpp"
 
 using namespace std;
 using namespace boost::gregorian;

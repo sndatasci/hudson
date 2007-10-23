@@ -57,7 +57,20 @@ typedef boost::multi_index::multi_index_container<
   >
 > __PositionSet;
 
+/*!
+  PositionSet is a multi index collection containing a set of Positions. The collection can be indexed by Position ID,
+  symbol, first Position execution (opening transaction) or last Position execution (closing transaction in case of closed Position).
+  A Position can looked up using Boost multi_index features. Example:
+  
+  Look for position by ID:
+  PositionSet::iterator iter = positions.find(id, pos_comp_id());
 
+  Look for position by symbol:
+  typedef PositionSet::index<symbol_key>::type position_set_by_symbol;
+  position_set_by_symbol::iterator it = _miPositions.get<symbol_key>().find("SP500");
+  
+  \see Position
+*/
 class PositionSet: private __PositionSet
 {
 public:
@@ -77,15 +90,23 @@ public:
   using __PositionSet::replace;
 
 public:
+  //! Returns all closed positions.
   const PositionSet closed(void) const;
+  //! Returns all open positions.
   const PositionSet open(void) const;
-
+  //! Returns all closed positions for symbol.
   const PositionSet closed(const std::string& symbol);
+  //! Returns all open positions for symbol.
   const PositionSet open(const std::string& symbol);
-
+  //! Returns closed positions factor.
   double realized(void) const;
+  //! Returns open positions factor.
   double unrealized(void) const;
 
+  //! Print all positions data.
+  /*!
+    \param curr_price The current price. Used to calculate open positions factor.
+  */
   void print(Price curr_price) const;
 };
 
@@ -95,18 +116,5 @@ struct pos_comp_id
   bool operator()(Position::ID id, Position& p) const { return id < p.id(); }
   bool operator()(Position& p, Position::ID id) const { return p.id() < id; }
 };
-
-
-// Look for position by ID:
-//
-// PositionSet positions;
-// ...populate collection...
-// Position::ID id = 5;
-// PositionSet::iterator iter = positions.find(id, pos_comp_id());
-
-// Look for position by symbol:
-//
-// typedef PositionSet::index<symbol_key>::type position_set_by_symbol;
-// position_set_by_symbol::iterator it = _miPositions.get<symbol_key>().find("SP500");
 
 #endif // _POSITIONSET_HPP_

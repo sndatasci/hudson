@@ -70,11 +70,13 @@ protected:
   std::string _Str;
 };
 
-
+//! A collection of SeriesFactor objects.
+/*!
+  Calculates the overall return factor for all included SeriesFactor objects.
+*/
 class SeriesFactorSet: private __SeriesFactorSet
 {
 public:
-  // Export keys and iteration stuff
   typedef __SeriesFactorSet::iterator iterator;
   typedef __SeriesFactorSet::const_iterator const_iterator;
   typedef __SeriesFactorSet::index<from_key>::type by_from;
@@ -89,9 +91,10 @@ public:
 public:
   SeriesFactorSet(void);
 
-  // Override insert() to cache factor value recalculation
+  //! Override insert() to calculate factor value after inserting a new SeriesFactor.
   bool insert(const SeriesFactor& sf);
 
+  //! Return factor value.
   double factor(void) const throw(SeriesFactorSetException);
 
 private:
