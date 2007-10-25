@@ -42,12 +42,10 @@
 
 //! Collection of Month-to-Month returns
 /*!
-  EOMReturnFactors calculates monthly return factors for the positions specified in the constructor.
-  The current implementation reads position prices from the historical database passed in the constructor, which is
-  specific to one security. Positions used to initialize this class should all be relative to the same security and
-  the symbol should match the EODSeries prices.
+  EOMReturnFactors calculates monthly return factors for the positions specified in sPositions.
+  In the current implementation, the risk free rate used to calculate the Sharpe ratio is assumed to be the same for the whole period.
+  Prices are loaded from EODSeries db. All data passed into the constructor should be for one symbol only.
   To aggregate multiple symbols EOMReturns, see PortfolioReturns.
-  \see PortfolioReturns.
 */
 class EOMReturnFactors: public ReturnFactors
 {

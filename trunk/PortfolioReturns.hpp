@@ -59,6 +59,8 @@ public:
   double cagr(void) const;
   //! Returns Geometric Standard Deviation of Monthly Returns.
   double gsd(void) const;
+  //! Returns Sharpe Ratio
+  double sharpe(void) const;
   
   //! Add EOMReturnFactors for a specific symbol.
   /*!

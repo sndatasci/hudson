@@ -46,6 +46,7 @@ void PortfolioReport::print(void)
   roi();
   cagr();
   gsd();
+  sharpe();
   
   cout.precision(curr_precision);
   cout.flags(curr_flags);
