@@ -47,6 +47,8 @@ public:
   void cagr(void) const { std::cout << "CAGR: " << _pr.cagr()*100 << '%' << std::endl; }
   //! Prints Geometric Standard Deviation of Monthly Returns.
   void gsd(void)  const { std::cout << "GSDm: " << _pr.gsd()*100 << '%' << std::endl; }
+  //! Prints Sharpe ratio.
+  void sharpe(void) const { std::cout << "Sharpe: " << _pr.sharpe() << std::endl; }
   
 protected:
   const PortfolioReturns& _pr;

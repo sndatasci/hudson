@@ -86,6 +86,19 @@ double PortfolioReturns::gsd( void ) const
 }
 
 
+double PortfolioReturns::sharpe( void ) const
+{
+  if( _vRF.empty() )
+    return 0;
+
+  double acc_sharpe = 0;
+  for( size_t i = 0; i < _vRF.size(); ++i )
+    acc_sharpe += (_vRF[i].pEOMRF->sharpe() * (_accWeight ? _vRF[i].w : 1));
+
+  return acc_sharpe / (_accWeight ? 1 : _vRF.size());
+}
+
+
 PortfolioReturns::EOMRFWeight::EOMRFWeight( EOMReturnFactors* pEOMRF_, double w_ ):
   pEOMRF(pEOMRF_),
   w(w_)
