@@ -1,6 +1,6 @@
-Hudson is a free, open-source C++ backtester. This software is open source. You are required to 
-redistribute any change you make to the original distribution by following the GPLv3 license
-agreement. Please read the COPYING file for more information on GPL licensing.
+Hudson is a free, open-source C++ backtester distributed under a GPLv3 license. If you
+decide to redistribute a modified copy of Hudson, you should also publish the modified
+source code. Please read the COPYING file for more information on GPL licensing.
 
 Hudson simulates trading strategies on historical data series and calculates various statistics,
 including compound annualized growth rate, % winners/losers, realized drawdown, single positions
@@ -9,17 +9,19 @@ deviation of monthly returns.
 All statistics reports are easily extensible by inheriting from the Report class and adding your
 own calculation based on raw transactions and historical data.
 
+Additionaly, the aim of this distribution is to gather and publicize a number of financial
+historical data series and references freely available online.
+
 The trader API support functions to backtest any custom long/short trading strategy in C++, 
 including multiple symbols portfolio backtests, pairs-trading and spread-trading. For a
-spread trade example, check the January trader. This class implements a strategy that exploits
+spread trade example, check the January trader. This class implements a strategy exploiting
 a seasonal microcap effect that occurs around the end of the year.
-
 The Asset Allocator example evaluates the performance of 5 asset classes (World Equities, SP500,
-Commodities, US Bonds and REIT) on a monthly basis. The goal is to improve buy and hold SP500
-risk-adjusted returns.
+Commodities, US Bonds and REIT) on a monthly basis and buy (sell) each class when the price close
+above (below) the 10 months SMA. The goal is to improve buy and hold SP500 risk-adjusted returns.
 
 Please understand that the goal of this project is to provide a set of open source tools to
-create and improve your own trading strategies and NOT to offer trading advice.
+create and improve trading strategies and NOT to offer trading advice.
 
 Hudson requires the GNU Scientific Library (GSL), TA-Lib, and Boost.
 
