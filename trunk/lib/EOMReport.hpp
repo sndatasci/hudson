@@ -31,20 +31,20 @@
 #include "Report.hpp"
 #include "EOMReturnFactors.hpp"
 
-//! Print Month-to-Month statistics
+//! Print Month-to-Month factors statistics. \see EOMReturnFactors.
 class EOMReport: public Report
 {
 public:
   EOMReport(const EOMReturnFactors& rf);
 
-  //! Compounded Annualized Growth Rate
+  //! Print Compounded Annualized Growth Rate.
   void cagr(void) const { std::cout << "CAGR: " << _eomrf.cagr()*100 << '%' << std::endl; }
-  //! Geometric Standard Deviation of Monthly returns
+  //! Print Geometric Standard Deviation of Monthly returns.
   void gsdm(void) const { std::cout << "GSDm: " << _eomrf.gsd()*100 << '%' << std::endl; }
-  //! Sharpe ratio
+  //! Print Sharpe ratio.
   void sharpe(void) const { std::cout << "Sharpe: " << _eomrf.sharpe() << std::endl; }
 
-  //! Print complete report
+  //! Print all EOMReport statistics.
   void print(void) const;
 
 private:

@@ -47,23 +47,40 @@ public:
   //! Return decimal digits precision.
   static unsigned get_precision(void);
 
+  //! Print total number of factors, including open position factors.
   void trades(void) const { std::cout << "Trades: " << _rf.num() << std::endl; }
+  //! Print average trade factor.
   void avg_trade(void) const { std::cout << "Avg trade: " << _rf.avg()*100 << '%' << std::endl; }
+  //! Print standard deviation of factors.
   void std_dev(void) const { std::cout << "Std dev: " <<  _rf.stddev()*100 << '%' << std::endl; }
+  //! Print factors skew.
   void skew(void) const { std::cout << "Skew: " << _rf.skew()*100 << std::endl; }
+  //! Print factors 2 standard deviations range.
   void std_dev2_range(void) const { double stddev2 = _rf.stddev()*2; std::cout << "2SD Range: " << (_rf.avg() - stddev2)*100 << '%' << " | " << (_rf.avg() + stddev2)*100 << '%' << std::endl; }
+  //! Print factors 3 standard deviations range.
   void std_dev3_range(void) const { double stddev3 = _rf.stddev()*3; std::cout << "3SD Range: " << (_rf.avg() - stddev3)*100 << '%' << " | " << (_rf.avg() + stddev3)*100 << '%' << std::endl; }
+  //! Print number of positive factors.
   void pos_trades(void) const { std::cout << "Pos trades: " << _rf_pos.num() << " (" << _pos_percent*100 << "%)" << std::endl; }
+  //! Print number of negative factors.
   void neg_trades(void) const { std::cout << "Neg trades: " << _rf_neg.num() << " (" << _neg_percent*100 << "%)" << std::endl; }
+  //! Print average positive factor.
   void avg_pos(void) const { std::cout << "Avg pos: " << _rf_pos.avg()*100 << '%' << std::endl; }
+  //! Print average negative factor.
   void avg_neg(void) const { std::cout << "Avg neg: " << _rf_neg.avg()*100 << '%' << std::endl; }
+  //! Print best factor.
   void best(void) const;
+  //! Print worst factor.
   void worst(void) const;
+  //! Print number of maximum consecutive positive factors.
   void max_cons_pos(void) const;
+  //! Print number of maximum consecutive negative factors.
   void max_cons_neg(void) const;
+  //! Print maximum realized drawdown.
   void max_dd(void) const;
+  //! Print total % return.
   void roi(void) const { std::cout << "ROI: " << _rf.roi()*100 << '%' << std::endl; }
 
+  //! Print all statistics.
   void print(void) const;
 
 private:

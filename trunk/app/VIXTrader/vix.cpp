@@ -116,6 +116,7 @@ int main(int argc, char* argv[])
     */
     VIXTrader trader(db, vixdb);
     trader.run();
+    PositionSet all_positions(trader.positions());
 
     /*
      * Print open/closed positions
@@ -131,7 +132,7 @@ int main(int argc, char* argv[])
      * Print simulation reports
      */
     Report::header("Trade results");
-    ReturnFactors rf(trader.positions(), last);
+    ReturnFactors rf(all_positions, last);
     Report rp(rf);
     rp.print();
 
@@ -139,7 +140,8 @@ int main(int argc, char* argv[])
      * Positions excursion
      */
     Report::header("Positions excursion");
-    PositionFactorsSet pf(trader.positions().closed(), db);
+    
+    PositionFactorsSet pf(all_positions, db);
     PositionsReport pr(pf);
     pr.print();
 

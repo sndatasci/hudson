@@ -136,6 +136,7 @@ SeriesFactorSet PositionFactors::wae( void ) const throw(PositionFactorsExceptio
 
   // For each SeriesFactor bar
   PeriodFactor worst_pf;
+  bool never_set = true;
   for( SF_TOTM::const_iterator iter = _sf_totm.begin(); iter != _sf_totm.end(); ++iter ) {
 
     // Calculate worst adverse excursion from this point
@@ -143,8 +144,11 @@ SeriesFactorSet PositionFactors::wae( void ) const throw(PositionFactorsExceptio
     PeriodFactor pf = _wae(iter); // return drawdown from this bar
 
     // Store worst adverse excursion
-    if( pf.factor < worst_pf.factor )
+    if( never_set || pf.factor < worst_pf.factor ) {
       worst_pf = pf;
+      never_set = false;
+      //cout << "WAE set from " << worst_pf.from_tm << " to " << worst_pf.to_tm << " (" << worst_pf.factor << ")" << endl;
+    }
   }
 
   if( !worst_pf.isValid() ) {
@@ -180,17 +184,19 @@ PositionFactors::PeriodFactor PositionFactors::_wae(SF_TOTM::const_iterator& sta
   PeriodFactor pf;
   pf.from_tm = (*start).from_tm(); // Begin of excursion no matter what. Index must be set to from_tm() for later retrieval by from_tm() key
 
-  // Calculate worst excursion from 'start'. We can't use multi_index secondary index for performance reasons.
+  // Calculate worst excursion from 'start'. Can't use multi_index secondary index for performance reasons.
   SeriesFactorSet sfs;
+  bool never_set = true;
   for( SF_TOTM::const_iterator iter = start; iter != _sf_totm.end(); ++iter ) {
 
     sfs.insert(*iter); // current position factors series
 
     // Check lower excursion
-    if( sfs.factor() < pf.factor ) {
+    if( never_set || sfs.factor() < pf.factor ) {
       // Store lower excursion
       pf.factor = sfs.factor();
       pf.to_tm = (*iter).to_tm();
+      never_set = false;
     }
   }
 
@@ -206,6 +212,7 @@ SeriesFactorSet PositionFactors::bfe(void) const throw(PositionFactorsException)
 
   // For each SeriesFactor bar
   PeriodFactor best_pf;
+  bool never_set = true;
   for( SF_TOTM::const_iterator iter = _sf_totm.begin(); iter != _sf_totm.end(); ++iter ) {
 
     // Calculate best favorable excursion from this point
@@ -213,8 +220,10 @@ SeriesFactorSet PositionFactors::bfe(void) const throw(PositionFactorsException)
     PeriodFactor pf = _bfe(iter); // return best favorable excursion from this bar
 
     // Store best favorable excursion till now
-    if( pf.factor > best_pf.factor )
-      best_pf = pf; 
+    if( never_set || pf.factor > best_pf.factor ) {
+      best_pf = pf;
+      never_set = false;
+    }
   }
 
   if( !best_pf.isValid() ) {
@@ -249,14 +258,16 @@ PositionFactors::PeriodFactor PositionFactors::_bfe(SF_TOTM::const_iterator& sta
 
   // Calculate best excursion from 'start'. We can't use multi_index secondary index for performance reasons.
   SeriesFactorSet sfs;
+  bool never_set = true;
   for( SF_TOTM::const_iterator iter = start; iter != _sf_totm.end(); ++iter ) {
     sfs.insert(*iter);
 
     // Check higher excursion
-    if( sfs.factor() > pf.factor ) {
+    if( never_set || sfs.factor() > pf.factor ) {
       // Store higher excursion
       pf.factor = sfs.factor();
       pf.to_tm = (*iter).to_tm();
+      never_set = false;
     }
   }
 
@@ -264,8 +275,8 @@ PositionFactors::PeriodFactor PositionFactors::_bfe(SF_TOTM::const_iterator& sta
 }
 
 
-PositionFactors::PeriodFactor::PeriodFactor( void ):
-  factor(1)
+PositionFactors::PeriodFactor::PeriodFactor( double f ):
+  factor(f)
 {
 }
 
