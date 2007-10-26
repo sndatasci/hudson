@@ -1,19 +1,36 @@
-Hudson is a free, open-source C++ trading strategies backtester. This software is open source. You are required to redistribute any change you make to the original distribution following the GPLv3 license agreement. Please read the COPYING file for more information on GPL licensing.
+Hudson is a free, open-source C++ backtester. This software is open source. You are required to 
+redistribute any change you make to the original distribution by following the GPLv3 license
+agreement. Please read the COPYING file for more information on GPL licensing.
 
-Hudson calculates various statistics, including compound annualized growth rate, % winners/losers, realized drawdown, single positions unrealized drawdown/peak analysis, month-to-month returns, Sharpe ratio and geometric standard deviation of monthly returns.
+Hudson simulates trading strategies on historical data series and calculates various statistics,
+including compound annualized growth rate, % winners/losers, realized drawdown, single positions
+unrealized drawdown/peak analysis, month-to-month returns, Sharpe ratio and geometric standard
+deviation of monthly returns.
+All statistics reports are easily extensible by inheriting from the Report class and adding your
+own calculation based on raw transactions and historical data.
 
-All statistics reports are easily extensible by inheriting from the Report class and adding your own calculation based on raw transactions and historical data.
+The trader API support functions to backtest any custom long/short trading strategy in C++, 
+including multiple symbols portfolio backtests, pairs-trading and spread-trading. For a
+spread trade example, check the January trader. This class implements a strategy that exploits
+a seasonal microcap effect that occurs around the end of the year.
 
-The trader API support functions to backtest any custom long/short trading strategy in C++, including portfolio backtesting of multiple symbols, pairs-trading and spread-trading. For a spread trading example, check the January trader. This class implements a strategy that exploits a seasonal microcap effect that occurs around the end of the year.
+The Asset Allocator example evaluates the performance of 5 asset classes (World Equities, SP500,
+Commodities, US Bonds and REIT) on a monthly basis. The goal is to improve buy and hold SP500
+risk-adjusted returns.
 
-The Asset Allocator example evaluates the performance of 5 asset classes (World Equities, SP500, Commodities, US Bonds and REIT) on a monthly basis. The goal is to improve buy and hold SP500 risk-adjusted returns.
-
-Please understand that the goal of this project is to provide a set of open source tools to create and improve your own trading strategies, NOT to offer trading advice.
+Please understand that the goal of this project is to provide a set of open source tools to
+create and improve your own trading strategies and NOT to offer trading advice.
 
 Hudson requires the GNU Scientific Library (GSL), TA-Lib, and Boost.
 
-The GSL is a free library developed by the FSF offering over 1000 numerical functions including statistics, least-square fitting, random numbers and Monte Carlo integration: http://www.gnu.org/software/gsl/.
+The GSL is a free library developed by the FSF offering over 1000 numerical functions including
+statistics, least-square fitting, random numbers and Monte Carlo
+integration: http://www.gnu.org/software/gsl/.
 
-Boost provides free portable C++ libraries implementing a wide range of functionalities from a complete set of date and time functions to multi-array and serialization: http://www.boost.org/libs/libraries.htm.
+Boost provides free portable C++ libraries implementing a wide range of functionalities from a
+complete set of date and time functions to multi-array and
+serialization libraries: http://www.boost.org/libs/libraries.htm.
 
-TA-LIB is a free, open-source financial series technical analysis library maintained by Mario Fortier. It offers support to more than 150 technical analysis indicators in C++, Java, Excel, .NET and other languages: http://ta-lib.org. 
+TA-LIB is a free, open-source financial series technical analysis library maintained by
+Mario Fortier. It offers support to more than 150 technical analysis indicators in C++, Java,
+Excel, .NET and other languages: http://ta-lib.org.
