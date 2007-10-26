@@ -102,7 +102,7 @@ class PositionFactors
 private:
   struct PeriodFactor
   {
-    PeriodFactor(void);
+    PeriodFactor(double f = 1);
     bool isValid(void) const;
 
     double factor;
