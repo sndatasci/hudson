@@ -84,7 +84,9 @@ public:
   bool open(void) const { return _size != 0; }
   //! Is position closed.
   bool closed(void) const { return !_sExecutions.empty() && !open(); }
-  //! Prints position data.
+  //! Print position data. Open position factor will not be displayed. \see print(Price curr_price).
+  void print(void) const;
+  //! Prints position data. Open position factor is calculated relative to curr_price.
   void print(Price curr_price) const;
 
   //! Returns position type.

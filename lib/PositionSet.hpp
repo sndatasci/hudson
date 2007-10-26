@@ -103,6 +103,9 @@ public:
   //! Returns open positions factor.
   double unrealized(void) const;
 
+  //! Print all positions data. Open positions factor can not be printed. \see print(Price curr_price).
+  void print(void) const;
+  
   //! Print all positions data.
   /*!
     \param curr_price The current price. Used to calculate open positions factor.
