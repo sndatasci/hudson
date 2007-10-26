@@ -173,7 +173,6 @@ protected:
   Price _last;
 
   PositionSet _sClosedPositions;
-  PositionSet _sOpenPositions;
 
   typedef std::vector<double> doubleVector;
   doubleVector _vFactors; // time-ordered position factors for fast array calculations

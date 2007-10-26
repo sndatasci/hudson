@@ -39,6 +39,15 @@ void PositionSet::print(Price curr_price) const
 }
 
 
+void PositionSet::print(void) const
+{
+  for( const_iterator iter = begin(); iter != end(); ++iter ) {
+    (*iter)->print();
+    cout << endl;
+  }
+}
+
+
 const PositionSet PositionSet::closed(void) const
 {
   PositionSet closedPos;

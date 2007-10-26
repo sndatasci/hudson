@@ -51,7 +51,6 @@ ReturnFactors::ReturnFactors(const PositionSet& sPositions, Price last):
   _stddev(0)
 {
   _sClosedPositions = _sPositions.closed();
-  _sOpenPositions = _sPositions.open();
 
   if( _sPositions.empty() )
     return;
@@ -145,7 +144,7 @@ int ReturnFactors::num(void) const
 PositionSet ReturnFactors::max_cons_pos(void) const throw(ReturnFactorsException)
 {
   if( _sClosedPositions.empty() )
-    throw ReturnFactorsException("Empty positions set");
+    throw ReturnFactorsException("Empty closed positions set");
  
   vector<PositionSet> cons;
 
@@ -178,7 +177,7 @@ PositionSet ReturnFactors::max_cons_pos(void) const throw(ReturnFactorsException
 PositionSet ReturnFactors::max_cons_neg(void) const throw(ReturnFactorsException)
 {
   if( _sClosedPositions.empty() )
-    throw ReturnFactorsException("Empty positions set");
+    throw ReturnFactorsException("Empty closed positions set");
 
   vector<PositionSet> cons;
   

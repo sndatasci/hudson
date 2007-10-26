@@ -50,3 +50,15 @@ void Position::print(Price curr_price) const
     
   cout << " - " << "Factor " << factor << " (" << ((factor-1)*100) << "%)";
 }
+
+
+void Position::print(void) const
+{
+  cout << _symbol << ": ";
+  _sExecutions.print();
+  
+  if( open() )
+    return;
+    
+  cout << " - " << "Factor " << factor() << " (" << (factor()-1)*100 << "%)";
+}
