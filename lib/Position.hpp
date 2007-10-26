@@ -84,7 +84,7 @@ public:
   bool open(void) const { return _size != 0; }
   //! Is position closed.
   bool closed(void) const { return !_sExecutions.empty() && !open(); }
-  //! Print position data. Open position factor will not be displayed. \see print(Price curr_price).
+  //! Print position data. Open position factor will not be displayed.
   void print(void) const;
   //! Prints position data. Open position factor is calculated relative to curr_price.
   void print(Price curr_price) const;
@@ -102,11 +102,11 @@ public:
   virtual double avgEntryPrice(void) const = 0;
   virtual double avgExitPrice(void) const = 0;
 
-  //! Current return factor.
+  //! Return current return factor.
   virtual double factor(void) const = 0;
-  //! Current return factor calculated from avgEntryPrice to price parameter.
+  //! Return current return factor calculated from avgEntryPrice to price parameter.
   virtual double factor(const Price& price) const = 0;
-  //! XXX: Should be a static.
+  //! Return return factor from prev_price to curr_price. Factor calculation will change according to Position type.
   virtual double factor(const Price& prev_price, const Price& curr_price) const = 0;
 
   //! Add BuyExecution.

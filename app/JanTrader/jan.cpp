@@ -81,8 +81,8 @@ int main(int argc, char* argv[])
     }
 
     if( vm["long_dbfile"].empty() || vm["hedge_dbfile"].empty() ||
-	vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
-	vm["begin_date"].empty()  || vm["end_date"].empty() ) {
+	      vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
+	      vm["begin_date"].empty()  || vm["end_date"].empty() ) {
       cout << desc << endl;
       exit(EXIT_FAILURE);
     }
@@ -127,51 +127,42 @@ int main(int argc, char* argv[])
       exit(EXIT_FAILURE);
     }
 
-  } catch( Series::DriverException& e ) {
-    cerr << "Driver error: " << e.what() << endl;
-    exit(EXIT_FAILURE);
+    cout << "Records: " << long_db.size() << endl;
+    cout << "Period: " << long_db.period() << endl;
+    cout << "Total days: " << long_db.days() << endl;
 
-  } catch( out_of_range& e ) {
-    cerr << "Can't get begin/end dates: " << e.what() << endl;
-    exit(EXIT_FAILURE);
+    JanTrader trader(long_db, hedge_db);
+    trader.run(entry_offset, exit_offset); // canonical entry/exit dates (12/20 - 1/9)
 
-  } catch( exception& e ) {
-    cerr << "Error: " << e.what() << endl;
+    /*
+    * Print open/closed positions
+    */
+    Report::header("Closed trades");
+    Price long_last(long_db.rbegin()->second.adjclose);
+    Price hedge_last(hedge_db.rbegin()->second.adjclose);
+    trader.positions().closed().print();
+
+    /*
+    * Print simulation reports
+    */
+    Report::header("Trade results");
+    ReturnFactors rf(trader.positions(), long_last);
+    Report rp(rf);
+    rp.print();
+
+    /*
+    * Positions stats
+    */
+    Report::header("Positions stats");
+    PositionFactorsSet pf(trader.positions().closed(), long_db);
+    PositionsReport pr(pf);
+    pr.print();
+    
+  } catch ( std::exception& ex ) {
+  
+    cerr << ex.what() << endl;
     exit(EXIT_FAILURE);
   }
-
-  cout << "Records: " << long_db.size() << endl;
-  cout << "Period: " << long_db.period() << endl;
-  cout << "Total days: " << long_db.days() << endl;
-
-  JanTrader trader(long_db, hedge_db);
-  trader.run(entry_offset, exit_offset); // canonical entry/exit dates (12/20 - 1/9)
-
-  /*
-   * Print open/closed positions
-   */
-  Report::header("Closed trades");
-  Price long_last(long_db.rbegin()->second.adjclose);
-  Price hedge_last(hedge_db.rbegin()->second.adjclose);
-  trader.positions(long_symbol).closed().print(long_last);
-  trader.positions(hedge_symbol).closed().print(hedge_last);
-
-  /*
-   * Print simulation reports
-   */
-  Report::header("Trade results");
-
-  ReturnFactors rf(trader.positions(), long_last);
-  Report rp(rf);
-  rp.print();
-
-  /*
-   * Positions stats
-   */
-  Report::header("Positions stats");
-  PositionFactorsSet pf(trader.positions().closed(), long_db);
-  PositionsReport pr(pf);
-  pr.print();
-
+  
   return 0;
 }
