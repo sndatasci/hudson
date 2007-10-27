@@ -30,9 +30,8 @@
 using namespace std;
 
 
-PositionFactorsSet::PositionFactorsSet( const PositionSet& sPositions, const Series::EODSeries& db ):
-  _sPositions(sPositions),
-  _db(db)
+PositionFactorsSet::PositionFactorsSet( const PositionSet& sPositions ):
+  _sPositions(sPositions)
 {
 }
 
@@ -47,7 +46,7 @@ PositionFactorsSet::ExcursionResults PositionFactorsSet::favorable(void) const t
 
   // Calculate average favorable position excursion
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
-    PositionFactors pf(*(*iter), _db);
+    PositionFactors pf(*(*iter));
     vSFSHighest.push_back(pf.bfe()); // Best favorable excursion for this position
     vSFSConsecutive.push_back(pf.max_cons_pos()); // Maximum consecutive favorable bars for this position
   }
@@ -79,7 +78,7 @@ PositionFactorsSet::ExcursionResults PositionFactorsSet::adverse(void) const thr
 
   // Calculate average adverse position excursion
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
-    PositionFactors pf(*(*iter), _db);
+    PositionFactors pf(*(*iter));
     vSFSHighest.push_back(pf.wae()); // Worst adverse excursion for this position
     vSFSConsecutive.push_back(pf.max_cons_neg()); // Maximum consecutive adverse bars for this position
   }

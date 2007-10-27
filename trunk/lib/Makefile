@@ -25,6 +25,7 @@ SRC=\
 	YahooDriver.cpp \
 	DMYCloseDriver.cpp \
 	EODSeries.cpp \
+	EODDB.cpp \
 	ReturnFactors.cpp \
 	EOMReturnFactors.cpp \
 	Position.cpp \
@@ -53,6 +54,7 @@ HDR=\
 	FileDriver.hpp \
 	DayPrice.hpp \
 	EODSeries.hpp \
+	EODDB.hpp \
 	DMYCloseDriver.hpp \
 	YahooDriver.hpp \
 	ReturnFactors.hpp \

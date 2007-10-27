@@ -84,10 +84,8 @@ public:
   bool open(void) const { return _size != 0; }
   //! Is position closed.
   bool closed(void) const { return !_sExecutions.empty() && !open(); }
-  //! Print position data. Open position factor will not be displayed.
+  //! Print position data.
   void print(void) const;
-  //! Prints position data. Open position factor is calculated relative to curr_price.
-  void print(Price curr_price) const;
 
   //! Returns position type.
   virtual Type type(void) const = 0;
@@ -129,13 +127,5 @@ protected:
 
   ExecutionSet _sExecutions;
 };
-
-
-/*!
-  This helper function calculates a Position return factor regardless of the Position state (open/closed). The function switch
-  between a call to factor() when the position is closed and factor(const Price& curr_price) when the position is open.
-*/
-inline double pfactor(const Position& pos, double curr_price) { return pos.closed() ? pos.factor() : pos.factor(Price(curr_price)); }
-
 
 #endif // _POSITION_HPP_

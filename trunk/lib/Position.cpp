@@ -26,6 +26,7 @@
 // Hudson
 #include "Price.hpp"
 #include "Position.hpp"
+#include "EODDB.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -39,26 +40,13 @@ Position::Position(ID id, const string& symbol):
 }
 
 
-void Position::print(Price curr_price) const
-{
-  cout << _symbol << ": ";
-  _sExecutions.print();
-  double factor = pfactor(*this, curr_price.value());
-
-  if( open() )
-    cout << " (" << curr_price.value() << ") ";
-    
-  cout << " - " << "Factor " << factor << " (" << ((factor-1)*100) << "%)";
-}
-
-
 void Position::print(void) const
 {
   cout << _symbol << ": ";
   _sExecutions.print();
   
   if( open() )
-    return;
+    cout << " (" << Series::EODDB::instance().get(_symbol).last().adjclose << ") ";
     
   cout << " - " << "Factor " << factor() << " (" << (factor()-1)*100 << "%)";
 }

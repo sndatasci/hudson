@@ -21,6 +21,7 @@
 
 // Hudson
 #include "ShortPosition.hpp"
+#include "EODDB.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -114,16 +115,13 @@ void ShortPosition::sell(const boost::gregorian::date& dt, const Price& price, u
 
 double ShortPosition::factor( void ) const throw(PositionException)
 {
-  if( ! closed() )
-    throw PositionException("Position not closed");
-
   if( _avgShortPrice <= 0 )
     throw PositionException("Invalid average short price");
 
-  if( _avgCoverPrice <= 0 )
+  if( closed() && _avgCoverPrice <= 0 )
     throw PositionException("Invalid average cover price");
 
-  return _avgShortPrice / _avgCoverPrice;
+  return closed() ? _avgShortPrice / _avgCoverPrice : _avgShortPrice / Series::EODDB::instance().get(_symbol).last().adjclose;
 }
 
 

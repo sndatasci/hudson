@@ -17,15 +17,19 @@
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Hudson
+#include <EODDB.hpp>
+
+// Jan
 #include "JanTrader.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
 
 
-JanTrader::JanTrader(const DB& longdb, const DB& hedgedb):
-  _longdb(longdb),
-  _hedgedb(hedgedb),
+JanTrader::JanTrader(const std::string& long_symbol,  const std::string& hedge_symbol):
+  _long_symbol(long_symbol),
+  _hedge_symbol(hedge_symbol),
   _vested_days(0)
 {
 }
@@ -36,44 +40,48 @@ void JanTrader::run(int entry_offset, int exit_offset) throw(TraderException)
   _vf.clear();
   _vested_days = days(0);
 
-  // For each year
-  for( year_iterator yiter( date(_longdb.begin()->first.year(), 12, 20) ); yiter < _longdb.rbegin()->first; ++yiter ) {
+  const Series::EODSeries& longdb = Series::EODDB::instance().get(_long_symbol);
+  const Series::EODSeries& hedgedb = Series::EODDB::instance().get(_hedge_symbol);
 
-	if( (*yiter).year() == _longdb.rbegin()->first.year() )
+  // For each year
+  for( year_iterator yiter( date(longdb.begin()->first.year(), 12, 20) ); yiter < longdb.rbegin()->first; ++yiter ) {
+
+	if( (*yiter).year() == longdb.rbegin()->first.year() )
 	  continue;					// we need next year Jan 9 close
 
 	try {
 	  date calendar_entry((*yiter).year(), 12, 20 + entry_offset);
-	  DB::const_iterator long_entry_iter = _longdb.lower_bound(calendar_entry);
-	  DB::const_iterator hedge_entry_iter = _hedgedb.lower_bound(calendar_entry);
+	  Series::EODSeries::const_iterator long_entry_iter = longdb.lower_bound(calendar_entry);
+	  Series::EODSeries::const_iterator hedge_entry_iter = hedgedb.lower_bound(calendar_entry);
 
 	  date calendar_exit((*yiter).year()+1, 1, 9 + exit_offset);
-	  DB::const_iterator long_exit_iter = _longdb.at_or_before(calendar_exit);
-	  DB::const_iterator hedge_exit_iter = _hedgedb.at_or_before(calendar_exit);
+	  Series::EODSeries::const_iterator long_exit_iter = longdb.at_or_before(calendar_exit);
 
-	  if( long_entry_iter == _longdb.end() ) {
+	  Series::EODSeries::const_iterator hedge_exit_iter = hedgedb.at_or_before(calendar_exit);
+
+	  if( long_entry_iter == longdb.end() ) {
 		cerr << "Can't locate long trade day entry around " << calendar_entry << endl;
 		continue;
 	  }
 
-	  if( hedge_entry_iter == _hedgedb.end() ) {
+	  if( hedge_entry_iter == hedgedb.end() ) {
 		cerr << "Can't locate hedge trade day entry around " << calendar_entry << endl;
 		continue;
 	  }
 
-	  if( long_exit_iter == _longdb.end() ) {
+	  if( long_exit_iter == longdb.end() ) {
 		cerr << "Can't locate long trade day exit around " << calendar_exit << endl;
 		continue;
 	  }
 
-	  if( hedge_exit_iter == _hedgedb.end() ) {
+	  if( hedge_exit_iter == hedgedb.end() ) {
 		cerr << "Can't locate hedge trade day exit around " << calendar_exit << endl;
 		continue;
 	  }
 
 
-	  Position::ID long_id = buy(_longdb.name(), long_entry_iter->first, long_entry_iter->second.adjclose);
-	  Position::ID hedge_id = sell_short(_hedgedb.name(), hedge_entry_iter->first, hedge_entry_iter->second.adjclose);
+	  Position::ID long_id = buy(longdb.name(), long_entry_iter->first, long_entry_iter->second.adjclose);
+	  Position::ID hedge_id = sell_short(hedgedb.name(), hedge_entry_iter->first, hedge_entry_iter->second.adjclose);
 
 	  close(long_id, long_exit_iter->first, long_exit_iter->second.adjclose);
 	  close(hedge_id, hedge_exit_iter->first, hedge_exit_iter->second.adjclose);
@@ -103,8 +111,5 @@ void JanTrader::run(int entry_offset, int exit_offset) throw(TraderException)
 	  cerr << "Standard exception: " << e.what() << endl;
 	  continue;
 	}
-
-
-
   }	// end for
 }

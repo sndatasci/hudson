@@ -43,9 +43,9 @@ public:
       
     \param id A unique Execution ID.
     \param symbol Security for this position.
-    \param dt Execution date.
-    \param price Execution price.
-    \param size Execution size.
+    \param dt Opening execution date.
+    \param price Opening execution price.
+    \param size Opening execution size.
     \see Execution.
   */
   LongPosition(ID id, const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);

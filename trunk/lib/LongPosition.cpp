@@ -21,6 +21,7 @@
 
 // Hudson
 #include "LongPosition.hpp"
+#include "EODDB.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -114,16 +115,13 @@ void LongPosition::cover(const boost::gregorian::date& dt, const Price& price, u
 
 double LongPosition::factor( void ) const throw(PositionException)
 {
-  if( ! closed() )
-    throw PositionException("Position not closed");
-
   if( _avgBuyPrice <= 0 )
     throw PositionException("Invalid average buy price");
 
-  if( _avgSellPrice <= 0 )
+  if( closed() && _avgSellPrice <= 0 )
     throw PositionException("Invalid average sell price");
 
-  return _avgSellPrice / _avgBuyPrice;
+  return closed() ? _avgSellPrice / _avgBuyPrice : Series::EODDB::instance().get(_symbol).last().adjclose / _avgBuyPrice;
 }
 
 

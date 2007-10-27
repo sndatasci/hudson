@@ -31,7 +31,6 @@
 #include <stdexcept>
 
 // Hudson
-#include "EODSeries.hpp"
 #include "Position.hpp"
 #include "SeriesFactor.hpp"
 #include "SeriesFactorSet.hpp"
@@ -63,10 +62,8 @@ class PositionFactors
     /*!
     * Initialize position daily factors for this position.
     * \param pos Position that must be analyzed.
-    * \param db Series database. It should include data for all daily series from the opening execution to the closing execution,
-      or the current date bar if the Position is still open.
     */
-    PositionFactors(const Position& pos, const Series::EODSeries& db);
+    PositionFactors(const Position& pos);
 
     //! Maximum consecutive positive daily factors.
     SeriesFactorSet max_cons_pos(void) const;
@@ -80,7 +77,6 @@ class PositionFactors
 
   private:
     const Position& _pos;
-    const Series::EODSeries& _db;
 
     // Must index SeriesFactor by date to speed up excursion calculations
     struct SeriesFactorToTmCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
