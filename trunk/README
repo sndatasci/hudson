@@ -2,17 +2,17 @@ Hudson is a free, open-source C++ backtester distributed under a GPLv3 license. 
 decide to redistribute a modified copy of Hudson, you should also publish the modified
 source code. Please read the COPYING file for more information on GPL licensing.
 
-Hudson simulates trading strategies on historical data series and calculates various statistics,
-including compound annualized growth rate, % winners/losers, realized drawdown, single positions
-unrealized drawdown/peak analysis, month-to-month returns, Sharpe ratio and geometric standard
-deviation of monthly returns.
-All statistics reports are easily extensible by inheriting from the Report class and adding your
-own calculation based on raw transactions and historical data.
+Hudson simulates trading strategies on historical data series and calculates various
+statistics, including compound annualized growth rate, % winners/losers, realized
+drawdown, single positions unrealized drawdown/peak analysis, month-to-month returns,
+Sharpe ratio and geometric standard deviation of monthly returns.
+All statistics reports are easily extensible by inheriting from the Report class and
+adding your own calculation based on raw transactions and historical data.
 
 Additionaly, the aim of this distribution is to gather and publicize a number of financial
 historical data series and references freely available online.
 
-The trader API support functions to backtest any custom long/short trading strategy in C++, 
+The trader API support a number of functions to backtest any custom long/short trading strategy in C++, 
 including multiple symbols portfolio backtests, pairs-trading and spread-trading. For a
 spread trade example, check the January trader. This class implements a strategy exploiting
 a seasonal microcap effect that occurs around the end of the year.

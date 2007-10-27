@@ -20,7 +20,6 @@
 // Hudson
 #include "EOMTrader.hpp"
 #include "TA.hpp"
-#include "Print.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
