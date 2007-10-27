@@ -32,8 +32,7 @@
 #include <boost/program_options.hpp>
 
 // Series
-#include "YahooDriver.hpp"
-#include "EODSeries.hpp"
+#include "EODDB.hpp"
 #include "EOMReturnFactors.hpp"
 #include "EOMReport.hpp"
 #include "PositionFactorsSet.hpp"
@@ -44,9 +43,6 @@ using namespace std;
 using namespace boost::gregorian;
 
 namespace po = boost::program_options;
-
-
-typedef Series::EODSeries DB;
 
 
 int main(int argc, char* argv[])
@@ -81,8 +77,8 @@ int main(int argc, char* argv[])
     }
 
     if( vm["long_dbfile"].empty() || vm["hedge_dbfile"].empty() ||
-	      vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
-	      vm["begin_date"].empty()  || vm["end_date"].empty() ) {
+	vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
+	vm["begin_date"].empty()  || vm["end_date"].empty() ) {
       cout << desc << endl;
       exit(EXIT_FAILURE);
     }
@@ -96,10 +92,6 @@ int main(int argc, char* argv[])
     cerr << "Error: " << e.what() << endl;
     exit(EXIT_FAILURE);
   }
-
-  Series::YahooDriver yd;
-  DB long_db(long_symbol);
-  DB hedge_db(hedge_symbol);
 
   try {
 
@@ -116,37 +108,31 @@ int main(int argc, char* argv[])
     }
 
     cout << "Loading hedge db file " << hedge_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
-    if( hedge_db.load(yd, hedge_dbfile, load_begin, load_end) <= 0) {
-      cerr << "No records found in " << hedge_dbfile << endl;
-      exit(EXIT_FAILURE);
-    }
+    Series::EODDB::instance().load(hedge_symbol, hedge_dbfile, Series::EODDB::YAHOO, load_begin, load_end);
 
     cout << "Loading long db file " << long_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
-    if( long_db.load(yd, long_dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found in" << long_dbfile << endl;
-      exit(EXIT_FAILURE);
-    }
+    Series::EODDB::instance().load(long_symbol, long_dbfile, Series::EODDB::YAHOO, load_begin, load_end);
+
+    const Series::EODSeries& long_db = Series::EODDB::instance().get(long_symbol);
 
     cout << "Records: " << long_db.size() << endl;
     cout << "Period: " << long_db.period() << endl;
     cout << "Total days: " << long_db.days() << endl;
 
-    JanTrader trader(long_db, hedge_db);
+    JanTrader trader(long_symbol, hedge_symbol);
     trader.run(entry_offset, exit_offset); // canonical entry/exit dates (12/20 - 1/9)
 
     /*
     * Print open/closed positions
     */
     Report::header("Closed trades");
-    Price long_last(long_db.rbegin()->second.adjclose);
-    Price hedge_last(hedge_db.rbegin()->second.adjclose);
     trader.positions().closed().print();
 
     /*
     * Print simulation reports
     */
     Report::header("Trade results");
-    ReturnFactors rf(trader.positions(), long_last);
+    ReturnFactors rf(trader.positions());
     Report rp(rf);
     rp.print();
 
@@ -154,7 +140,7 @@ int main(int argc, char* argv[])
     * Positions stats
     */
     Report::header("Positions stats");
-    PositionFactorsSet pf(trader.positions().closed(), long_db);
+    PositionFactorsSet pf(trader.positions().closed());
     PositionsReport pr(pf);
     pr.print();
     

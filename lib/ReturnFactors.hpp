@@ -25,6 +25,7 @@
 #endif
 
 // STD
+#include <stdexcept>
 #include <cmath>
 
 // STL
@@ -37,7 +38,6 @@
 
 // Hudson
 #include "PositionSet.hpp"
-#include "Price.hpp"
 
 
 class ReturnFactorsException: public std::exception
@@ -59,8 +59,8 @@ protected:
 //! Calculate return factor statistics for a set of positions.
 /*!
   ReturnFactors are relative to a number of positions and calculate statistics for realized loss/profits. ReturnFactors
-  should not be confused with PositionFactors, which are the daily factor for a single position and are used to calculate
-  unrealized factors statistics.
+  should not be confused with PositionFactors, which are positions daily factors and are used to calculate position
+  unrealized returns statistics.
   \see PositionFactors.
   \see PositionFactorsSet.
 */
@@ -68,17 +68,13 @@ class ReturnFactors
 {
 public:
   /*!
-    \param sPositions The set of positions used to calculate these return factors.
-    \param last The price of the last bar. Required to calculate factors for open positions.
+    \param sPositions The set of positions that will be used to calculate these return factors.
   */
-  ReturnFactors(const PositionSet& sPositions, Price last);
+  ReturnFactors(const PositionSet& sPositions);
 
   //! Return the total number of positions passed in the constructor. \see ReturnFactors().
   int num(void) const;
 
-  //! Return the last series price passed in the constructor. \see ReturnFactors().
-  Price last(void) const;
-  
   //! Return the return on investment.
   double roi(void) const;
   //! Return the average factors return.
@@ -130,7 +126,7 @@ protected:
 
     PositionGt(double curr_price): _curr_price(curr_price) { }
 
-    bool operator()(PositionPtr pPos, double x) const { return pfactor(*pPos, _curr_price) > x; }
+    bool operator()(PositionPtr pPos, double x) const { return pPos->factor() > x; }
 
   private:
     double _curr_price;
@@ -140,7 +136,7 @@ protected:
 
     PositionLt(double curr_price): _curr_price(curr_price) { }
 
-    bool operator()(PositionPtr pPos, double x) const { return pfactor(*pPos, _curr_price) < x; }
+    bool operator()(PositionPtr pPos, double x) const { return pPos->factor() < x; }
 
   private:
     double _curr_price;
@@ -148,12 +144,9 @@ protected:
 
   struct PositionLtCmp: public std::binary_function<PositionPtr, PositionPtr, bool> {
 
-    PositionLtCmp(double curr_price): _curr_price(curr_price) { }
+    PositionLtCmp(void) { }
 
-    bool operator()(const PositionPtr pos1, const PositionPtr pos2) const { return pfactor(*pos1, _curr_price) < pfactor(*pos2, _curr_price); }
-
-  private:
-    double _curr_price;
+    bool operator()(const PositionPtr pos1, const PositionPtr pos2) const { return pos1->factor() < pos2->factor(); }
   };
 
   struct PositionSetSizeCmp: public std::binary_function<PositionSet, PositionSet, bool> {
@@ -170,9 +163,6 @@ protected:
 
 protected:
   PositionSet _sPositions;
-  Price _last;
-
-  PositionSet _sClosedPositions;
 
   typedef std::vector<double> doubleVector;
   doubleVector _vFactors; // time-ordered position factors for fast array calculations

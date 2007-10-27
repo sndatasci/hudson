@@ -29,6 +29,7 @@
 #include "PositionFactors.hpp"
 #include "Position.hpp"
 #include "SeriesFactorSet.hpp"
+#include "EODDB.hpp"
 
 using namespace std;
 using namespace boost::posix_time;
@@ -36,9 +37,8 @@ using namespace boost::gregorian;
 using namespace Series;
 
 
-PositionFactors::PositionFactors( const Position& pos, const EODSeries& db ):
-  _pos(pos),
-  _db(db)
+PositionFactors::PositionFactors( const Position& pos ):
+  _pos(pos)
 {
   // Browse all price series from the position opening and build daily factors
   date prev_date = _pos.first_exec().dt();
@@ -49,7 +49,8 @@ PositionFactors::PositionFactors( const Position& pos, const EODSeries& db ):
 
   // Initialize all factors until the end of the series database
   //cout << "Initializing daily factors for position " << _pos.id() << " (" << _pos.first_exec().dt() << "/" << _pos.last_exec().dt() << ")" << endl;
-  for( EODSeries::const_iterator iter = _db.after(_pos.first_exec().dt()); iter != _db.end(); ++iter ) {
+  const Series::EODSeries& series = Series::EODDB::instance().get(_pos.symbol());
+  for( EODSeries::const_iterator iter = series.after(_pos.first_exec().dt()); iter != series.end(); ++iter ) {
 
     // If position is closed we only initialize factors up to the last execution
     if( _pos.closed() && iter->first > _pos.last_exec().dt() )

@@ -236,6 +236,9 @@ namespace Series
     */    
     ThisMap::const_iterator last_in_week(boost::gregorian::greg_year year, boost::gregorian::greg_month month, boost::gregorian::greg_day day) const;
 
+    //! Return last EOD record in series.
+    Series::DayPrice last(void) const { return (*rbegin()).second; }
+
   private:
     std::string _name;
     bool _isLoaded;

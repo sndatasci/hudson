@@ -30,7 +30,7 @@ using namespace Series;
 
 
 EOMReturnFactors::EOMReturnFactors( const PositionSet& sPositions, const Series::EODSeries& db, double rf_rate ):
-  ReturnFactors(sPositions, db.rbegin()->second.close),
+  ReturnFactors(sPositions),
   _db(db),
   _monthly_db(_db.monthly()),
   _rf_rate(rf_rate),

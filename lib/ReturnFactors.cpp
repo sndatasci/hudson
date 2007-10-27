@@ -36,28 +36,22 @@
 #include "ReturnFactors.hpp"
 #include "PositionFactors.hpp"
 
-
 using namespace std;
 namespace lmb = boost::lambda;
 
-using namespace Series;
 
-
-ReturnFactors::ReturnFactors(const PositionSet& sPositions, Price last):
+ReturnFactors::ReturnFactors(const PositionSet& sPositions):
   _sPositions(sPositions),
-  _last(last),
   _fvalue(0),
   _mean(0),
   _stddev(0)
 {
-  _sClosedPositions = _sPositions.closed();
-
   if( _sPositions.empty() )
     return;
 
   // Initialize time-ordered position factors by last execution (position close)
   for( PositionSet::by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin(); iter != _sPositions.get<last_exec_key>().end(); ++iter )
-    _vFactors.push_back( pfactor(*(*iter), _last.value()) ); // open position factors are calculated to _last_close
+    _vFactors.push_back( (*iter)->factor() );
 
   _fvalue = accumulate<doubleVector::const_iterator, double>( _vFactors.begin(), _vFactors.end(), 1, lmb::_1 * lmb::_2 );
   _mean = accumulate<doubleVector::const_iterator, double>( _vFactors.begin(), _vFactors.end(), 0 ) / _vFactors.size();
@@ -98,7 +92,7 @@ const Position& ReturnFactors::best(void) const throw(ReturnFactorsException)
   if( _sPositions.empty() )
     throw ReturnFactorsException("Empty positions set");
   
-  return **max_element(_sPositions.begin(), _sPositions.end(), PositionLtCmp(_last.value()));
+  return **max_element(_sPositions.begin(), _sPositions.end(), PositionLtCmp());
 }
 
 
@@ -107,7 +101,7 @@ const Position& ReturnFactors::worst(void) const throw(ReturnFactorsException)
   if( _sPositions.empty() )
     throw ReturnFactorsException("Empty positions set");
 
-  return **min_element(_sPositions.begin(), _sPositions.end(), PositionLtCmp(_last.value()));
+  return **min_element(_sPositions.begin(), _sPositions.end(), PositionLtCmp());
 }
 
 
@@ -116,7 +110,7 @@ PositionSet ReturnFactors::pos(void) const
   PositionSet sPosPositions;
 
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter )
-    if( pfactor(*(*iter), _last.value()) > 1 )
+    if( (*iter)->factor() > 1 )
       sPosPositions.insert(*iter);
 
   return sPosPositions;
@@ -128,7 +122,7 @@ PositionSet ReturnFactors::neg(void) const
   PositionSet sNegPositions;
 
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter )
-    if( pfactor(*(*iter), _last.value()) < 1 )
+    if( (*iter)->factor() < 1 )
       sNegPositions.insert(*iter);
 
   return sNegPositions;
@@ -143,22 +137,22 @@ int ReturnFactors::num(void) const
 
 PositionSet ReturnFactors::max_cons_pos(void) const throw(ReturnFactorsException)
 {
-  if( _sClosedPositions.empty() )
-    throw ReturnFactorsException("Empty closed positions set");
+  if( _sPositions.empty() )
+    throw ReturnFactorsException("Empty positions set");
  
   vector<PositionSet> cons;
 
-  PositionSet::by_last_exec::iterator iter = _sClosedPositions.get<last_exec_key>().begin();
-  while( iter != _sClosedPositions.get<last_exec_key>().end() ) {
+  PositionSet::by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
+  while( iter != _sPositions.get<last_exec_key>().end() ) {
     // Filter out negative factors
-    if( pfactor(*(*iter), _last.value()) <= 1 ) {
+    if( (*iter)->factor() <= 1 ) {
       ++iter;
       continue;
     }
 
     // Positive factor, look for positive sequence
     PositionSet pset;
-    while( iter != _sClosedPositions.get<last_exec_key>().end() && pfactor(*(*iter), _last.value()) > 1 ) {
+    while( iter != _sPositions.get<last_exec_key>().end() && (*iter)->factor() > 1 ) {
       pset.insert(*iter);
       ++iter;
     }
@@ -176,22 +170,22 @@ PositionSet ReturnFactors::max_cons_pos(void) const throw(ReturnFactorsException
 
 PositionSet ReturnFactors::max_cons_neg(void) const throw(ReturnFactorsException)
 {
-  if( _sClosedPositions.empty() )
-    throw ReturnFactorsException("Empty closed positions set");
+  if( _sPositions.empty() )
+    throw ReturnFactorsException("Empty positions set");
 
   vector<PositionSet> cons;
   
-  PositionSet::by_last_exec::iterator iter = _sClosedPositions.get<last_exec_key>().begin();
-  while( iter != _sClosedPositions.get<last_exec_key>().end() ) {
+  PositionSet::by_last_exec::iterator iter = _sPositions.get<last_exec_key>().begin();
+  while( iter != _sPositions.get<last_exec_key>().end() ) {
     // Filter out positive factors
-    if( pfactor(*(*iter), _last.value()) >= 1 ) {
+    if( (*iter)->factor() >= 1 ) {
       ++iter;
       continue;
     }
 
     // Negative factor, look for negative sequence
     PositionSet pset;
-    while( iter != _sClosedPositions.get<last_exec_key>().end() && pfactor(*(*iter), _last.value()) < 1 ) {
+    while( iter != _sPositions.get<last_exec_key>().end() && (*iter)->factor() < 1 ) {
       pset.insert(*iter);
       ++iter;
     }
@@ -233,7 +227,7 @@ PositionSet ReturnFactors::_dd(PositionSet::by_last_exec::iterator& start) const
 
   for( PositionSet::by_last_exec::iterator iter = start; iter != _sPositions.get<last_exec_key>().end(); ++iter ) {
     pset.insert(*iter);
-    acc *= pfactor(*(*iter), _last.value());
+    acc *= (*iter)->factor();
 
     if( acc < my_dd ) {
       my_dd = acc;
@@ -242,10 +236,4 @@ PositionSet ReturnFactors::_dd(PositionSet::by_last_exec::iterator& start) const
   }
 
   return dd_pset;
-}
-
-
-Price ReturnFactors::last( void ) const
-{
-  return _last;
 }

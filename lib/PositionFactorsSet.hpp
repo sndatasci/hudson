@@ -31,7 +31,7 @@
 
 // Hudson
 #include "PositionSet.hpp"
-#include "EODSeries.hpp"
+
 #include "SeriesFactorSet.hpp"
 
 
@@ -79,9 +79,8 @@ public:
 public:
   /*!
     \param sPositions The set of Positions that will be used to calculate peak/drawdown statistics.
-    \param db EODSeries relative to the positions in sPositions.
   */
-  PositionFactorsSet(const PositionSet& sPositions, const Series::EODSeries& db);
+  PositionFactorsSet(const PositionSet& sPositions);
 
   //! Returns the total number of positions included in the analysis.
   unsigned num(void) const { return (unsigned)_sPositions.size(); }
@@ -105,7 +104,6 @@ private:
 
 private:
   const PositionSet _sPositions;
-  const Series::EODSeries& _db;
 };
 
 #endif // _POSITIONSFACTORS_HPP_
