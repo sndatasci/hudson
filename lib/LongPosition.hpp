@@ -59,16 +59,16 @@ public:
   unsigned sells(void) const { return _sells; }
 
   //! Average buy price. 
-  virtual double avgEntryPrice(void) const { return _avgBuyPrice; }
+  virtual double avgEntryPrice(void) const throw(PositionException) { return _avgBuyPrice; }
   //! Average sell price.
-  virtual double avgExitPrice(void) const { return _avgSellPrice; }
+  virtual double avgExitPrice(void) const throw(PositionException) { return _avgSellPrice; }
 
   //! Current return factor: average sell price divided by average buy price.
   virtual double factor(void) const throw(PositionException);
   //! Return factor calculated dividing the price parameter into the avgEntryPrice().
   virtual double factor(const Price& price) const throw(PositionException);
   //! XXX should be a static: curr_price / prev_price.
-  virtual double factor(const Price& prev_price, const Price& curr_price) const;
+  virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException);
 
   //! Add buy Execution.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);

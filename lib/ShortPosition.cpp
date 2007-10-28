@@ -137,7 +137,7 @@ double ShortPosition::factor( const Price& price ) const throw(PositionException
 }
 
 
-double ShortPosition::factor( const Price& prev_price, const Price& curr_price ) const
+double ShortPosition::factor( const Price& prev_price, const Price& curr_price ) const throw(PositionException)
 {
   return prev_price / curr_price;
 }

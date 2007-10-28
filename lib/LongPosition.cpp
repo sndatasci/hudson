@@ -134,7 +134,7 @@ double LongPosition::factor( const Price& price ) const throw(PositionException)
 }
 
 
-double LongPosition::factor( const Price& prev_price, const Price& curr_price ) const
+double LongPosition::factor( const Price& prev_price, const Price& curr_price ) const throw(PositionException)
 {
   return curr_price / prev_price;
 }

@@ -65,7 +65,8 @@ public:
 
   enum Type {
 	  LONG,
-	  SHORT
+	  SHORT,
+	  STRATEGY
   };
 
 public:
@@ -81,31 +82,31 @@ public:
   int size(void) const { return _size; }
 
   //! Is position open.
-  bool open(void) const { return _size != 0; }
+  virtual bool open(void) const { return _size != 0; }
   //! Is position closed.
-  bool closed(void) const { return !_sExecutions.empty() && !open(); }
+  virtual bool closed(void) const { return !_sExecutions.empty() && !open(); }
   //! Print position data.
-  void print(void) const;
+  virtual void print(void) const;
 
-  //! Returns position type.
+  //! Return position type.
   virtual Type type(void) const = 0;
-  //! Returns position type as string.
+  //! Return position type as string.
   virtual std::string type_str(void) const = 0;
 
   //! First Execution by time.
-  const Execution& first_exec(void) const { return _sExecutions.first_by_date(); }
+  virtual const Execution& first_exec(void) const { return _sExecutions.first_by_date(); }
   //! Last Execution by time.
-  const Execution& last_exec(void) const { return _sExecutions.last_by_date(); }
+  virtual const Execution& last_exec(void) const { return _sExecutions.last_by_date(); }
 
-  virtual double avgEntryPrice(void) const = 0;
-  virtual double avgExitPrice(void) const = 0;
+  virtual double avgEntryPrice(void) const throw(PositionException) = 0;
+  virtual double avgExitPrice(void) const throw(PositionException) = 0;
 
   //! Return current return factor.
   virtual double factor(void) const = 0;
   //! Return current return factor calculated from avgEntryPrice to price parameter.
-  virtual double factor(const Price& price) const = 0;
+  virtual double factor(const Price& price) const throw(PositionException) = 0;
   //! Return return factor from prev_price to curr_price. Factor calculation will change according to Position type.
-  virtual double factor(const Price& prev_price, const Price& curr_price) const = 0;
+  virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException) = 0;
 
   //! Add BuyExecution.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
