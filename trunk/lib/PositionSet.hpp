@@ -58,9 +58,9 @@ typedef boost::multi_index::multi_index_container<
 > __PositionSet;
 
 /*!
-  PositionSet is a multi index collection containing a set of Positions. The collection can be indexed by Position ID,
-  symbol, first Position execution (opening transaction) or last Position execution (closing transaction in case of closed Position).
-  A Position can looked up using Boost multi_index features. Example:
+  PositionSet is a multi index Position collection that can be indexed by Position ID,
+  symbol, first Position execution (opening transaction) or last Position execution (closing transaction for closed Position).
+  A specific Position can be retrieved using Boost multi_index features. Example:
   
   Look for position by ID:
   PositionSet::iterator iter = positions.find(id, pos_comp_id());

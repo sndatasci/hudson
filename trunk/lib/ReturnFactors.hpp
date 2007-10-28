@@ -68,11 +68,11 @@ class ReturnFactors
 {
 public:
   /*!
-    \param sPositions The set of positions that will be used to calculate these return factors.
+    \param sPositions The set of positions used to calculate these return factors.
   */
   ReturnFactors(const PositionSet& sPositions);
 
-  //! Return the total number of positions passed in the constructor. \see ReturnFactors().
+  //! Return the total number of positions passed in the constructor.
   int num(void) const;
 
   //! Return the return on investment.

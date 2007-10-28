@@ -57,16 +57,16 @@ public:
   unsigned covers(void) const { return _covers; }
 
   //! Average short price.
-  virtual double avgEntryPrice(void) const { return _avgShortPrice; }
+  virtual double avgEntryPrice(void) const throw(PositionException) { return _avgShortPrice; }
   //! Average cover price.
-  virtual double avgExitPrice(void) const { return _avgCoverPrice; }
+  virtual double avgExitPrice(void) const throw(PositionException) { return _avgCoverPrice; }
 
   //! Current return factor: average short price divided by the average cover price.
   virtual double factor(void) const throw(PositionException);
   //! Return factor calculated dividing avgEntrPrice() into the price parameter.
   virtual double factor(const Price& price) const throw(PositionException);
   //! XXX: Should be a static.
-  virtual double factor(const Price& prev_price, const Price& curr_price) const;
+  virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException);
   
   //! Virtual implementation. Will throw an exception.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
