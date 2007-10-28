@@ -1,4 +1,5 @@
 - Data series database (only flat files are currently supported).
+- Add equity curve.
 - Improve positions peak and drawdown calculation speed.
 - Add excursion statistics (MAE MFE).
 - Slippage and commissions.
