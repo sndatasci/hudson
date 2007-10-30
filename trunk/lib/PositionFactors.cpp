@@ -61,7 +61,7 @@ PositionFactors::PositionFactors( const Position& pos ):
     curr_date  = iter->first;
 
     // Calculate position factor until this point
-    double f = _pos.factor(prev_price, curr_price);
+    double f = _pos.factor(Price(prev_price), Price(curr_price));
 
     // Initialize SeriesFactorSet indexed by time to calculate bfe() and wae(). multi_index secondary index is too slow.
     _sf_fromtm.insert(SeriesFactor(ptime(prev_date), ptime(curr_date), f));

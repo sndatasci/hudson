@@ -81,24 +81,30 @@ public:
   //! Returns current open size.
   int size(void) const { return _size; }
 
-  //! Is position open.
+  //! Is Position open.
   virtual bool open(void) const { return _size != 0; }
-  //! Is position closed.
+  //! Is Position closed.
   virtual bool closed(void) const { return !_sExecutions.empty() && !open(); }
   //! Print position data.
   virtual void print(void) const;
 
-  //! Return position type.
+  //! Return Position type.
   virtual Type type(void) const = 0;
-  //! Return position type as string.
+  //! Return Position type as string.
   virtual std::string type_str(void) const = 0;
 
   //! First Execution by time.
   virtual const Execution& first_exec(void) const { return _sExecutions.first_by_date(); }
   //! Last Execution by time.
   virtual const Execution& last_exec(void) const { return _sExecutions.last_by_date(); }
+  
+  //! Return Position holding period, from first opening execution to last closing position execution,
+  //! or the last date in the database for the position symbol.
+  boost::gregorian::date_period hold_period(void) const throw(PositionException);
 
+  //! Return Position average entry price.
   virtual double avgEntryPrice(void) const throw(PositionException) = 0;
+  //! Return Position average exit price.
   virtual double avgExitPrice(void) const throw(PositionException) = 0;
 
   //! Return current return factor.
@@ -107,6 +113,8 @@ public:
   virtual double factor(const Price& price) const throw(PositionException) = 0;
   //! Return return factor from prev_price to curr_price. Factor calculation will change according to Position type.
   virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException) = 0;
+  //! Return monthly factor for month/year period.
+  virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException) = 0;
 
   //! Add BuyExecution.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;

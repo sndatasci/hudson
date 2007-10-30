@@ -17,6 +17,8 @@
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "StdAfx.h"
+
 // Hudson
 #include "EODDB.hpp"
 #include "EODSeries.hpp"

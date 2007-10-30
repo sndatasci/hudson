@@ -67,6 +67,8 @@ public:
   virtual double factor(const Price& price) const throw(PositionException);
   //! XXX: Should be a static.
   virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException);
+  //! Return monthly factor for month/year period
+  virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException);
   
   //! Virtual implementation. Will throw an exception.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);

@@ -39,7 +39,7 @@ void PositionSet::print(void) const
 }
 
 
-const PositionSet PositionSet::closed(void) const
+PositionSet PositionSet::closed(void) const
 {
   PositionSet closedPos;
 
@@ -51,7 +51,7 @@ const PositionSet PositionSet::closed(void) const
 }
 
 
-const PositionSet PositionSet::closed( const std::string& symbol )
+PositionSet PositionSet::closed( const std::string& symbol )
 {
   PositionSet closedPos;
 
@@ -66,7 +66,7 @@ const PositionSet PositionSet::closed( const std::string& symbol )
 }
 
 
-const PositionSet PositionSet::open(void) const
+PositionSet PositionSet::open(void) const
 {
   PositionSet openPos;
 
@@ -78,7 +78,7 @@ const PositionSet PositionSet::open(void) const
 }
 
 
-const PositionSet PositionSet::open( const std::string& symbol )
+PositionSet PositionSet::open( const std::string& symbol )
 {
   PositionSet openPos;
 

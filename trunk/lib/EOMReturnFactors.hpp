@@ -51,10 +51,11 @@ class EOMReturnFactors: public ReturnFactors
 public:
   /*!
     \param sPositions A set of positions for a specific symbol.
-    \param db EODSeries for a specific symbol. Security should match positions symbol.
+    \param begin Begin of monthly return periods.
+    \param end End of monthly return periods.
     \param rf_rate Fixed risk-free rate. Used to calculate Sharpe ratio.
   */
-  EOMReturnFactors(const PositionSet& sPositions, const Series::EODSeries& db, double rf_rate = 3.0);
+  EOMReturnFactors(const PositionSet& sPositions, const boost::gregorian::date& begin, const boost::gregorian::date& end, double rf_rate = 3.0);
   
   //! Returns compounded annualized growth rate.
   double cagr(void) const;
@@ -65,11 +66,10 @@ public:
 
 protected:
   void _calculateM2M(void);
-  double _monthlyFactor(Series::EODSeries::const_iterator prev_em_mark, Series::EODSeries::const_iterator em_mark, const PositionPtr pos);
 
 protected:
-  const Series::EODSeries& _db;
-  const Series::EODSeries _monthly_db;
+  const boost::gregorian::date _begin;
+  const boost::gregorian::date _end;
   const double _rf_rate;
 
   std::vector<double> _vMFactors; // monthly factors
@@ -82,7 +82,7 @@ protected:
   double _mstddev;
   double _msharpe;
   
-  unsigned _days;
+  boost::gregorian::days _days;
   double   _years;
 
 protected:

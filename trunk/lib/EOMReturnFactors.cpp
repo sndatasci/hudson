@@ -24,15 +24,19 @@
 
 // Hudson
 #include "EOMReturnFactors.hpp"
+#include "PositionSet.hpp"
+#include "EODDB.hpp"
 
 using namespace std;
 using namespace Series;
+using namespace boost::gregorian;
 
 
-EOMReturnFactors::EOMReturnFactors( const PositionSet& sPositions, const Series::EODSeries& db, double rf_rate ):
+EOMReturnFactors::EOMReturnFactors( const PositionSet& sPositions,
+                                    const boost::gregorian::date& begin, const boost::gregorian::date& end, double rf_rate ):
   ReturnFactors(sPositions),
-  _db(db),
-  _monthly_db(_db.monthly()),
+  _begin(begin),
+  _end(end),
   _rf_rate(rf_rate),
   _mmean(0),
   _mstddev(0),
@@ -40,8 +44,8 @@ EOMReturnFactors::EOMReturnFactors( const PositionSet& sPositions, const Series:
   _days(0),
   _years(0)
 {
-  _days = _db.duration().days();
-  _years = (_days == 0 ? 0 : _days/(double)365);
+  _days = end - begin;
+  _years = (_days.days() == 0 ? 0 : _days.days()/(double)365);
   
   _calculateM2M();
 }
@@ -75,81 +79,48 @@ double EOMReturnFactors::sharpe( void ) const
 
 void EOMReturnFactors::_calculateM2M(void)
 {
-  // For each month in db
-  EODSeries::const_iterator prev_em_mark(_db.begin());
-  for( EODSeries::const_iterator em_mark(_monthly_db.begin()); em_mark != _monthly_db.end(); ++em_mark ) {
+  // For each month in selected period
+  date prev_em_mark(_begin);
+  date em_mark;
+  for( month_iterator miter(_begin); miter <= _end; ++miter ) {
 
-    //cout << "Calculating M2M factor from " << prev_em_mark->first << " to " << em_mark->first << endl;
+    em_mark = miter->end_of_month();
+    date_period month_period(prev_em_mark, em_mark);
+    cout << "Calculating M2M factor for period " << month_period << endl;
 
-    // For each position in our local set
+    // For each position
     double f_acc = 1;
+    bool cash = true;
     for( PositionSet::const_iterator piter(_sPositions.begin()); piter != _sPositions.end(); ++piter ) {
 
-      // Skip positions closed before bm_mark or opened after em_mark
-      if( ((*piter)->closed() && (*piter)->last_exec().dt() <= prev_em_mark->first) ) {
-        //cout << "Skipping position " << (*piter)->id() << ". Position closed before beginning of this month" << endl;
+      PositionPtr pPos = *piter;
+      // Skip positions closed before prev_em_mark or opened after em_mark
+      if( ! month_period.intersects(pPos->hold_period()) ) {
+        cout << "Skipping position " << pPos->id() << ", holding period " << pPos->hold_period() << ", current monthly period " << month_period << endl;
         continue;
       }
 
-      if( (*piter)->first_exec().dt() > em_mark->first ) {
-        //cout << "Skipping position " << (*piter)->id() << ". Position opened after end of this month" << endl;
-        continue; // Doesn't qualify for this month factor
-      }
-
       // Calculate monthly factor for this position
-      double f = _monthlyFactor(prev_em_mark, em_mark, *piter);
-      //cout << "Monthly factor for position " << (*piter)->id() << " (" << em_mark->first.month() << "): " << f << endl;
+      double f = pPos->factor(miter->month(), miter->year());
+      cout << "Monthly factor for position " << pPos->id() << " " << pPos->symbol() << " (" << miter->month() << "): " << f << endl;
 
       f_acc *= f;
+      cash = false; // XXX: Should calculate risk free return down to daily...
     } // End of positions for this month
 
-    // Add monthly factor
-    //cout << em_mark->first << ", factor " << f_acc << endl;
+    // Add position monthly factor
+    if( cash )
+      f_acc = 1 + (_rf_rate/12);
+    cout << em_mark << ", factor " << f_acc << endl;
     _vMFactors.push_back(f_acc);
     _vLogMFactors.push_back(::log10(f_acc));
-    _mDateMFactors.insert(DATEMFACTOR::value_type(em_mark->first, f_acc));
+    _mDateMFactors.insert(DATEMFACTOR::value_type(em_mark, f_acc));
 
     prev_em_mark = em_mark;
-  }
+  } // for each month in selected period
 
   _mmean = accumulate<doubleVector::const_iterator, double>( _vMFactors.begin(), _vMFactors.end(), 0 ) / _vMFactors.size();
   _mstddev = ::sqrt( accumulate<doubleVector::const_iterator, double>( _vMFactors.begin(), _vMFactors.end(), 0, variance_bf(_mmean) ) / (_vMFactors.size() - 1) );
   _msharpe = (((_mmean-1)*12) - (_rf_rate/100)) / (_mstddev*::sqrt((double)12));
 }
 
-
-double EOMReturnFactors::_monthlyFactor(Series::EODSeries::const_iterator prev_em_mark, Series::EODSeries::const_iterator em_mark, const PositionPtr pos)
-{
-  // XXX: Factors should be calculated for each execution in the position, not using entry/exit averages
-
-  //cout << "Calculating position " << pos->id() << " from " << prev_em_mark->first << " to " << em_mark->first << endl;
-
-  double begin_price = 0;
-  // If position opening execution is before month-begin mark, us month-begin price
-  if( pos->first_exec().dt() <= prev_em_mark->first ) {
-    begin_price = prev_em_mark->second.adjclose;
-    //cout << "Position opened before or at previous EOM mark price, using " << prev_em_mark->first << " adjclose" << endl;
-  // Else if position opening position is after month-begin mark, use opening execution price
-  } else if( pos->first_exec().dt() > prev_em_mark->first && pos->first_exec().dt() <= em_mark->first ) {
-    begin_price = pos->avgEntryPrice();
-    //cout << "Position opened after previous EOM mark price, using position avg entry price" << endl;
-  } else {
-    cerr << "Error: position opened after EOM end mark" << endl;
-    return 1;
-  }
-
-  double end_price = 0;
-  // If position closing execution is after end-month mark, use end-month price
-  if( pos->open() || pos->last_exec().dt() > em_mark->first ) {
-    end_price = em_mark->second.adjclose;
-    //cout << "Position still open or closed after EOM mark price, using " << em_mark->first << " adjclose" << endl;
-  // Else if position closing execution is before end-month mark, use execution price
-  } else if( pos->last_exec().dt() <= em_mark->first ) {
-    end_price = pos->avgExitPrice();
-    //cout << "Position closed before EOM mark price, using position avg exit price" << endl;
-  } else {
-    cerr << "Error: position " << endl;
-  }
-
-  return end_price / begin_price;
-}

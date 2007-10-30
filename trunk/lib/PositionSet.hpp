@@ -81,6 +81,7 @@ public:
   typedef __PositionSet::index<last_exec_key>::type   by_last_exec;
 
   using __PositionSet::get;
+  using __PositionSet::key_extractor;
   using __PositionSet::size;
   using __PositionSet::empty;
   using __PositionSet::begin;
@@ -90,17 +91,17 @@ public:
   using __PositionSet::replace;
 
 public:
-  //! Returns all closed positions.
-  const PositionSet closed(void) const;
-  //! Returns all open positions.
-  const PositionSet open(void) const;
-  //! Returns all closed positions for symbol.
-  const PositionSet closed(const std::string& symbol);
-  //! Returns all open positions for symbol.
-  const PositionSet open(const std::string& symbol);
-  //! Returns closed positions factor.
+  //! Return all closed positions.
+  PositionSet closed(void) const;
+  //! Return all open positions.
+  PositionSet open(void) const;
+  //! Return all closed positions for symbol.
+  PositionSet closed(const std::string& symbol);
+  //! Return all open positions for symbol.
+  PositionSet open(const std::string& symbol);
+  //! Return closed positions factor.
   double realized(void) const;
-  //! Returns open positions factor.
+  //! Return open positions factor.
   double unrealized(void) const;
 
   //! Print all positions data.

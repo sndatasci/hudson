@@ -37,6 +37,6 @@ BnHTrader::BnHTrader(const DB& db):
 
 void BnHTrader::run(void)
 {
-  Position::ID id = buy(_db.name(), _db.begin()->first, _db.begin()->second.open);
-  close(id, _db.rbegin()->first, _db.rbegin()->second.adjclose);
+  Position::ID id = buy(_db.name(), _db.begin()->first, Price(_db.begin()->second.open));
+  close(id, _db.rbegin()->first, Price(_db.rbegin()->second.adjclose));
 }

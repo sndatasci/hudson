@@ -17,7 +17,7 @@
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Posix
+// STDLIB
 #include <ctime>
 #include <cstdlib>
 #include <cmath>
@@ -31,7 +31,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/program_options.hpp>
 
-// Series
+// Hudson
 #include "EODDB.hpp"
 #include "EOMReturnFactors.hpp"
 #include "EOMReport.hpp"
@@ -77,8 +77,8 @@ int main(int argc, char* argv[])
     }
 
     if( vm["long_dbfile"].empty() || vm["hedge_dbfile"].empty() ||
-	vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
-	vm["begin_date"].empty()  || vm["end_date"].empty() ) {
+	      vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
+	      vm["begin_date"].empty()  || vm["end_date"].empty() ) {
       cout << desc << endl;
       exit(EXIT_FAILURE);
     }
