@@ -25,6 +25,8 @@ SRC=\
 	YahooDriver.cpp \
 	DMYCloseDriver.cpp \
 	EODSeries.cpp \
+	EOMSeries.cpp \
+	EOWSeries.cpp \
 	EODDB.cpp \
 	ReturnFactors.cpp \
 	EOMReturnFactors.cpp \
@@ -53,7 +55,11 @@ SRC=\
 HDR=\
 	FileDriver.hpp \
 	DayPrice.hpp \
+	WeekPrice.hpp \
+	MonthPrice.hpp \
 	EODSeries.hpp \
+	EOWSeries.hpp \
+	EOMSeries.hpp \
 	EODDB.hpp \
 	DMYCloseDriver.hpp \
 	YahooDriver.hpp \
@@ -84,7 +90,7 @@ INCLUDES= \
 	-I/opt/local/include \
 	-I/opt/local/include/ta-lib
 
-CFLAGS=-g
+CFLAGS=-g -O3
 CPPFLASG=
 LDFLAGS=
 DEPFLAGS=-M
