@@ -28,6 +28,7 @@
 
 // Hudson
 #include "EODSeries.hpp"
+#include "EOMSeries.hpp"
 #include "Trader.hpp"
 #include "TA.hpp"
 
@@ -38,8 +39,6 @@
 */
 class AATrader: public Trader
 {
-  typedef Series::EODSeries DB;
-
 public:
   /*!
     The constructor gets historical data series for different asset classes.
@@ -49,7 +48,7 @@ public:
     \param eafe_db EAFE historical data
     \param reit_db REIT historical data
   */
-  AATrader(const DB& spx_db, const DB& tnx_db, const DB& djc_db, const DB& eafe_db, const DB& reit_db);
+  AATrader(const Series::EODSeries& spx_db, const Series::EODSeries& tnx_db, const Series::EODSeries& djc_db, const Series::EODSeries& eafe_db, const Series::EODSeries& reit_db);
 
   //! Run the trader.
   void run(void) throw(TraderException);
@@ -61,7 +60,7 @@ private:
     \param iter begin of trading period
     \param sma simple moving average series
   */
-  void trade(const DB& db, DB::const_iterator& iter, const TA::SMARes& sma);
+  void trade(const Series::EOMSeries& db, Series::EOMSeries::const_iterator& iter, const TA::SMARes& sma);
   /*!
     Execute the buy strategy
     \param db historical data
@@ -69,7 +68,7 @@ private:
     \param sma Simple moving average series
     \param i begin of SMA series matching iter
   */
-  void check_buy(const DB& db, DB::const_iterator& iter, const TA::SMARes& sma, int i);
+  void check_buy(const Series::EOMSeries& db, Series::EOMSeries::const_iterator& iter, const TA::SMARes& sma, int i);
   /*!
     Execute the sell strategy
     \param db historical data
@@ -77,14 +76,14 @@ private:
     \param sma Simple moving average series
     \param i begin of SMA series matching iter   
   */  
-  void check_sell(const DB& db, DB::const_iterator& iter, const TA::SMARes& sma, int i);
+  void check_sell(const Series::EOMSeries& db, Series::EOMSeries::const_iterator& iter, const TA::SMARes& sma, int i);
 
 private:
-  const DB& _spx_db;
-  const DB& _tnx_db;
-  const DB& _djc_db;
-  const DB& _eafe_db;
-  const DB& _reit_db;
+  const Series::EODSeries& _spx_db;
+  const Series::EODSeries& _tnx_db;
+  const Series::EODSeries& _djc_db;
+  const Series::EODSeries& _eafe_db;
+  const Series::EODSeries& _reit_db;
 };
 
 #endif // _AATRADER_HPP_

@@ -36,6 +36,8 @@
 // Series
 #include "DayPrice.hpp"
 #include "FileDriver.hpp"
+#include "EOWSeries.hpp"
+#include "EOMSeries.hpp"
 
 
 namespace Series
@@ -94,7 +96,7 @@ namespace Series
       This function should be called after loading EOD daily series. The method will recalculate H/L/O/C values for the week.
       \see DayPrice.
     */
-    EODSeries weekly(void) const;
+    EOWSeries weekly(void) const;
     
     //! Returns monthly series.
     /*!
@@ -102,7 +104,7 @@ namespace Series
       for the month.
       \see DayPrice.
     */  
-    EODSeries monthly(void) const;
+    EOMSeries monthly(void) const;
 
     //! Extract all open prices from current loaded series preserving the original time order.
     std::vector<double> open(void) const;

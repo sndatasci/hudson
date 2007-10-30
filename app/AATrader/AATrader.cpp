@@ -22,9 +22,10 @@
 
 using namespace std;
 using namespace boost::gregorian;
+using namespace Series;
 
 
-AATrader::AATrader(const DB& spx_db, const DB& tnx_db, const DB& djc_db, const DB& eafe_db, const DB& reit_db):
+AATrader::AATrader(const EODSeries& spx_db, const EODSeries& tnx_db, const EODSeries& djc_db, const EODSeries& eafe_db, const EODSeries& reit_db):
   _spx_db(spx_db),
   _tnx_db(tnx_db),
   _djc_db(djc_db),
@@ -38,17 +39,17 @@ void AATrader::run(void) throw(TraderException)
 {
   TA ta;
 
-  const DB spx_monthly_db = _spx_db.monthly();
-  const DB tnx_monthly_db = _tnx_db.monthly();
-  const DB djc_monthly_db = _djc_db.monthly();
-  const DB eafe_monthly_db = _eafe_db.monthly();
-  const DB reit_monthly_db = _reit_db.monthly();
+  const EOMSeries spx_monthly_db = _spx_db.monthly();
+  const EOMSeries tnx_monthly_db = _tnx_db.monthly();
+  const EOMSeries djc_monthly_db = _djc_db.monthly();
+  const EOMSeries eafe_monthly_db = _eafe_db.monthly();
+  const EOMSeries reit_monthly_db = _reit_db.monthly();
 
-  DB::const_iterator spx_iter(spx_monthly_db.begin());
-  DB::const_iterator tnx_iter(tnx_monthly_db.begin());
-  DB::const_iterator djc_iter(djc_monthly_db.begin());
-  DB::const_iterator eafe_iter(eafe_monthly_db.begin());
-  DB::const_iterator reit_iter(reit_monthly_db.begin());
+  EOMSeries::const_iterator spx_iter(spx_monthly_db.begin());
+  EOMSeries::const_iterator tnx_iter(tnx_monthly_db.begin());
+  EOMSeries::const_iterator djc_iter(djc_monthly_db.begin());
+  EOMSeries::const_iterator eafe_iter(eafe_monthly_db.begin());
+  EOMSeries::const_iterator reit_iter(reit_monthly_db.begin());
 
   TA::SMARes spxSMA = ta.SMA(spx_monthly_db.close(), 10);
   TA::SMARes tnxSMA = ta.SMA(tnx_monthly_db.close(), 10);
@@ -71,7 +72,7 @@ void AATrader::run(void) throw(TraderException)
 }
 
 
-void AATrader::trade(const DB& db, DB::const_iterator& iter, const TA::SMARes& sma)
+void AATrader::trade(const EOMSeries& db, EOMSeries::const_iterator& iter, const TA::SMARes& sma)
 {
   for( int i = 0; iter != db.end(); ++iter, ++i ) {
 
@@ -89,28 +90,28 @@ void AATrader::trade(const DB& db, DB::const_iterator& iter, const TA::SMARes& s
 }
 
 
-void AATrader::check_buy( const DB& db, DB::const_iterator& iter, const TA::SMARes& sma, int i )
+void AATrader::check_buy( const EOMSeries& db, EOMSeries::const_iterator& iter, const TA::SMARes& sma, int i )
 {
   if( _miPositions.open(db.name()).empty() && iter->second.close > sma.ma[i] ) {
 
     // Buy tomorrow's open
-    DB::const_iterator iter_entry = db.after(iter->first);
+    EOMSeries::const_iterator iter_entry = db.after(iter->first);
     if( iter_entry == db.end() ) {
       cerr << "Warning: can't open " << db.name() << " position after " << iter->first << endl;
       return;
     }
 
     //cout << "Buying on " << iter_entry->first << " at " << iter_entry->second.open << endl;
-    buy(db.name(), iter_entry->first, Price(iter_entry->second.open));
+    buy(db.name(), iter_entry->second.begin, Price(iter_entry->second.open));
   }
 }
 
 
-void AATrader::check_sell( const DB& db, DB::const_iterator& iter, const TA::SMARes& sma, int i )
+void AATrader::check_sell( const EOMSeries& db, EOMSeries::const_iterator& iter, const TA::SMARes& sma, int i )
 {
   if( ! _miPositions.open(db.name()).empty() && iter->second.close < sma.ma[i] ) {
 
-    DB::const_iterator iter_exit = db.after(iter->first);
+    EOMSeries::const_iterator iter_exit = db.after(iter->first);
     if( iter_exit == db.end() ) {
       cerr << "Warning: can't close " << db.name() << " position after " << iter->first << endl;
       return;
@@ -122,7 +123,7 @@ void AATrader::check_sell( const DB& db, DB::const_iterator& iter, const TA::SMA
       PositionPtr pPos = (*pos_iter);
       // Sell at tomorrow's open
       //cout << "Selling on " << iter_exit->first << " at " << iter_exit->second.open << endl;
-      close(pPos->id(), iter_exit->first, Price(iter_exit->second.open));
+      close(pPos->id(), iter_exit->second.begin, Price(iter_exit->second.open));
     } // end of all open positions
   }
 }

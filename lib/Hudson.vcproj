@@ -113,6 +113,9 @@
 				RelativePath=".\DMYCloseDriver.cpp">
 			</File>
 			<File
+				RelativePath=".\EODDB.cpp">
+			</File>
+			<File
 				RelativePath=".\EODSeries.cpp">
 			</File>
 			<File
@@ -120,6 +123,12 @@
 			</File>
 			<File
 				RelativePath=".\EOMReturnFactors.cpp">
+			</File>
+			<File
+				RelativePath=".\EOMSeries.cpp">
+			</File>
+			<File
+				RelativePath=".\EOWSeries.cpp">
 			</File>
 			<File
 				RelativePath=".\Execution.cpp">
@@ -208,6 +217,9 @@
 				RelativePath=".\DMYCloseDriver.hpp">
 			</File>
 			<File
+				RelativePath=".\EODDB.hpp">
+			</File>
+			<File
 				RelativePath=".\EODSeries.hpp">
 			</File>
 			<File
@@ -215,6 +227,12 @@
 			</File>
 			<File
 				RelativePath=".\EOMReturnFactors.hpp">
+			</File>
+			<File
+				RelativePath=".\EOMSeries.hpp">
+			</File>
+			<File
+				RelativePath=".\EOWSeries.hpp">
 			</File>
 			<File
 				RelativePath=".\Execution.hpp">
@@ -227,6 +245,9 @@
 			</File>
 			<File
 				RelativePath=".\LongPosition.hpp">
+			</File>
+			<File
+				RelativePath=".\MonthPrice.hpp">
 			</File>
 			<File
 				RelativePath=".\PortfolioReport.hpp">
@@ -275,6 +296,9 @@
 			</File>
 			<File
 				RelativePath=".\Trader.hpp">
+			</File>
+			<File
+				RelativePath=".\WeekPrice.hpp">
 			</File>
 			<File
 				RelativePath=".\YahooDriver.hpp">

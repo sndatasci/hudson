@@ -21,7 +21,8 @@
 
 // Hudson
 #include "EODSeries.hpp"
-
+#include "EOWSeries.hpp"
+#include "EOMSeries.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -503,9 +504,9 @@ std::vector<double> Series::EODSeries::volume( const_iterator itbegin, const_ite
 }
 
 
-Series::EODSeries Series::EODSeries::weekly( void ) const
+Series::EOWSeries Series::EODSeries::weekly( void ) const
 {
-  EODSeries weekly_series(name()); // empty series
+  EOWSeries weekly_series(name()); // empty series
 
   // Iterate through all the weeks in db
   for( week_iterator witer(begin()->first); (*witer) <= rbegin()->first; ++witer ) {
@@ -525,8 +526,10 @@ Series::EODSeries Series::EODSeries::weekly( void ) const
     }
 
     // Initialize this weekly series (O,L,H,C,V)
-    DayPrice dp;
+    WeekPrice dp;
     dp.key = last_in_week_iter->first; // Key is EOW
+    dp.begin = first_in_week_iter->first;
+    dp.end = last_in_week_iter->first;
     dp.open = first_in_week_iter->second.open; // Open on first day of the week
     dp.close = last_in_week_iter->second.close; // Close on last day of the week
     dp.adjclose = last_in_week_iter->second.adjclose; // Adj. close on last day of the week
@@ -550,16 +553,16 @@ Series::EODSeries Series::EODSeries::weekly( void ) const
     if( !volumes.empty() )
       dp.volume = accumulate<vector<unsigned long>::const_iterator, unsigned long>(volumes.begin(), volumes.end(), 0);
 
-    weekly_series.insert(value_type(dp.key, dp));
+    weekly_series.insert(EOWSeries::value_type(dp.key, dp));
   }
 
   return weekly_series;
 }
 
 
-Series::EODSeries Series::EODSeries::monthly( void ) const
+Series::EOMSeries Series::EODSeries::monthly( void ) const
 {
-  EODSeries monthly_series(name());
+  EOMSeries monthly_series(name());
 
   // Iterate through all the months in db
   for( month_iterator miter(begin()->first); (*miter) <= rbegin()->first; ++miter ) {
@@ -579,8 +582,10 @@ Series::EODSeries Series::EODSeries::monthly( void ) const
     }
 
     // Initialize monthly series (O,L,H,C,V)
-    DayPrice dp;
+    MonthPrice dp;
     dp.key = last_in_month_iter->first; // Monthly series key is last bar in month
+    dp.begin = first_in_month_iter->first;
+    dp.end = last_in_month_iter->first;
     dp.open = first_in_month_iter->second.open; // Open on first day of the month
     dp.close = last_in_month_iter->second.close; // Close on last day of the month
     dp.adjclose = last_in_month_iter->second.adjclose; // Adj. close on last day of the month
@@ -604,7 +609,7 @@ Series::EODSeries Series::EODSeries::monthly( void ) const
     if( !volumes.empty() )
       dp.volume = accumulate<vector<unsigned long>::const_iterator, unsigned long>(volumes.begin(), volumes.end(), 0);
 
-    monthly_series.insert(value_type(dp.key, dp));
+    monthly_series.insert(EOMSeries::value_type(dp.key, dp));
   }
 
   return monthly_series;
