@@ -86,7 +86,7 @@ void EOMReturnFactors::_calculateM2M(void)
 
     em_mark = miter->end_of_month();
     date_period month_period(prev_em_mark, em_mark);
-    cout << "Calculating M2M factor for period " << month_period << endl;
+    //cout << "Calculating M2M factor for period " << month_period << endl;
 
     // For each position
     double f_acc = 1;
@@ -96,22 +96,22 @@ void EOMReturnFactors::_calculateM2M(void)
       PositionPtr pPos = *piter;
       // Skip positions closed before prev_em_mark or opened after em_mark
       if( ! month_period.intersects(pPos->hold_period()) ) {
-        cout << "Skipping position " << pPos->id() << ", holding period " << pPos->hold_period() << ", current monthly period " << month_period << endl;
+        //cout << "Skipping position " << pPos->id() << ", holding period " << pPos->hold_period() << ", current monthly period " << month_period << endl;
         continue;
       }
 
       // Calculate monthly factor for this position
       double f = pPos->factor(miter->month(), miter->year());
-      cout << "Monthly factor for position " << pPos->id() << " " << pPos->symbol() << " (" << miter->month() << "): " << f << endl;
+      //cout << "Monthly factor for position " << pPos->id() << " " << pPos->symbol() << " (" << miter->month() << "): " << f << endl;
 
       f_acc *= f;
-      cash = false; // XXX: Should calculate risk free return down to daily...
+      cash = false;
     } // End of positions for this month
 
-    // Add position monthly factor
     if( cash )
-      f_acc = 1 + (_rf_rate/12);
-    cout << em_mark << ", factor " << f_acc << endl;
+      f_acc = 1 + (_rf_rate/100/12);
+      
+    //cout << em_mark << ", factor " << f_acc << endl;
     _vMFactors.push_back(f_acc);
     _vLogMFactors.push_back(::log10(f_acc));
     _mDateMFactors.insert(DATEMFACTOR::value_type(em_mark, f_acc));
