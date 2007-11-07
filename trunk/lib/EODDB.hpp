@@ -56,16 +56,24 @@ namespace Series
   {
   public:
     enum DriverType {
-      NA = 0,
+      DT_NA,
       YAHOO,
       DMYC
+    };
+    
+    enum PriceType {
+      PT_NA,
+      OPEN,
+      CLOSE,
+      ADJCLOSE,
+      LIMIT
     };
 
   public:
     static EODDB& instance(void);
 
     void load(const std::string& name, const std::string& filename, DriverType dt,
-	      const boost::gregorian::date& begin, const boost::gregorian::date& end) throw(EODDBException);
+	            const boost::gregorian::date& begin, const boost::gregorian::date& end) throw(EODDBException);
     const EODSeries& get(const std::string& name) const throw(EODDBException);
 
   protected:

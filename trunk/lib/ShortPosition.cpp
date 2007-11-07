@@ -105,6 +105,42 @@ void ShortPosition::close(const date& dt, const Price& price) throw(PositionExce
 }
 
 
+void ShortPosition::close( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) throw(PositionException)
+{
+  if( closed() )
+    throw PositionException("Position is closed");
+
+  // Retrieve market price
+  Series::EODSeries::const_iterator citer = Series::EODDB::instance().get(_symbol).find(dt);
+  if( citer == Series::EODDB::instance().get(_symbol).end() )
+    throw PositionException("Can't get EODSeries price record");
+
+  double priceval = 0;
+  switch( pt ) {
+
+    case EODDB::OPEN:
+      priceval = citer->second.open;
+      break;
+
+    case EODDB::CLOSE:
+      priceval = citer->second.close;
+      break;
+
+    case EODDB::ADJCLOSE:
+      priceval = citer->second.adjclose;
+      break;
+      
+    case EODDB::LIMIT:
+      throw PositionException("Limit price not implemented yet");
+
+    default:
+      throw PositionException("Invalid price type");
+  }
+
+  cover(dt, Price(priceval), _size);
+}
+
+
 void ShortPosition::buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException)
 {
   throw PositionException("Short position");

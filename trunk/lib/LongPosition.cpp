@@ -25,6 +25,7 @@
 // Hudson
 #include "LongPosition.hpp"
 #include "EODDB.hpp"
+#include "EODSeries.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -102,6 +103,42 @@ void LongPosition::close(const boost::gregorian::date& dt, const Price& price) t
 	  throw PositionException("Position is closed");
 
   sell(dt, price, _size);
+}
+
+
+void LongPosition::close( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) throw(PositionException)
+{
+  if( closed() )
+    throw PositionException("Position is closed");
+    
+  // Retrieve market price
+  Series::EODSeries::const_iterator citer = Series::EODDB::instance().get(_symbol).find(dt);
+  if( citer == Series::EODDB::instance().get(_symbol).end() )
+    throw PositionException("Can't get EODSeries price record");
+  
+  double priceval = 0;
+  switch( pt ) {
+  
+    case EODDB::OPEN:
+      priceval = citer->second.open;
+      break;
+      
+    case EODDB::CLOSE:
+      priceval = citer->second.close;
+      break;
+      
+    case EODDB::ADJCLOSE:
+      priceval = citer->second.adjclose;
+      break;
+      
+    case EODDB::LIMIT:
+      throw PositionException("Limit price not implemented yet");
+      
+    default:
+      throw PositionException("Invalid price type");
+  }
+  
+  sell(dt, Price(priceval), _size);
 }
 
 
