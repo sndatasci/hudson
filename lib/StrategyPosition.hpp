@@ -28,35 +28,57 @@
 #include <string>
 
 // Hudson
-#include "Position.hpp"
+#include "PositionSet.hpp"
 
 class Price;
 
 //! Composite Position class.
 /*!
   StrategyPosition is a composite pattern class that aggregates executions for one or more Position objects. The factor() method is redefined
-  to accumulate the factors of all the Position objects included in the strategy. Any type of Position can be added to the StrategyPosition,
+  to accumulate the factors of all the Position included in the strategy. Any type of Position can be added to the StrategyPosition,
   including another StrategyPosition. This class can be used to build multi-leg strategies such as spread trades or pair trades and calculate
-  simulation statistics through the ReturnFactors class using the common Position interface.
+  simulation statistics through the ReturnFactors and EOMReturnFactors classes.
+  \see ReturnFactors.
+  \see EOMReturnFactors.
  */
 class StrategyPosition: public Position
 {
 public:
+  //! Initialize a new StrategyPosition.
+  /*!
+    \param id A unique Position identifier.
+    \param symbol A virtual symbol name used to name this composite position.
+  */
   StrategyPosition(Position::ID id, const std::string& symbol);
 
   //! Add a new Position.
-  void add(const Position& p);
+  /*!
+    \param p A pointer to the Position that will be added to this StrategyPosition.
+    \return True if the Position was successfully added, false otherwise.
+  */
+  bool add(const PositionPtr p); 
 
   //! Get a specific Position by ID.
-  const Position& get(Position::ID id) const;
+  /*!
+    \param id The unique identifier of the wanted Position.
+    \return An iterator to the PositionPtr in PositionSet matching id, or PositionSet::end() if not found.
+  */
+  PositionSet::const_iterator get(Position::ID id) const { return _sPositions.find(id, pos_comp_id()); }
   //! Get all Position objects included in this StrategyPosition.
-  const PositionSet& get(void) const;
+  //! \return A reference to the complete set of Positions for this StrategyPosition.
+  const PositionSet& get(void) const { return _sPositions; }
 
-  //! Is strategy open.
+  //! Is this StrategyPosition open.
+  /*!
+    \return True if any of the underlying Position objects is open, false otherwise.
+  */
   virtual bool open(void) const;
-  //! Is strategy closed.
+  //! Is StrategyPosition closed.
+  /*!
+    \return True if all the underlying Position are closed, false otherwise.
+  */
   virtual bool closed(void) const;
-  //! Print strategy data.
+  //! Print data for all underlying Position.
   virtual void print(void) const;
 
   //! Return position type.
@@ -64,16 +86,11 @@ public:
   //! Return position type as string.
   virtual std::string type_str(void) const { return "Strategy"; }
 
-  //! First Execution by date/time
-  virtual const Execution& first_exec(void) const;
-  //! First Execution by date/time
-  virtual const Execution& last_exec(void) const;
-
   //! Always throw an exception. A StrategyPosition does not have a single entry price.
-  //! See get() to extract basic Position objects and read average entry/exit prices.
+  //! See get() to extract underlying Position objects and read average entry/exit prices.
   virtual double avgEntryPrice(void) const throw(PositionException);
   //! Always throw an exception. A StrategyPosition does not have a unique entry price.
-  //! See get() to extract basic Position objects and read average entry/exit prices.
+  //! See get() to extract underlying Position objects and read average entry/exit prices.
   virtual double avgExitPrice(void) const throw(PositionException);
 
   //! Return strategy factor. This is the product factor for all Position included in the strategy.
@@ -92,11 +109,17 @@ public:
   //! Add CoverExecution. A StrategyPosition can not be covered directly. See get() to cover a specific ShortPosition.
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
 
-  //! Close open Position size.
+  //! Throw an exception. StrategyPosition can only be closed at market or by closing each underlying Position.
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException);
+  //! Close any open size at market price.
+  /*!
+  \param dt The series date that will be used to retrieve the market price.
+  \param pt The type of price that will be used to close the Position.
+  */
+  virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException);
 
 protected:
-  double _f;
+  PositionSet _sPositions;
 };
 
 #endif // _STRATEGYPOSITION_HPP_

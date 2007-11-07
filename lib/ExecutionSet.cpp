@@ -69,3 +69,11 @@ bool ExecutionSet::cover(boost::gregorian::date dt, const Price& price, unsigned
   ExecutionPtr pExe(new CoverExecution(++_eid, dt, price, size));
   return insert(pExe).second;
 }
+
+
+void ExecutionSet::add( const ExecutionSet& sExecutions )
+{
+  for (ExecutionSet::const_iterator citer = sExecutions.begin(); citer != sExecutions.end(); ++citer ) {
+    insert(*citer);
+  }
+}

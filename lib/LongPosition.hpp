@@ -82,6 +82,12 @@ public:
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
   //! Close any open size by adding a sell Execution.
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException);
+  //! Close any open size on dt at market price.
+  /*!
+    \param dt The series date that will be used to retrieve the market price.
+    \param pt The type of price that will be used to close the Position.
+  */
+  virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException);
 
 private:
   unsigned _buys;

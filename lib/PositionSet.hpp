@@ -43,6 +43,8 @@ struct symbol_key { };
 struct first_exec_key { };
 struct last_exec_key { };
 
+//! Position shared pointer used in PositionSet multi index collection.
+//! \see PositionSet.
 typedef boost::shared_ptr<Position> PositionPtr;
 
 typedef boost::multi_index::multi_index_container<
@@ -58,7 +60,7 @@ typedef boost::multi_index::multi_index_container<
 > __PositionSet;
 
 /*!
-  PositionSet is a multi index Position collection that can be indexed by Position ID,
+  PositionSet is a multi index PositionPtr collection that can be indexed by Position ID,
   symbol, first Position execution (opening transaction) or last Position execution (closing transaction for closed Position).
   A specific Position can be retrieved using Boost multi_index features. Example:
   

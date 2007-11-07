@@ -194,6 +194,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\StrategyPosition.cpp">
+			</File>
+			<File
 				RelativePath=".\TA.cpp">
 			</File>
 			<File
@@ -290,6 +293,9 @@
 			</File>
 			<File
 				RelativePath=".\StdAfx.h">
+			</File>
+			<File
+				RelativePath=".\StrategyPosition.hpp">
 			</File>
 			<File
 				RelativePath=".\TA.hpp">

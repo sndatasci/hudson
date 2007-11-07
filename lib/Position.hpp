@@ -33,6 +33,7 @@
 
 // Hudson
 #include "ExecutionSet.hpp"
+#include "EODDB.hpp"
 
 class Price;
 
@@ -97,6 +98,8 @@ public:
   virtual const Execution& first_exec(void) const { return _sExecutions.first_by_date(); }
   //! Last Execution by time.
   virtual const Execution& last_exec(void) const { return _sExecutions.last_by_date(); }
+  //! Return all Execution.
+  const ExecutionSet& executions(void) const { return _sExecutions; }
   
   //! Return Position holding period, from first opening execution to last closing position execution,
   //! or the last date in the database for the position symbol.
@@ -124,8 +127,10 @@ public:
   virtual void sell_short(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
   //! Add CoverExecution.
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
-  //! Close open Position size.
+  //! Close open Position size on dt at a specific price.
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException) = 0;
+  //! Close open Position size on dt at market price.
+  virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException) = 0;
  
 protected:
   Position(ID id, const std::string& symbol);
