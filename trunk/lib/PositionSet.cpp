@@ -119,3 +119,39 @@ double PositionSet::unrealized(void) const
 
   return acc;
 }
+
+
+PositionSet PositionSet::longPos( void ) const
+{
+  PositionSet sPos;
+
+  for( const_iterator iter = begin(); iter != end(); ++iter )
+    if( (*iter)->type() == Position::LONG )
+      sPos.insert(*iter);
+
+  return sPos;
+}
+
+
+PositionSet PositionSet::shortPos( void ) const
+{
+  PositionSet sPos;
+
+  for( const_iterator iter = begin(); iter != end(); ++iter )
+    if( (*iter)->type() == Position::SHORT )
+      sPos.insert(*iter);
+
+  return sPos;
+}
+
+
+PositionSet PositionSet::stratPos( void ) const
+{
+  PositionSet sPos;
+
+  for( const_iterator iter = begin(); iter != end(); ++iter )
+    if( (*iter)->type() == Position::STRATEGY )
+      sPos.insert(*iter);
+
+  return sPos;
+}

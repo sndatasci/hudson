@@ -51,8 +51,7 @@ TA::SMARes TA::SMA(vDouble vSeries, unsigned ma_period) const throw(TAException)
   SMARes res;
   res.ma.resize(vSeries.size());
 
-  TA_RetCode ta_ret = TA_MA(0, vSeries.size()-1, &vSeries[0], ma_period, TA_MAType_SMA,
-                            &res.begIdx, &res.nbElement, &res.ma[0]);
+  TA_RetCode ta_ret = TA_MA(0, vSeries.size()-1, &vSeries[0], ma_period, TA_MAType_SMA, &res.begIdx, &res.nbElement, &res.ma[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
 
@@ -71,8 +70,7 @@ TA::EMARes TA::EMA( vDouble vSeries, unsigned ema_period ) const throw(TAExcepti
   EMARes res;
   res.ema.resize(vSeries.size());
 
-  TA_RetCode ta_ret = TA_MA(0, vSeries.size()-1, &vSeries[0], ema_period, TA_MAType_EMA,
-                            &res.begIdx, &res.nbElement, &res.ema[0]);
+  TA_RetCode ta_ret = TA_MA(0, vSeries.size()-1, &vSeries[0], ema_period, TA_MAType_EMA, &res.begIdx, &res.nbElement, &res.ema[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
 
@@ -91,8 +89,7 @@ TA::RSIRes TA::RSI( vDouble vSeries, unsigned rsi_period ) const throw(TAExcepti
   RSIRes res;
   res.rsi.resize(vSeries.size());
 
-  TA_RetCode ta_ret = TA_RSI(0, vSeries.size()-1, &vSeries[0], rsi_period,
-                             &res.begIdx, &res.nbElement, &res.rsi[0]);
+  TA_RetCode ta_ret = TA_RSI(0, vSeries.size()-1, &vSeries[0], rsi_period, &res.begIdx, &res.nbElement, &res.rsi[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
 
@@ -111,8 +108,7 @@ TA::ROCRes TA::ROC(vDouble vSeries, unsigned roc_period) const throw(TAException
   ROCRes res;
   res.roc.resize(vSeries.size());
 
-  TA_RetCode ta_ret = TA_ROC(0, vSeries.size()-1, &vSeries[0], roc_period,
-                             &res.begIdx, &res.nbElement, &res.roc[0]);
+  TA_RetCode ta_ret = TA_ROC(0, vSeries.size()-1, &vSeries[0], roc_period, &res.begIdx, &res.nbElement, &res.roc[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
 
@@ -131,8 +127,7 @@ TA::ROCRRes TA::ROCR(vDouble vSeries, unsigned rocr_period ) const throw(TAExcep
   ROCRRes res;
   res.rocr.resize(vSeries.size());
 
-  TA_RetCode ta_ret = TA_ROCR(0, vSeries.size()-1, &vSeries[0], rocr_period,
-                              &res.begIdx, &res.nbElement, &res.rocr[0]);
+  TA_RetCode ta_ret = TA_ROCR(0, vSeries.size()-1, &vSeries[0], rocr_period, &res.begIdx, &res.nbElement, &res.rocr[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
 
@@ -151,8 +146,7 @@ TA::ROCPRes TA::ROCP(vDouble vSeries, unsigned rocp_period ) const throw(TAExcep
   ROCPRes res;
   res.rocp.resize(vSeries.size());
 
-  TA_RetCode ta_ret = TA_ROCP(0, vSeries.size()-1, &vSeries[0], rocp_period,
-                              &res.begIdx, &res.nbElement, &res.rocp[0]);
+  TA_RetCode ta_ret = TA_ROCP(0, vSeries.size()-1, &vSeries[0], rocp_period, &res.begIdx, &res.nbElement, &res.rocp[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
 
@@ -171,8 +165,7 @@ TA::STDDEVRes TA::STDDEV( vDouble vSeries, unsigned stddev_period, double sd ) c
   STDDEVRes res;
   res.stddev.resize(vSeries.size());
 
-  TA_RetCode ta_ret = TA_STDDEV(0, vSeries.size()-1, &vSeries[0], stddev_period, sd,
-                                &res.begIdx, &res.nbElement, &res.stddev[0]);
+  TA_RetCode ta_ret = TA_STDDEV(0, vSeries.size()-1, &vSeries[0], stddev_period, sd, &res.begIdx, &res.nbElement, &res.stddev[0]);
   if( ta_ret != TA_SUCCESS )
     throw TAException(getError(ta_ret));
 

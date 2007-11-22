@@ -19,7 +19,7 @@
 
 #include <StdAfx.h>
 
-// IOSTREAM
+// STDLIB
 #include <iostream>
 
 // Hudson
@@ -28,9 +28,10 @@
 using namespace std;
 
 
-StrategyPosition::StrategyPosition( Position::ID id, const std::string& symbol ):
+StrategyPosition::StrategyPosition( Position::ID id, const std::string& symbol, const PositionPtr pPos ):
   Position(id, symbol)
 {
+  add(pPos);
 }
 
 
@@ -105,16 +106,21 @@ double StrategyPosition::factor( const Price& prev_price, const Price& curr_pric
 }
 
 
+double StrategyPosition::factor( const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year ) const throw(PositionException) /*= 0*/
+{
+  throw PositionException("StrategyPosition monthly factor not implemented yet");
+}
+
+
 bool StrategyPosition::add( const PositionPtr p )
 {
   // Add position pointers
-  if( _sPositions.insert(p).second ) {
-    // Add execution pointers
-    _sExecutions.add(p->executions());
-    return true;
-  }
+  if( ! _sPositions.insert(p).second )
+    return false;
   
-  return false;
+  // Add new Position executions to this Position set
+  _sExecutions.add(p->executions());
+  return true;
 }
 
 
@@ -141,4 +147,3 @@ void StrategyPosition::print( void ) const
     
   cout << endl << "Strategy factor " << factor() << " (" << (factor()-1)*100 << "%)";
 }
-

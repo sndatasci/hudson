@@ -58,6 +58,7 @@ protected:
 /*!
   \see LongPosition.
   \see ShortPosition.
+  \see StrategyPosition.
 */
 class Position
 {
@@ -70,7 +71,7 @@ public:
 	  STRATEGY
   };
 
-public:
+public:  
   //! Default comparison by Position ID.
   bool operator<(const Position& p) const { return _id < p._id; }
   bool operator==(const Position& p) const { return _id == p._id; }
