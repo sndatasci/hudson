@@ -27,10 +27,12 @@
 #include <string>
 
 // Hudson
+#include "Trader.hpp"
 #include "Price.hpp"
 #include "LongPosition.hpp"
 #include "ShortPosition.hpp"
-#include "Trader.hpp"
+#include "StrategyPosition.hpp"
+
 
 using namespace std;
 using namespace boost::gregorian;
@@ -61,7 +63,7 @@ Position::ID Trader::buy(const string& symbol, const date& dt, const Price& pric
 
   // Add new position to trader collection
   if( _miPositions.insert(pPos).first == _miPositions.end() )
-  	throw TraderException("Can't add position");
+  	throw TraderException("Can't add long position");
 
   // Return new position ID
   return _pid;
@@ -132,7 +134,7 @@ Position::ID Trader::sell_short(const string& symbol, const date& dt, const Pric
   }
 
   if( _miPositions.insert(pPos).first == _miPositions.end() )
-  	throw TraderException("Can't add position");
+  	throw TraderException("Can't add short position");
 
   return _pid;
 }
@@ -218,4 +220,26 @@ PositionSet Trader::positions( const std::string& symbol )
       psSymbol.insert(*iter);
 
   return psSymbol;
+}
+
+
+Position::ID Trader::strategy(const std::string& symbol, PositionPtr pPos) throw(TraderException)
+{
+  PositionPtr pStratPos; // The new StrategyPosition
+
+  try {
+
+    pStratPos = PositionPtr(new StrategyPosition(++_pid, symbol, pPos));
+
+  } catch (const exception& ex) {
+
+    throw TraderException(ex.what());
+  }
+
+  // Add new position to global collection
+  if( _miPositions.insert(pStratPos).first == _miPositions.end() )
+    throw TraderException("Can't add new strategy position");
+
+  // Return new position ID
+  return _pid; 
 }

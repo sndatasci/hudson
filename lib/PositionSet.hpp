@@ -97,13 +97,22 @@ public:
   PositionSet closed(void) const;
   //! Return all open positions.
   PositionSet open(void) const;
+  //! Return all long positions.
+  //! \see LongPosition
+  PositionSet longPos(void) const;
+  //! Return all short positions.
+  //! \see ShortPosition
+  PositionSet shortPos(void) const;
+  //! Return all strategies positions.
+  //! \see StrategyPosition
+  PositionSet stratPos(void) const;
   //! Return all closed positions for symbol.
   PositionSet closed(const std::string& symbol);
   //! Return all open positions for symbol.
   PositionSet open(const std::string& symbol);
-  //! Return closed positions factor.
+  //! Return all closed positions factor.
   double realized(void) const;
-  //! Return open positions factor.
+  //! Return all open positions factor.
   double unrealized(void) const;
 
   //! Print all positions data.

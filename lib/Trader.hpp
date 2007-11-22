@@ -59,20 +59,80 @@ public:
   Trader(void);
   virtual ~Trader(void) { }
 
-  // Buy/Sell
+  /*!
+  \brief Buy to open a new LongPosition.
+  \param symbol The name of the LongPosition.
+  \param dt Transaction date.
+  \param price Transaction Price.
+  \param size Transaction size.
+  */
   Position::ID buy(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);  
-  void buy(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
-  void sell(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  /*!
+  \brief Buy to add to an existing LongPosition.
+  \param id The LongPosition identifier.
+  \param dt Transaction date.
+  \param price Transaction Price.
+  \param size Transaction size.
+  */
+  void buy(Position::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  /*!
+  \brief Sell to close or partially close an existing LongPosition.
+  \param id The LongPosition identifier.
+  \param dt Transaction date.
+  \param price Transaction Price.
+  \param size Transaction size.
+  */
+  void sell(Position::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
 
-  // Short Sell/Cover
+  /*!
+  \brief Sell short to open a new ShortPosition.
+  \param symbol The name of the ShortPosition.
+  \param dt Transaction date.
+  \param price Transaction Price.
+  \param size Transaction size.
+  */
   Position::ID sell_short(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  /*!
+  \brief Sell short to open an existing ShortPosition.
+  \param id The ShortPosition identifier.
+  \param dt Transaction date.
+  \param price Transaction Price.
+  \param size Transaction size.
+  */
   void sell_short(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  /*!
+  \brief Cover to close or partially close an existing ShortPosition.
+  \param id The ShortPosition identifier.
+  \param dt Transaction date.
+  \param price Transaction Price.
+  \param size Transaction size.
+  */
   void cover(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  
+  /*!
+  \brief Add a new StrategyPosition.
+  \param symbol The name of the new StrategyPosition being added.
+  \param pPos The first position added to the strategy.
+  \see StrategyPosition.
+  */
+  Position::ID strategy(const std::string& symbol, PositionPtr pPos) throw(TraderException);
 
-  // Close
-  void close(Position::ID, const boost::gregorian::date& dt, const Price& price) throw(TraderException);
+  /*!
+  \brief Close an existing position of any type.
+  \param id The Position unique identifier.
+  \param dt Transaction date.
+  \param price Transaction Price.
+  */
+  void close(Position::ID id, const boost::gregorian::date& dt, const Price& price) throw(TraderException);
 
+  /*!
+  \brief Return all the positions opened and closed by this Trader.
+  */
   const PositionSet& positions(void) const { return _miPositions; }
+  /*!
+  \brief Return all positions opened and closed by this Trader for a specific symbol.
+  \param symbol The name of the Position objects that will be returned.
+  */
   PositionSet positions(const std::string& symbol);
 
 protected:

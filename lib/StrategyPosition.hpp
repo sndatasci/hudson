@@ -35,9 +35,9 @@ class Price;
 //! Composite Position class.
 /*!
   StrategyPosition is a composite pattern class that aggregates executions for one or more Position objects. The factor() method is redefined
-  to accumulate the factors of all the Position included in the strategy. Any type of Position can be added to the StrategyPosition,
-  including another StrategyPosition. This class can be used to build multi-leg strategies such as spread trades or pair trades and calculate
-  simulation statistics through the ReturnFactors and EOMReturnFactors classes.
+  to accumulate factors of all Position included in the StrategyPosition. Any type of Position can be added to the StrategyPosition,
+  including another StrategyPosition. This class can be used to build multi-leg strategies such as spread trades or pair trades, and calculate
+  simulation statistics based on multiple Position composite returns.
   \see ReturnFactors.
   \see EOMReturnFactors.
  */
@@ -48,8 +48,9 @@ public:
   /*!
     \param id A unique Position identifier.
     \param symbol A virtual symbol name used to name this composite position.
+    \param pPos The first Position to be added to the strategy.
   */
-  StrategyPosition(Position::ID id, const std::string& symbol);
+  StrategyPosition(Position::ID id, const std::string& symbol, const PositionPtr pPos);
 
   //! Add a new Position.
   /*!
@@ -99,6 +100,8 @@ public:
   virtual double factor(const Price& price) const throw(PositionException);
   //! Always throw an exception. A StrategyPosition does not a have a single entry/exit price.
   virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException);
+  //! Return monthly factor for month/year period.
+  virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException);
 
   //! Always throw an exception. A StrategyPosition can not be bought directly. See get() to buy a specific LongPosition.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
@@ -109,12 +112,12 @@ public:
   //! Add CoverExecution. A StrategyPosition can not be covered directly. See get() to cover a specific ShortPosition.
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
 
-  //! Throw an exception. StrategyPosition can only be closed at market or by closing each underlying Position.
+  //! Always throw an exception. StrategyPosition can only be closed at market price or by closing each underlying Position.
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException);
   //! Close any open size at market price.
   /*!
-  \param dt The series date that will be used to retrieve the market price.
-  \param pt The type of price that will be used to close the Position.
+    \param dt The series date that will be used to retrieve the market price.
+    \param pt The type of price that will be used to close the Position.
   */
   virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException);
 

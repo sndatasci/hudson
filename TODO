@@ -1,10 +1,10 @@
-- Data series database (only flat files are currently supported).
+- Add data series database (only flat files are currently supported).
 - Add equity curve.
 - Improve positions peak and drawdown calculation speed.
 - Add excursion statistics (MAE MFE).
-- Slippage and commissions.
-- Actual $ simulation.
-- Support intraday series.
-- Add real monthly risk-free rate of return series (currently default 3%).
-- Add risk-free returns.
+- Add slippage and commissions factors.
+- Add support for intraday series.
+- Add real monthly risk-free rate of return historical data (currently defaults to 3%).
+- Integrate QuantLib.
+
 

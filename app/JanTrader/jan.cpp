@@ -114,35 +114,41 @@ int main(int argc, char* argv[])
     Series::EODDB::instance().load(long_symbol, long_dbfile, Series::EODDB::YAHOO, load_begin, load_end);
 
     const Series::EODSeries& long_db = Series::EODDB::instance().get(long_symbol);
+    const Series::EODSeries& hedge_db = Series::EODDB::instance().get(hedge_symbol);
 
     cout << "Records: " << long_db.size() << endl;
     cout << "Period: " << long_db.period() << endl;
     cout << "Total days: " << long_db.days() << endl;
 
+    cout << "Hedge Records: " << hedge_db.size() << endl;
+    cout << "Hedge Period: " << hedge_db.period() << endl;
+    cout << "Hedge Total days: " << hedge_db.days() << endl;
+    
     JanTrader trader(long_symbol, hedge_symbol);
     trader.run(entry_offset, exit_offset); // canonical entry/exit dates (12/20 - 1/9)
 
     /*
-    * Print open/closed positions
+    * Print closed positions
     */
     Report::header("Closed trades");
-    trader.positions().closed().print();
+    trader.positions().stratPos().closed().print();
 
     /*
     * Print simulation reports
     */
     Report::header("Trade results");
-    ReturnFactors rf(trader.positions());
+    ReturnFactors rf(trader.positions().stratPos());
     Report rp(rf);
     rp.print();
 
     /*
     * Positions stats
+    * Can not calculate for StrategyPosition. 
     */
-    Report::header("Positions stats");
-    PositionFactorsSet pf(trader.positions().closed());
-    PositionsReport pr(pf);
-    pr.print();
+    //Report::header("Positions stats");
+    //PositionFactorsSet pf(trader.positions().stratPos().closed());
+    //PositionsReport pr(pf);
+    //pr.print();
     
   } catch ( std::exception& ex ) {
   
