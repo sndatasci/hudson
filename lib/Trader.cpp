@@ -25,6 +25,7 @@
 // STL
 #include <iostream>
 #include <string>
+#include <strstream>
 
 // Hudson
 #include "Trader.hpp"
@@ -63,14 +64,14 @@ Position::ID Trader::buy(const string& symbol, const date& dt, const Price& pric
 
   // Add new position to trader collection
   if( _miPositions.insert(pPos).first == _miPositions.end() )
-  	throw TraderException("Can't add long position");
+  	throw TraderException("Can't add new long position");
 
   // Return new position ID
   return _pid;
 }
 
 
-// Add buy for an existing position
+// Add buy execution to an existing position
 void Trader::buy(Position::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size) throw(TraderException)
 {
   // Find existing position
@@ -223,23 +224,14 @@ PositionSet Trader::positions( const std::string& symbol )
 }
 
 
-Position::ID Trader::strategy(const std::string& symbol, PositionPtr pPos) throw(TraderException)
+PositionPtr Trader::get( Position::ID id ) const throw(TraderException)
 {
-  PositionPtr pStratPos; // The new StrategyPosition
-
-  try {
-
-    pStratPos = PositionPtr(new StrategyPosition(++_pid, symbol, pPos));
-
-  } catch (const exception& ex) {
-
-    throw TraderException(ex.what());
+  PositionSet::const_iterator citer = _miPositions.find(id, pos_comp_id());
+  if( citer == _miPositions.end() ) {
+    strstream ss;
+    ss << "Can't find position id " << id;
+    throw TraderException(ss.str());
   }
-
-  // Add new position to global collection
-  if( _miPositions.insert(pStratPos).first == _miPositions.end() )
-    throw TraderException("Can't add new strategy position");
-
-  // Return new position ID
-  return _pid; 
+  
+  return *citer;
 }

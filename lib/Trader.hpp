@@ -32,8 +32,7 @@
 
 // Hudson
 #include "PositionSet.hpp"
-
-class Price;
+#include "Price.hpp"
 
 
 class TraderException: public std::exception
@@ -53,6 +52,11 @@ protected:
 };
 
 
+/*!
+  Simulates Buy, Sell, Sell Short and Cover transactions. All open and closed Position objects are grouped in a local PositionSet collection.
+  Transactions can create new Position objects or modify existing ones by calling the appropriate method using the unique Position::ID identifier.
+  \see positions()
+*/
 class Trader
 {
 public:
@@ -60,23 +64,25 @@ public:
   virtual ~Trader(void) { }
 
   /*!
-  \brief Buy to open a new LongPosition.
+  \brief Buy to open a new LongPosition at a specific price.
   \param symbol The name of the LongPosition.
   \param dt Transaction date.
   \param price Transaction Price.
   \param size Transaction size.
   */
-  Position::ID buy(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);  
+  Position::ID buy(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+
   /*!
-  \brief Buy to add to an existing LongPosition.
+  \brief Buy to add to an existing LongPosition at a specific price.
   \param id The LongPosition identifier.
   \param dt Transaction date.
   \param price Transaction Price.
   \param size Transaction size.
   */
   void buy(Position::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  
   /*!
-  \brief Sell to close or partially close an existing LongPosition.
+  \brief Sell to close or partially close an existing LongPosition at a specific price.
   \param id The LongPosition identifier.
   \param dt Transaction date.
   \param price Transaction Price.
@@ -85,46 +91,42 @@ public:
   void sell(Position::ID id, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
 
   /*!
-  \brief Sell short to open a new ShortPosition.
+  \brief Sell short to open a new ShortPosition at a specific price.
   \param symbol The name of the ShortPosition.
   \param dt Transaction date.
   \param price Transaction Price.
   \param size Transaction size.
   */
   Position::ID sell_short(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+
   /*!
-  \brief Sell short to open an existing ShortPosition.
+  \brief Sell short to open an existing ShortPosition at a specific price.
   \param id The ShortPosition identifier.
   \param dt Transaction date.
   \param price Transaction Price.
   \param size Transaction size.
   */
   void sell_short(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+
   /*!
-  \brief Cover to close or partially close an existing ShortPosition.
+  \brief Cover to close or partially close an existing ShortPosition at a specific price.
   \param id The ShortPosition identifier.
   \param dt Transaction date.
   \param price Transaction Price.
   \param size Transaction size.
   */
   void cover(Position::ID, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
-  
-  /*!
-  \brief Add a new StrategyPosition.
-  \param symbol The name of the new StrategyPosition being added.
-  \param pPos The first position added to the strategy.
-  \see StrategyPosition.
-  */
-  Position::ID strategy(const std::string& symbol, PositionPtr pPos) throw(TraderException);
 
   /*!
-  \brief Close an existing position of any type.
+  \brief Close a Position of any type at a specific price.
+  \note A StrategyPosition can not be closed at a specific price.
+  \see StrategyTrader.
   \param id The Position unique identifier.
   \param dt Transaction date.
   \param price Transaction Price.
   */
   void close(Position::ID id, const boost::gregorian::date& dt, const Price& price) throw(TraderException);
-
+  
   /*!
   \brief Return all the positions opened and closed by this Trader.
   */
@@ -136,8 +138,15 @@ public:
   PositionSet positions(const std::string& symbol);
 
 protected:
-  Position::ID _pid;
-  PositionSet _miPositions;
+  /*!
+  \brief Find Position by its identifier. Throw an exception if not found.
+  Application should use the public helper functions and in general not rely on single position extraction.
+  */
+  PositionPtr get(Position::ID id) const throw(TraderException);
+ 
+protected:
+  Position::ID _pid; //! Position id counter
+  PositionSet _miPositions; //! Complete set of open/closed PositionPtr for this Trader
 };
 
 #endif // _TRADER_HPP_

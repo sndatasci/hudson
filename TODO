@@ -1,5 +1,6 @@
 - Add data series database (only flat files are currently supported).
 - Add equity curve.
+- Add StrategyPosition monthly return support.
 - Improve positions peak and drawdown calculation speed.
 - Add excursion statistics (MAE MFE).
 - Add slippage and commissions factors.

@@ -30,6 +30,7 @@
 
 using namespace std;
 using namespace boost::gregorian;
+using namespace Series;
 
 
 Position::Position(ID id, const string& symbol):
@@ -42,7 +43,7 @@ Position::Position(ID id, const string& symbol):
 
 void Position::print(void) const
 {
-  cout << _symbol << ": ";
+  cout << endl << _symbol << ":";
   _sExecutions.print();
   
   if( open() )
@@ -60,3 +61,4 @@ boost::gregorian::date_period Position::hold_period( void ) const throw(Position
   return (closed() ? boost::gregorian::date_period(_sExecutions.first_by_date().dt(), _sExecutions.last_by_date().dt())
     : boost::gregorian::date_period(_sExecutions.first_by_date().dt(), Series::EODDB::instance().get(_symbol).rbegin()->first));
 }
+

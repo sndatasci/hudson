@@ -26,6 +26,8 @@
 
 // Hudson
 #include "Position.hpp"
+#include "Price.hpp"
+
 
 //! A new short position.
 /*!
@@ -55,7 +57,11 @@ public:
   unsigned shorts(void) const { return _shorts; }
   //! The number of cover executions run on this position.
   unsigned covers(void) const { return _covers; }
-
+  
+  //! Always throws an exception. ShortPosition are not composite positions.
+  //! \see StrategyPosition.
+  virtual bool add(const PositionPtr pPos) throw(PositionException);
+  
   //! Average short price.
   virtual double avgEntryPrice(void) const throw(PositionException) { return _avgShortPrice; }
   //! Average cover price.
@@ -70,14 +76,26 @@ public:
   //! Return monthly factor for month/year period
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException);
   
-  //! Virtual implementation. Will throw an exception.
+  //! Throw an exception. ShortPosition can not be bought.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
-  //! Virtual implementation. Will throw an exception.
+  //! Throw an exception. ShortPosition can not be bought.
+  virtual void buy(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException);
+  
+  //! Throw an exception. ShortPosition con not be sold.
   virtual void sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
-  //! Add a short Execution.
+  //! Throw an exception. ShortPosition can not be sold.
+  virtual void sell(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException);
+  
+  //! Add a ShortExecution.
   virtual void sell_short(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
-  //! Add a cover Execution.
+  //! Add a ShortExecution.
+  virtual void sell_short(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException) { sell_short(dt, Price::get(_symbol, dt, pt), size); }
+ 
+  //! Add a CoverExecution.
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
+  //! Add a CoverExecution.
+  virtual void cover(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException) { cover(dt, Price::get(_symbol, dt, pt), size); }
+  
   //! Close any open short size by adding a cover Execution.
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException);
   //! Close any open size on dt at market price.
@@ -85,7 +103,7 @@ public:
     \param dt The series date that will be used to retrieve a matching market price.
     \param pt The type of price that will be used to close the Position.
   */
-  virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException);
+  virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException) { close(dt, Price::get(_symbol, dt, pt)); }
   
 private:
   unsigned _shorts;
