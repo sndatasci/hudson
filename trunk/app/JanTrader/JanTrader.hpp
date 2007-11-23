@@ -28,10 +28,10 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 // Hudson
-#include "Trader.hpp"
+#include "StrategyTrader.hpp"
 
 
-class JanTrader: public Trader
+class JanTrader: public StrategyTrader
 {
 public:
   JanTrader(const std::string& long_symbol,  const std::string& hedge_symbol);

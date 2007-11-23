@@ -76,42 +76,10 @@ void JanTrader::run(int entry_offset, int exit_offset) throw(TraderException)
 		  continue;
 	  }
 
-    //strategy_buy(strat_id, longdb.name(), long_entry_iter->first, Price(long_entry_iter->second.adjclose));
-    //strategy_sell_short(strat_id, hedgedb.name(), hedge_entry_iter->first, Price(hedge_entry_iter->second.adjclose));
-    
-    // Create spread trades positions
-	  Position::ID long_id = buy(longdb.name(), long_entry_iter->first, Price(long_entry_iter->second.adjclose));
-	  Position::ID hedge_id = sell_short(hedgedb.name(), hedge_entry_iter->first, Price(hedge_entry_iter->second.adjclose));
-
-	  close(long_id, long_exit_iter->first, Price(long_exit_iter->second.adjclose));
-	  close(hedge_id, hedge_exit_iter->first, Price(hedge_exit_iter->second.adjclose));
-
-	  PositionSet::const_iterator long_iter = _miPositions.find(long_id, pos_comp_id());
-	  PositionSet::const_iterator hedge_iter = _miPositions.find(hedge_id, pos_comp_id());
-
-	  if( long_iter == _miPositions.end() || hedge_iter == _miPositions.end() ) {
-		  cerr << "Can't find positions closed on " << long_exit_iter->first << endl;
-		  continue;
-	  }
-
-    // Add new StrategyPosition
-    Position::ID strat_id = strategy("JanSpread", *long_iter);
-    
-    PositionSet::const_iterator strat_iter = _miPositions.find(strat_id, pos_comp_id());
-    if( strat_iter == _miPositions.end() ) {
-      cerr << "Can't get strategy position " << strat_id << endl;
-      continue;
-    }
-    
-    PositionPtr pPos = *strat_iter;
-    StrategyPosition* pStrategy = dynamic_cast<StrategyPosition*>(pPos.get());
-    if( pStrategy == NULL ) {
-      cerr << "Position " << (*strat_iter)->symbol() << " (" << (*strat_iter)->id() << ") is not a strategy" << endl;
-      continue;
-    }
-    
-    // Add hedge trade to StrategyPosition
-	  pStrategy->add(*hedge_iter);
+    Position::ID strat_id = strategy_buy("JanSpread", longdb.name(), long_entry_iter->first, Price(long_entry_iter->second.adjclose));
+    Position::ID short_pos_id = strategy_sell_short(strat_id, hedgedb.name(), hedge_entry_iter->first, Price(hedge_entry_iter->second.adjclose));
+	  
+	  strategy_close(strat_id, long_exit_iter->first, Series::EODDB::ADJCLOSE);
 
 	} catch( bad_day_of_month& me ) {
 	  cerr << "Month error: " << me.what() << endl;

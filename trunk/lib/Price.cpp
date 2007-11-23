@@ -19,8 +19,47 @@
 
 #include "StdAfx.h"
 
+// STD
+#include <strstream>
+
 // Hudson
 #include "Price.hpp"
+
+using namespace std;
+using namespace Series;
+
+
+Price Price::get( const std::string& symbol, const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) throw(PriceException)
+{
+  // Retrieve price type pt
+  Series::EODSeries::const_iterator citer = Series::EODDB::instance().get(symbol).find(dt);
+  if( citer == Series::EODDB::instance().get(symbol).end() ) {
+    strstream ss;
+    ss << "Can't find " << dt << " price record in " << symbol.c_str() << " series";
+    throw PriceException(ss.str());
+  }
+
+  double priceval = 0;
+  switch( pt ) {
+
+    case EODDB::OPEN:
+      priceval = citer->second.open;
+      break;
+
+    case EODDB::CLOSE:
+      priceval = citer->second.close;
+      break;
+
+    case EODDB::ADJCLOSE:
+      priceval = citer->second.adjclose;
+      break;
+
+    default:
+      throw PriceException("Invalid price type");
+  }
+
+  return Price(priceval);
+}
 
 
 Price::Price(double value) throw(PriceException):
@@ -44,4 +83,3 @@ Price& Price::operator=(const Price& src)
 
   return *this;
 }
-

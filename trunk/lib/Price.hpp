@@ -24,11 +24,17 @@
 #pragma warning (disable:4290)
 #endif
 
-// C++
+// STDLIB
 #include <stdexcept>
 
 // STL
 #include <string>
+
+// Boost
+#include <boost/date_time/gregorian/gregorian.hpp>
+
+// Hudson
+#include "EODDB.hpp"
 
 
 class PriceException: public std::exception
@@ -50,19 +56,27 @@ protected:
 
 class Price
 {
-  public:
-    //! Initialize Price with value and checks for valid value > 0.
-    explicit Price(double value) throw(PriceException);
-    Price(const Price& src);
+public:
+  //! Return a price for a specific symbol/date.
+  /*!
+  \param symbol The name of the database series where the lookup series will be performed.
+  \param dt The index used to lookup the price in the database series.
+  \param pt The price type. Valid values should be PriceType::OPEN, PriceType::CLOSE or PriceType::ADJCLOSE.
+  */
+  static Price get(const std::string& symbol, const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PriceException);
+  
+public:
+  //! Initialize Price with value and checks for valid value > 0.
+  explicit Price(double value) throw(PriceException);
+  Price(const Price& src);
 
-    Price& operator=(const Price& src);
+  Price& operator=(const Price& src);
 
-    double value(void) const { return _value; }
+  double value(void) const { return _value; }
 
-  protected:
-    double _value;
+protected:
+  double _value;
 };
-
 
 inline double operator-(const Price& first, const Price& second) { return first.value() - second.value(); }
 inline double operator+(const Price& first, const Price& second) { return first.value() + second.value(); }

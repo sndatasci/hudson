@@ -30,6 +30,7 @@
 
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/shared_ptr.hpp>
 
 // Hudson
 #include "ExecutionSet.hpp"
@@ -54,8 +55,12 @@ protected:
   std::string _Str;
 };
 
-//! Position interface.
+
+class Position;
+typedef boost::shared_ptr<Position> PositionPtr;
+
 /*!
+  \brief Abstract class defining Position services.
   \see LongPosition.
   \see ShortPosition.
   \see StrategyPosition.
@@ -110,6 +115,10 @@ public:
   virtual double avgEntryPrice(void) const throw(PositionException) = 0;
   //! Return Position average exit price.
   virtual double avgExitPrice(void) const throw(PositionException) = 0;
+  
+  //! Add an existing Position to this Position. Only valid for composite positions.
+  //! \return True if the Position was successfully added, false otherwise.
+  virtual bool add(const PositionPtr pPos) throw(PositionException) = 0;
 
   //! Return current return factor.
   virtual double factor(void) const = 0;
@@ -120,17 +129,29 @@ public:
   //! Return monthly factor for month/year period.
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException) = 0;
 
-  //! Add BuyExecution.
+  //! Add BuyExecution at specific price.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
-  //! Add SellExecution.
+  //! Add BuyExecution at database PriceType.
+  virtual void buy(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException) = 0;
+  
+  //! Add SellExecution at specific price.
   virtual void sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
-  //! Add SellShortExecution.
+  //! Add SellExecution at database PriceType.
+  virtual void sell(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException) = 0;
+    
+  //! Add SellShortExecution at specific price.
   virtual void sell_short(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
-  //! Add CoverExecution.
+  //! Add SellShortExecution database PriceType.
+  virtual void sell_short(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException) = 0;
+    
+  //! Add CoverExecution at specific price.
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;
+  //! Add CoverExecution at database PriceType.
+  virtual void cover(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException) = 0;
+    
   //! Close open Position size on dt at a specific price.
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException) = 0;
-  //! Close open Position size on dt at market price.
+  //! Close open Position size on dt at database PriceType.
   virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException) = 0;
  
 protected:

@@ -52,8 +52,18 @@ void StrategyPosition::buy( const boost::gregorian::date& dt, const Price& price
   throw PositionException("StrategyPosition can not be bought");
 }
 
+void StrategyPosition::buy( const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size ) throw(PositionException)
+{
+  throw PositionException("StrategyPosition can not be bought");
+}
+
 
 void StrategyPosition::sell( const boost::gregorian::date& dt, const Price& price, unsigned size ) throw(PositionException)
+{
+  throw PositionException("StrategyPosition can not be sold");
+}
+
+void StrategyPosition::sell( const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size ) throw(PositionException)
 {
   throw PositionException("StrategyPosition can not be sold");
 }
@@ -64,8 +74,18 @@ void StrategyPosition::sell_short( const boost::gregorian::date& dt, const Price
   throw PositionException("StrategyPosition can not be sold short");
 }
 
+void StrategyPosition::sell_short( const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size ) throw(PositionException)
+{
+  throw PositionException("StrategyPosition con not be sold short");
+}
+
 
 void StrategyPosition::cover( const boost::gregorian::date& dt, const Price& price, unsigned size ) throw(PositionException)
+{
+  throw PositionException("StrategyPosition can not be covered");
+}
+
+void StrategyPosition::cover( const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size ) throw(PositionException)
 {
   throw PositionException("StrategyPosition can not be covered");
 }
@@ -73,7 +93,7 @@ void StrategyPosition::cover( const boost::gregorian::date& dt, const Price& pri
 
 void StrategyPosition::close( const boost::gregorian::date& dt, const Price& price ) throw(PositionException)
 {
-  throw PositionException("StrategyPosition can not be closed at unique price");
+  throw PositionException("StrategyPosition can not be closed at single price");
 }
 
 
@@ -112,7 +132,7 @@ double StrategyPosition::factor( const boost::gregorian::date::month_type& month
 }
 
 
-bool StrategyPosition::add( const PositionPtr p )
+bool StrategyPosition::add( const PositionPtr p ) throw(PositionException)
 {
   // Add position pointers
   if( ! _sPositions.insert(p).second )

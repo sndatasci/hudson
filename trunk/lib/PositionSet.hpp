@@ -32,7 +32,6 @@
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/tag.hpp>
-#include <boost/shared_ptr.hpp>
 
 // Hudson
 #include "Position.hpp"
@@ -43,9 +42,6 @@ struct symbol_key { };
 struct first_exec_key { };
 struct last_exec_key { };
 
-//! Position shared pointer used in PositionSet multi index collection.
-//! \see PositionSet.
-typedef boost::shared_ptr<Position> PositionPtr;
 
 typedef boost::multi_index::multi_index_container<
 

@@ -35,7 +35,7 @@ class Price;
 //! Composite Position class.
 /*!
   StrategyPosition is a composite pattern class that aggregates executions for one or more Position objects. The factor() method is redefined
-  to accumulate factors of all Position included in the StrategyPosition. Any type of Position can be added to the StrategyPosition,
+  to accumulate factors for all Position included in the StrategyPosition. Any type of Position can be added to the StrategyPosition,
   including another StrategyPosition. This class can be used to build multi-leg strategies such as spread trades or pair trades, and calculate
   simulation statistics based on multiple Position composite returns.
   \see ReturnFactors.
@@ -57,7 +57,7 @@ public:
     \param p A pointer to the Position that will be added to this StrategyPosition.
     \return True if the Position was successfully added, false otherwise.
   */
-  bool add(const PositionPtr p); 
+  virtual bool add(const PositionPtr p) throw(PositionException);
 
   //! Get a specific Position by ID.
   /*!
@@ -105,18 +105,30 @@ public:
 
   //! Always throw an exception. A StrategyPosition can not be bought directly. See get() to buy a specific LongPosition.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
-  //! Add SellExecution. A StrategyPosition can not be sold directly. See get() to sell a specific LongPosition.
+  //! Always throw an exception. A StrategyPosition can not be bought directly. See get() to buy a specific LongPosition.
+  virtual void buy(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException);
+  
+  //! Always throw an exception. A StrategyPosition can not be sold directly. See get() to sell a specific LongPosition.
   virtual void sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
-  //! Add SellShortExecution. A StrategyPosition can not be shorted directly. See get() to short a specific ShortPosition.
+  //! Always throw an exception. A StrategyPosition can not be sold directly. See get() to sell a specific LongPosition.
+  virtual void sell(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException);
+  
+  //! Always throw an exception. A StrategyPosition can not be shorted directly. See get() to short a specific ShortPosition.
   virtual void sell_short(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
-  //! Add CoverExecution. A StrategyPosition can not be covered directly. See get() to cover a specific ShortPosition.
+  //! Always throw an exception. A StrategyPosition can not be shorted directly. See get() to short a specific ShortPosition.
+  virtual void sell_short(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException);
+ 
+  //! Always throw an exception. A StrategyPosition can not be covered directly. See get() to cover a specific ShortPosition.
   virtual void cover(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
+  //! Always throw an exception. A StrategyPosition can not be covered directly. See get() to cover a specific ShortPosition.
+  virtual void cover(const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size) throw(PositionException);
 
-  //! Always throw an exception. StrategyPosition can only be closed at market price or by closing each underlying Position.
+  //! Always throw an exception. StrategyPosition can only be closed at price type or by closing each underlying Position.
   virtual void close(const boost::gregorian::date& dt, const Price& price) throw(PositionException);
-  //! Close any open size at market price.
+  //! Close any open size on dt at price type pt.
   /*!
-    \param dt The series date that will be used to retrieve the market price.
+    All the Position objects included in the strategy will be closed on the date specified at PriceType.
+    \param dt The series date that will be used to retrieve the database price.
     \param pt The type of price that will be used to close the Position.
   */
   virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException);

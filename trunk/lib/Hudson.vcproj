@@ -24,7 +24,7 @@
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
-				RuntimeTypeInfo="TRUE"
+				RuntimeTypeInfo="FALSE"
 				UsePrecompiledHeader="3"
 				BrowseInformation="0"
 				WarningLevel="3"
@@ -198,6 +198,9 @@
 				RelativePath=".\StrategyPosition.cpp">
 			</File>
 			<File
+				RelativePath=".\StrategyTrader.cpp">
+			</File>
+			<File
 				RelativePath=".\TA.cpp">
 			</File>
 			<File
@@ -297,6 +300,9 @@
 			</File>
 			<File
 				RelativePath=".\StrategyPosition.hpp">
+			</File>
+			<File
+				RelativePath=".\StrategyTrader.hpp">
 			</File>
 			<File
 				RelativePath=".\TA.hpp">

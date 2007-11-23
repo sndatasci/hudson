@@ -66,6 +66,7 @@ namespace Series
       OPEN,
       CLOSE,
       ADJCLOSE,
+      MARKET,
       LIMIT
     };
 
