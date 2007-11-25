@@ -6,6 +6,3 @@
 - Add slippage and commissions factors.
 - Add support for intraday series.
 - Add real monthly risk-free rate of return historical data (currently defaults to 3%).
-- Integrate QuantLib.
-
-

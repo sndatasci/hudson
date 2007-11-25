@@ -25,7 +25,7 @@
 // STL
 #include <iostream>
 #include <string>
-#include <strstream>
+#include <sstream>
 
 // Hudson
 #include "Trader.hpp"
@@ -228,7 +228,7 @@ PositionPtr Trader::get( Position::ID id ) const throw(TraderException)
 {
   PositionSet::const_iterator citer = _miPositions.find(id, pos_comp_id());
   if( citer == _miPositions.end() ) {
-    strstream ss;
+    stringstream ss;
     ss << "Can't find position id " << id;
     throw TraderException(ss.str());
   }

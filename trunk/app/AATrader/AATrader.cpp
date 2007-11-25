@@ -17,7 +17,6 @@
  * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Hudson
 #include "AATrader.hpp"
 
 using namespace std;

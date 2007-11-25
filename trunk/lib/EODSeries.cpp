@@ -107,20 +107,27 @@ size_t Series::EODSeries::load(FileDriver& driver, const std::string& filename, 
 }
 
 
-boost::gregorian::date_period Series::EODSeries::period(void) const
+boost::gregorian::date_period Series::EODSeries::period(void) const throw(EODSeriesException)
 {
+  if( empty() )
+    throw EODSeriesException("Null series");
+
   return boost::gregorian::date_period(ThisMap::begin()->first, ThisMap::rbegin()->first);
 }
 
 
-boost::gregorian::date_duration Series::EODSeries::duration(void) const
+boost::gregorian::date_duration Series::EODSeries::duration(void) const throw(EODSeriesException)
 {
+  if( empty() )
+    throw EODSeriesException("Null series");
+
   return boost::gregorian::date_duration(ThisMap::rbegin()->first - ThisMap::begin()->first);
 }
 
 
 long Series::EODSeries::days(void) const
 {
+  if( empty() ) return 0;
   return boost::gregorian::date_duration(ThisMap::rbegin()->first - ThisMap::begin()->first).days();
 }
 

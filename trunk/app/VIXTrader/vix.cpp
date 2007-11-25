@@ -21,14 +21,15 @@
 #include <boost/program_options.hpp>
 
 // Hudson
-#include "YahooDriver.hpp"
-#include "EODSeries.hpp"
-#include "ReturnFactors.hpp"
-#include "PositionFactors.hpp"
+#include <EODDB.hpp>
+#include <ReturnFactors.hpp>
+#include <PositionFactors.hpp>
+#include <PositionFactorsSet.hpp>
+#include <BnHTrader.hpp>
+#include <Report.hpp>
+#include <PositionsReport.hpp>
+
 #include "VIXTrader.hpp"
-#include "BnHTrader.hpp"
-#include "Report.hpp"
-#include "PositionsReport.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -40,7 +41,7 @@ namespace po = boost::program_options;
 int main(int argc, char* argv[])
 {
   string begin_date, end_date;
-  string dbfile, vix_dbfile;
+  string spx_file, vix_file;
 
   try {
 
@@ -50,10 +51,10 @@ int main(int argc, char* argv[])
     po::options_description desc("Allowed options");
     desc.add_options()
       ("help", "produce help message")
-      ("series_file",     po::value<string>(&dbfile),                       "series database")
-      ("vix_series_file", po::value<string>(&vix_dbfile),                   "VIX series database")
-      ("begin_date",      po::value<string>(&begin_date),                   "start of trading period (YYYY-MM-DD)")
-      ("end_date",        po::value<string>(&end_date),                     "end of trading period (YYYY-MM-DD)")
+      ("spx_file",        po::value<string>(&spx_file),      "SPX series database")
+      ("vix_file",        po::value<string>(&vix_file),      "VIX series database")
+      ("begin_date",      po::value<string>(&begin_date),    "start of trading period (YYYY-MM-DD)")
+      ("end_date",        po::value<string>(&end_date),      "end of trading period (YYYY-MM-DD)")
       ;
 
     po::variables_map vm;
@@ -65,23 +66,22 @@ int main(int argc, char* argv[])
       exit(0);
     }
 
-    if( vm["series_file"].empty() ||
-        vm["vix_series_file"].empty() ||
-	      vm["begin_date"].empty() ||
-	      vm["end_date"].empty() ) {
+    if( vm["spx_file"].empty() ||
+        vm["vix_file"].empty() ||
+	vm["begin_date"].empty() ||
+	vm["end_date"].empty() ) {
       cout << desc << endl;
       exit(1);
     }
 
-    cout << "Series file: " << dbfile << endl;
-    cout << "VIX series file: " << vix_dbfile << endl;
+    cout << "SPX series file: " << spx_file << endl;
+    cout << "VIX series file: " << vix_file << endl;
 
     /*
     * Load series data
     */
-    YahooDriver yd;
-    EODSeries db(dbfile);
-    EODSeries vixdb(vix_dbfile);
+    const string spx_symbol = "SPX";
+    const string vix_symbol = "VIX";
 
     date load_begin(from_simple_string(begin_date));
     if( load_begin.is_not_a_date() ) {
@@ -95,44 +95,44 @@ int main(int argc, char* argv[])
       exit(EXIT_FAILURE);
     }
 
-    cout << "Loading " << dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( db.load(yd, dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-    }
+    cout << "Loading " << spx_file << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+    Series::EODDB::instance().load(spx_symbol, spx_file, Series::EODDB::YAHOO, load_begin, load_end);
 
-    cout << "Loading " << vix_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( vixdb.load(yd, vix_dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-    }
+    cout << "Loading " << vix_file << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
+    Series::EODDB::instance().load(vix_symbol, vix_file, Series::EODDB::YAHOO, load_begin, load_end);
 
-    cout << "Records: " << db.size() << endl;
-    cout << "Period: " << db.period() << endl;
-    cout << "Total days: " << db.duration().days() << endl;
+    const Series::EODSeries& spx_db = Series::EODDB::instance().get(spx_symbol);
+    const Series::EODSeries& vix_db = Series::EODDB::instance().get(vix_symbol);
+
+    cout << "SPX Records: " << spx_db.size() << endl;
+    cout << "SPX Period: " << spx_db.period() << endl;
+    cout << "SPX Total days: " << spx_db.duration().days() << endl;
+
+    cout << "VIX Records: " << vix_db.size() << endl;
+    cout << "VIX Period: " << vix_db.period() << endl;
+    cout << "VIX Total days: " << vix_db.duration().days() << endl;
 
     /*
     * Initialize and run strategy
     */
-    VIXTrader trader(db, vixdb);
+    VIXTrader trader(spx_db, vix_db);
     trader.run();
     PositionSet all_positions(trader.positions());
 
     /*
      * Print open/closed positions
      */
-    Price last(db.rbegin()->second.adjclose);
     Report::header("Closed trades");
-    trader.positions().closed().print(last);
+    trader.positions().closed().print();
 
     Report::header("Open trades");
-    trader.positions().open().print(last);
+    trader.positions().open().print();
 
     /*
      * Print simulation reports
      */
     Report::header("Trade results");
-    ReturnFactors rf(all_positions, last);
+    ReturnFactors rf(all_positions);
     Report rp(rf);
     rp.print();
 
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
      */
     Report::header("Positions excursion");
     
-    PositionFactorsSet pf(all_positions, db);
+    PositionFactorsSet pf(all_positions);
     PositionsReport pr(pf);
     pr.print();
 

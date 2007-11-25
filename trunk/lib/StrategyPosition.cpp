@@ -165,5 +165,5 @@ void StrategyPosition::print( void ) const
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
     (*citer)->print();
     
-  cout << endl << "Strategy factor " << factor() << " (" << (factor()-1)*100 << "%)";
+  cout << endl << "Strategy factor " << factor() << " (" << (factor()-1)*100 << "%)" << endl;
 }

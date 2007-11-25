@@ -26,18 +26,18 @@
 #include <boost/program_options.hpp>
 
 // Hudson
-#include "YahooDriver.hpp"
-#include "DMYCloseDriver.hpp"
-#include "EODSeries.hpp"
-#include "PositionFactors.hpp"
-#include "PositionFactorsSet.hpp"
-#include "AATraderMACD.hpp"
-#include "BnHTrader.hpp"
-#include "EOMReturnFactors.hpp"
-#include "EOMReport.hpp"
-#include "PositionsReport.hpp"
-#include "PortfolioReturns.hpp"
-#include "PortfolioReport.hpp"
+#include <YahooDriver.hpp>
+#include <DMYCloseDriver.hpp>
+#include <EODSeries.hpp>
+#include <PositionFactors.hpp>
+#include <PositionFactorsSet.hpp>
+#include <AATraderMACD.hpp>
+#include <BnHTrader.hpp>
+#include <EOMReturnFactors.hpp>
+#include <EOMReport.hpp>>
+#include <PositionsReport.hpp>
+#include <PortfolioReturns.hpp>
+#include <PortfolioReport.hpp>
 
 
 using namespace std;
@@ -91,15 +91,6 @@ int main(int argc, char* argv[])
     /*
      * Load series data
      */
-    YahooDriver yd;
-    DMYCloseDriver sd;
-  
-    EODSeries spx_db("SPX");
-    EODSeries tnx_db("TNX");
-    EODSeries djc_db("DJC");
-    EODSeries eafe_db("EAFE");
-    EODSeries reit_db("REIT");
-
     date load_begin(from_simple_string(begin_date));
     if( load_begin.is_not_a_date() ) {
       cerr << "Invalid begin date " << begin_date << endl;
@@ -112,36 +103,33 @@ int main(int argc, char* argv[])
       exit(EXIT_FAILURE);
     }
 
-    cout << "Loading " << spx_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( spx_db.load(yd, spx_dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-    }
-
-    cout << "Loading " << tnx_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( tnx_db.load(yd, tnx_dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-    }
-
-    cout << "Loading " << djc_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( djc_db.load(yd, djc_dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-    }
+    const string spx_symbol = "SPX";
+    const string tnx_symbol = "TNX";
+    const string reit_symbol = "REIT";
+    const string djc_symbol = "DJC";
+    const string eafe_symbol = "EAFE";
     
-    cout << "Loading " << eafe_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( eafe_db.load(sd, eafe_dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-    }
-
-    cout << "Loading " << reit_dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( reit_db.load(sd, reit_dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-    }
+    cout << "Loading " << spx_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
+    Series::EODDB::instance().load(spx_symbol, spx_dbfile, Series::EODDB::YAHOO, load_begin, load_end);
     
+    cout << "Loading " << tnx_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
+    Series::EODDB::instance().load(tnx_symbol, tnx_dbfile, Series::EODDB::YAHOO, load_begin, load_end);
+    
+    cout << "Loading " << djc_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
+    Series::EODDB::instance().load(djc_symbol, djc_dbfile, Series::EODDB::YAHOO, load_begin, load_end);
+    
+    cout << "Loading " << eafe_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
+    Series::EODDB::instance().load(eafe_symbol, eafe_dbfile, Series::EODDB::DMYC, load_begin, load_end);
+
+    cout << "Loading " << reit_dbfile << " from " << load_begin << " to " << load_end << "..." << endl;
+    Series::EODDB::instance().load(reit_symbol, reit_dbfile, Series::EODDB::DMYC, load_begin, load_end);
+
+    const Series::EODSeries& spx_db = Series::EODDB::instance().get(spx_symbol);
+    const Series::EODSeries& tnx_db = Series::EODDB::instance().get(tnx_symbol);
+    const Series::EODSeries& djc_db = Series::EODDB::instance().get(djc_symbol);
+    const Series::EODSeries& reit_db = Series::EODDB::instance().get(reit_symbol);
+    const Series::EODSeries& eafe_db = Series::EODDB::instance().get(eafe_symbol);
+        
     cout << "SPX Records: " << spx_db.size() << endl;
     cout << "SPX Period: " << spx_db.period() << endl;
     cout << "SPX Total days: " << spx_db.duration().days() << endl;
@@ -166,60 +154,54 @@ int main(int argc, char* argv[])
     AATraderMACD trader(spx_db, tnx_db, djc_db, eafe_db, reit_db);
     trader.run();
 
-    // All trades (closed + open)
-    Price spx_lastPrice(spx_db.rbegin()->second.adjclose);
-    Price tnx_lastPrice(tnx_db.rbegin()->second.adjclose);
-    Price djc_lastPrice(djc_db.rbegin()->second.adjclose);
-    Price eafe_lastPrice(eafe_db.rbegin()->second.adjclose);
-    Price reit_lastPrice(reit_db.rbegin()->second.adjclose);
-    
+    // Print trades  
     Report::header("Closed trades");
-    trader.positions("SPX").closed().print(spx_lastPrice);
-    trader.positions("TNX").closed().print(tnx_lastPrice);
-    trader.positions("DJC").closed().print(djc_lastPrice);
-    trader.positions("EAFE").closed().print(eafe_lastPrice);
-    trader.positions("REIT").closed().print(reit_lastPrice);
+    trader.positions("SPX").closed().print();
+    trader.positions("TNX").closed().print();
+    trader.positions("DJC").closed().print();
+    trader.positions("EAFE").closed().print();
+    trader.positions("REIT").closed().print();
     
     Report::header("Open trades");
-    trader.positions("SPX").open().print(spx_lastPrice);
-    trader.positions("TNX").open().print(tnx_lastPrice);
-    trader.positions("DJC").open().print(djc_lastPrice);
-    trader.positions("EAFE").open().print(eafe_lastPrice);
-    trader.positions("REIT").open().print(reit_lastPrice);
+    trader.positions("SPX").open().print();
+    trader.positions("TNX").open().print();
+    trader.positions("DJC").open().print();
+    trader.positions("EAFE").open().print();
+    trader.positions("REIT").open().print();
             
     // SPX stats
     Report::header("SPX Stats");
-    EOMReturnFactors spx_eomrf(trader.positions("SPX"), spx_db);
+    EOMReturnFactors spx_eomrf(trader.positions("SPX"), load_begin, load_end);
     EOMReport rp(spx_eomrf);
     rp.print();
     
     // TNX stats
     Report::header("TNX Stats");
-    EOMReturnFactors tnx_eomrf(trader.positions("TNX"), tnx_db);
+    EOMReturnFactors tnx_eomrf(trader.positions("TNX"), load_begin, load_end);
     EOMReport tnx_rp(tnx_eomrf);
     tnx_rp.print();
     
     // DJC stats
     Report::header("DJC Stats");
-    EOMReturnFactors djc_eomrf(trader.positions("DJC"), djc_db);
+    EOMReturnFactors djc_eomrf(trader.positions("DJC"), load_begin, load_end);
     EOMReport djc_rp(djc_eomrf);
     djc_rp.print();
     
     // EAFE stats
     Report::header("EAFE Stats");
-    EOMReturnFactors eafe_eomrf(trader.positions("EAFE"), eafe_db);
+    EOMReturnFactors eafe_eomrf(trader.positions("EAFE"), load_begin, load_end);
     EOMReport eafe_rp(eafe_eomrf);
     eafe_rp.print();
     
     // REIT stats
     Report::header("REIT Stats");
-    EOMReturnFactors reit_eomrf(trader.positions("REIT"), reit_db);
+    EOMReturnFactors reit_eomrf(trader.positions("REIT"), load_begin, load_end);
     EOMReport reit_rp(reit_eomrf);
     reit_rp.print();
     
     // Position analysis
     //Report::header("Positions");
-    //PositionFactorsSet pfs(trader.positions(), spx_db);
+    //PositionFactorsSet pfs(trader.positions());
     //PositionsReport pr(pfs);
     //pr.print();
     
@@ -238,8 +220,8 @@ int main(int argc, char* argv[])
     Report::header("SPX BnH");
     BnHTrader bnh(spx_db); 
     bnh.run();
-    bnh.positions().print(spx_lastPrice);
-    EOMReturnFactors bnh_eomrf(bnh.positions(), spx_db);
+    bnh.positions().print();
+    EOMReturnFactors bnh_eomrf(bnh.positions(), load_begin, load_end);
     EOMReport bnh_rp(bnh_eomrf);
 
     Report::precision(2);

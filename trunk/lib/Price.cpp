@@ -20,7 +20,7 @@
 #include "StdAfx.h"
 
 // STD
-#include <strstream>
+#include <sstream>
 
 // Hudson
 #include "Price.hpp"
@@ -34,7 +34,7 @@ Price Price::get( const std::string& symbol, const boost::gregorian::date& dt, S
   // Retrieve price type pt
   Series::EODSeries::const_iterator citer = Series::EODDB::instance().get(symbol).find(dt);
   if( citer == Series::EODDB::instance().get(symbol).end() ) {
-    strstream ss;
+    stringstream ss;
     ss << "Can't find " << dt << " price record in " << symbol.c_str() << " series";
     throw PriceException(ss.str());
   }

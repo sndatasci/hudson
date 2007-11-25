@@ -36,7 +36,7 @@ class EOMTrader: public Trader
   typedef Series::EODSeries DB;
 
 public:
-  EOMTrader(const DB& db);
+  EOMTrader(const std::string& symbol, const DB& db);
 
   void run(unsigned entry_days, unsigned exit_days) throw(TraderException);
 
@@ -45,6 +45,7 @@ public:
   boost::gregorian::days invested_days(void) { return _invested_days; }
 
 private:
+  const std::string _symbol;
   const DB& _db;
 
   boost::gregorian::date _first_entry;

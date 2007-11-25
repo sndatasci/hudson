@@ -26,17 +26,17 @@
 #include <boost/program_options.hpp>
 
 // Hudson
-#include "EODDB.hpp"
-#include "PositionFactors.hpp"
-#include "PositionFactorsSet.hpp"
-#include "AATrader.hpp"
-#include "BnHTrader.hpp"
-#include "EOMReturnFactors.hpp"
-#include "EOMReport.hpp"
-#include "PositionsReport.hpp"
-#include "PortfolioReturns.hpp"
-#include "PortfolioReport.hpp"
+#include <EODDB.hpp>
+#include <PositionFactors.hpp>
+#include <PositionFactorsSet.hpp>
+#include <BnHTrader.hpp>
+#include <EOMReturnFactors.hpp>
+#include <EOMReport.hpp>
+#include <PositionsReport.hpp>
+#include <PortfolioReturns.hpp>
+#include <PortfolioReport.hpp>
 
+#include "AATrader.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -221,12 +221,7 @@ int main(int argc, char* argv[])
     bnh.positions().print();
     EOMReturnFactors bnh_eomrf(bnh.positions(), load_begin, load_end);
     EOMReport bnh_rp(bnh_eomrf);
-
-    Report::precision(2);
-    bnh_rp.roi();
-    bnh_rp.cagr();
-    bnh_rp.gsdm();
-    bnh_rp.sharpe();
+    bnh_rp.print();
 
   } catch( std::exception& ex ) {
 

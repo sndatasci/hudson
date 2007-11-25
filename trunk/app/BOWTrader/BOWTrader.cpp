@@ -24,7 +24,8 @@ using namespace std;
 using namespace boost::gregorian;
 
 
-BOWTrader::BOWTrader(const DB& db):
+BOWTrader::BOWTrader(const string& symbol, const DB& db):
+  _symbol(symbol),
   _db(db),
   _invested_days(0)
 {
@@ -43,7 +44,7 @@ void BOWTrader::run(unsigned entry_offset, char entry_oc, unsigned exit_offset, 
 
 	DB::const_iterator first_tradeday_iter = _db.first_in_week((*witer).year(), (*witer).month(), (*witer).day());
 	if( first_tradeday_iter == _db.end() ) {
-	  cerr << "Can't find BOW at date " << (*witer) << endl;
+	  cerr << "Can't find " << _symbol << " at date " << (*witer) << endl;
 	  continue;
 	}
 
@@ -68,13 +69,13 @@ void BOWTrader::run(unsigned entry_offset, char entry_oc, unsigned exit_offset, 
 
 	DB::const_iterator entry_iter = _db.after(first_tradeday_iter->first, entry_offset);
 	if( entry_iter == _db.end() ) {
-	  cerr << "Can't find actual entry date for BOW " << first_tradeday_iter->first << endl;
+	  cerr << "Can't find actual entry date for " << _symbol << first_tradeday_iter->first << endl;
 	  continue;
 	}
 
 	DB::const_iterator exit_iter = _db.after(first_tradeday_iter->first, exit_offset);
 	if( exit_iter == _db.end() ) {
-	  cerr << "Can't find actual exit date for BOW " << first_tradeday_iter->first << endl;
+	  cerr << "Can't find actual exit date for " << _symbol << first_tradeday_iter->first << endl;
 	  continue;
 	}
 
@@ -83,8 +84,8 @@ void BOWTrader::run(unsigned entry_offset, char entry_oc, unsigned exit_offset, 
 	  double entry_price = (toupper(entry_oc) == 'O' ? entry_iter->second.open : entry_iter->second.close);
 	  double exit_price  = (toupper(exit_oc) == 'O' ? exit_iter->second.open : exit_iter->second.close);
 
-	  Position::ID id = sell_short("BOW", entry_iter->first, entry_price);
-	  close(id, exit_iter->first, exit_price);
+	  Position::ID id = sell_short(_symbol, entry_iter->first, Price(entry_price));
+	  close(id, exit_iter->first, Price(exit_price));
 
 	} catch( TraderException& te ) {
 	  cerr << "Trader error: " << te.what() << endl;

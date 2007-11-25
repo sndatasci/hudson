@@ -42,6 +42,21 @@
 
 namespace Series
 {
+  class EODSeriesException: public std::exception
+  {
+  public:
+    EODSeriesException(const std::string& msg):
+      _Str("EODSeriesException: ")
+    {
+      _Str += msg;
+    }
+
+    virtual ~EODSeriesException(void) throw() { }
+    virtual const char *what(void) const throw() { return _Str.c_str(); }
+    
+  protected:
+    std::string _Str;
+  };
 
   /*!
     EODSeries is an STL map collection indexed by date. The collection is meant to store
@@ -60,8 +75,8 @@ namespace Series
 
     //! Returns data series name.
     std::string name(void) const { return _name; }
-  	
-  	//! Returns true if data was loaded from a file. False otherwise.
+    
+    //! Returns true if data was loaded from a file. False otherwise.
     bool isLoaded(void) const { return _isLoaded; }
 
     /*!
@@ -85,9 +100,11 @@ namespace Series
     std::size_t load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
 
     //! Returns the loaded period.
-    boost::gregorian::date_period period(void) const;
+    boost::gregorian::date_period period(void) const throw(EODSeriesException);
+
     //! Returns the loaded period in date_duration format.
-    boost::gregorian::date_duration duration(void) const;
+    boost::gregorian::date_duration duration(void) const throw(EODSeriesException);
+
     //! Returns the loaded period in days.
     long days(void) const;
 

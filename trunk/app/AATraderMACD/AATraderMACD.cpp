@@ -25,9 +25,10 @@
 
 using namespace std;
 using namespace boost::gregorian;
+using namespace Series;
 
 
-AATraderMACD::AATraderMACD(const DB& spx_db, const DB& tnx_db, const DB& djc_db, const DB& eafe_db, const DB& reit_db):
+AATraderMACD::AATraderMACD(const EODSeries& spx_db, const EODSeries& tnx_db, const EODSeries& djc_db, const EODSeries& eafe_db, const EODSeries& reit_db):
   _spx_db(spx_db),
   _tnx_db(tnx_db),
   _djc_db(djc_db),
@@ -41,17 +42,17 @@ void AATraderMACD::run(void) throw(TraderException)
 {
   TA ta;
 
-  const DB spx_monthly_db  = _spx_db.monthly();
-  const DB tnx_monthly_db  = _tnx_db.monthly();
-  const DB djc_monthly_db  = _djc_db.monthly();
-  const DB eafe_monthly_db = _eafe_db.monthly();
-  const DB reit_monthly_db = _reit_db.monthly();
+  const EOMSeries spx_monthly_db = _spx_db.monthly();
+  const EOMSeries tnx_monthly_db = _tnx_db.monthly();
+  const EOMSeries djc_monthly_db = _djc_db.monthly();
+  const EOMSeries eafe_monthly_db = _eafe_db.monthly();
+  const EOMSeries reit_monthly_db = _reit_db.monthly();
 
-  DB::const_iterator spx_iter(spx_monthly_db.begin());
-  DB::const_iterator tnx_iter(tnx_monthly_db.begin());
-  DB::const_iterator djc_iter(djc_monthly_db.begin());
-  DB::const_iterator eafe_iter(eafe_monthly_db.begin());
-  DB::const_iterator reit_iter(reit_monthly_db.begin());
+  EOMSeries::const_iterator spx_iter(spx_monthly_db.begin());
+  EOMSeries::const_iterator tnx_iter(tnx_monthly_db.begin());
+  EOMSeries::const_iterator djc_iter(djc_monthly_db.begin());
+  EOMSeries::const_iterator eafe_iter(eafe_monthly_db.begin());
+  EOMSeries::const_iterator reit_iter(reit_monthly_db.begin());
 
   TA::MACDRes spxMACD = ta.MACD(spx_monthly_db.close(), 12, 26, 9);
   TA::MACDRes tnxMACD = ta.MACD(tnx_monthly_db.close(), 12, 26, 9);
@@ -74,7 +75,7 @@ void AATraderMACD::run(void) throw(TraderException)
 }
 
 
-void AATraderMACD::trade(const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd)
+void AATraderMACD::trade(const EOMSeries& db, EOMSeries::const_iterator& iter, const TA::MACDRes& macd)
 {
   for( int i = 0; iter != db.end(); ++iter, ++i ) {
 
@@ -92,7 +93,7 @@ void AATraderMACD::trade(const DB& db, DB::const_iterator& iter, const TA::MACDR
 }
 
 
-void AATraderMACD::check_buy( const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd, int i )
+void AATraderMACD::check_buy( const EOMSeries& db, EOMSeries::const_iterator& iter, const TA::MACDRes& macd, int i )
 {
   // Buy on MACD cross and MACD Hist > 0.5%
   if( _miPositions.open(db.name()).empty() && macd.macd[i] > macd.macd_signal[i] && (::abs(macd.macd_hist[i]) / iter->second.close ) > 0.005 ) {
@@ -100,7 +101,7 @@ void AATraderMACD::check_buy( const DB& db, DB::const_iterator& iter, const TA::
     //cout << db.name() << " MACD " << macd.macd[i] << " MACD Signal " << macd.macd_signal[i] << " MACD Hist " << macd.macd_hist[i] << endl;
     
     // Buy tomorrow's open
-    DB::const_iterator iter_entry = db.after(iter->first);
+    EOMSeries::const_iterator iter_entry = db.after(iter->first);
     if( iter_entry == db.end() ) {
       cerr << "Warning: can't open " << db.name() << " position after " << iter->first << endl;
       return;
@@ -112,13 +113,13 @@ void AATraderMACD::check_buy( const DB& db, DB::const_iterator& iter, const TA::
 }
 
 
-void AATraderMACD::check_sell( const DB& db, DB::const_iterator& iter, const TA::MACDRes& macd, int i )
+void AATraderMACD::check_sell( const EOMSeries& db, EOMSeries::const_iterator& iter, const TA::MACDRes& macd, int i )
 {
   if( ! _miPositions.open(db.name()).empty() && macd.macd[i] < macd.macd_signal[i] && (::abs(macd.macd_hist[i]) / iter->second.close ) > 0.005 ) {
   
     //cout << db.name() << "MACD " << macd.macd[i] << " MACD Signal " << macd.macd_signal[i] << " MACD Hist " << macd.macd_hist[i] << endl;
     
-    DB::const_iterator iter_exit = db.after(iter->first);
+    EOMSeries::const_iterator iter_exit = db.after(iter->first);
     if( iter_exit == db.end() ) {
       cerr << "Warning: can't close " << db.name() << " position after " << iter->first << endl;
       return;
@@ -134,4 +135,3 @@ void AATraderMACD::check_sell( const DB& db, DB::const_iterator& iter, const TA:
     } // end of all open positions
   }
 }
-
