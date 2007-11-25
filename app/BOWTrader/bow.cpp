@@ -1,21 +1,21 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
-*
-* This file is part of Hudson.
-*
-* Hudson is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Hudson is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2007, Alberto Giannetti
+ *
+ * This file is part of Hudson.
+ *
+ * Hudson is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Hudson is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 // Posix
 #include <ctime>
@@ -31,28 +31,26 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/program_options.hpp>
 
-// Series
-#include "YahooDriver.hpp"
-#include "EODSeries.hpp"
-#include "EOMReturnFactors.hpp"
-#include "PositionFactorsSet.hpp"
-#include "PositionsReport.hpp"
+// Hudson
+#include <EODDB.hpp>
+#include <EOMReturnFactors.hpp>
+#include <PositionFactorsSet.hpp>
+#include <PositionsReport.hpp>
+#include <BnHTrader.hpp>
+#include <EOMReport.hpp>
+
 #include "BOWTrader.hpp"
-#include "BnHTrader.hpp"
-#include "EOMReport.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
 
 namespace po = boost::program_options;
 
-typedef Series::EODSeries DB;
-
 
 int main(int argc, char* argv[])
 {
   string begin_date, end_date;
-  string dbfile;
+  string dbfile, symbol;
   unsigned entry_offset, exit_offset;
   char entry_oc, exit_oc;
 
@@ -61,10 +59,11 @@ int main(int argc, char* argv[])
     desc.add_options()
       ("help", "produce help message")
       ("series_file",  po::value<string>(&dbfile), "series database")
+      ("symbol",       po::value<string>(&symbol), "symbol")
       ("begin_date",   po::value<string>(&begin_date), "start of trading period")
       ("end_date",     po::value<string>(&end_date), "end of trading period")
       ("entry_offset", po::value<unsigned>(&entry_offset)->default_value(0), "offset entry from BOW (+days)")
-      ("exit_offset",  po::value<unsigned>(&exit_offset)->default_value(0), "offset exit from BOW (+days)")
+      ("exit_offset",  po::value<unsigned>(&exit_offset)->default_value(1), "offset exit from BOW (+days)")
       ("entry_oc",     po::value<char>(&entry_oc)->default_value('c'), "entry open/close")
       ("exit_oc",      po::value<char>(&exit_oc)->default_value('c'), "exit open/close")
       ;
@@ -79,8 +78,9 @@ int main(int argc, char* argv[])
     }
 
     if( vm["series_file"].empty() ||
-	      vm["begin_date"].empty() ||
-	      vm["end_date"].empty() ) {
+	vm["symbol"].empty() ||
+	vm["begin_date"].empty() ||
+	vm["end_date"].empty() ) {
       cout << desc << endl;
       exit(EXIT_FAILURE);
     }
@@ -97,16 +97,6 @@ int main(int argc, char* argv[])
 
     cout << "Series file: " << dbfile << endl;
 
-  } catch( exception& e ) {
-    cerr << "Error: " << e.what() << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  Series::YahooDriver yd;
-  DB db("myseries");
-
-  try {
-
     date load_begin(from_simple_string(begin_date));
     if( load_begin.is_not_a_date() ) {
       cerr << "Invalid begin date " << begin_date << endl;
@@ -120,10 +110,52 @@ int main(int argc, char* argv[])
     }
 
     cout << "Loading " << dbfile << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    if( db.load(yd, dbfile, load_begin, load_end) <= 0 ) {
-      cerr << "No records found" << endl;
-      exit(EXIT_FAILURE);
-    }
+    Series::EODDB::instance().load(symbol, dbfile, Series::EODDB::YAHOO, load_begin, load_end);
+
+    const Series::EODSeries& db = Series::EODDB::instance().get(symbol);
+
+    cout << "Records: " << db.size() << endl;
+    cout << "Period: " << db.period() << endl;
+    cout << "Total days: " << db.duration().days() << endl;
+
+    /*
+     * Initialize and run strategy
+     */
+    BOWTrader trader(symbol, db);
+    trader.run(entry_offset, entry_oc, exit_offset, exit_oc);
+
+    /*
+     * Print open/closed positions
+     */
+    Report::header("Closed trades");
+    trader.positions().closed().print();
+
+    Report::header("Open trades");
+    trader.positions().open().print();
+
+    /*
+     * Print simulation reports
+     */
+    Report::header("Trade results");
+    ReturnFactors rf(trader.positions());
+    Report rp(rf);
+    rp.print();
+
+    /*
+     * Positions excursion
+     */
+    Report::header("Positions excursion");
+    PositionFactorsSet pf(trader.positions().closed());
+    PositionsReport pr(pf);
+    pr.print();
+
+    // BnH
+    Report::header("BnH");
+    BnHTrader bnh(db);
+    bnh.run();
+    EOMReturnFactors bnh_rf(bnh.positions(), load_begin, load_end);
+    EOMReport bnh_rp(bnh_rf);
+    bnh_rp.print();
 
   } catch( Series::DriverException& e ) {
     cerr << "Driver error: " << e.what() << endl;
@@ -137,53 +169,6 @@ int main(int argc, char* argv[])
     cerr << "Error: " << e.what() << endl;
     exit(EXIT_FAILURE);
   }
-
-  cout << "Records: " << db.size() << endl;
-  cout << "Period: " << db.period() << endl;
-  cout << "Total days: " << db.duration().days() << endl;
-
-  /*
-   * Initialize and run strategy
-   */
-  BOWTrader trader(db);
-  trader.run(entry_offset, entry_oc, exit_offset, exit_oc);
-
-  /*
-   * Print open/closed positions
-   */
-  Price last(db.rbegin()->second.adjclose);
-  Report::header("Closed trades");
-  trader.positions().closed().print(last);
-
-  Report::header("Open trades");
-  trader.positions().open().print(last);
-
-  /*
-   * Print simulation reports
-   */
-  Report::header("Trade results");
-  ReturnFactors rf(trader.positions(), last);
-  Report rp(rf);
-  rp.print();
-
-  /*
-   * Positions excursion
-   */
-  Report::header("Positions excursion");
-  PositionFactorsSet pf(trader.positions().closed(), db);
-  PositionsReport pr(pf);
-  pr.print();
-
-  // BnH
-  Report::header("BnH");
-  BnHTrader bnh(db);
-  bnh.run();
-  EOMReturnFactors bnh_rf(bnh.positions(), db);
-  EOMReport bnh_rp(bnh_rf);
-
-  bnh_rp.roi();
-  bnh_rp.cagr();
-  bnh_rp.gsdm();
 
   return 0;
 }

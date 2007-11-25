@@ -36,7 +36,7 @@ class BOWTrader: public Trader
   typedef Series::EODSeries DB;
 
 public:
-  BOWTrader(const DB& db);
+  BOWTrader(const std::string& symbol, const DB& db);
 
   void run(unsigned entry_offset, char entry_oc, unsigned exit_offset, char exit_oc) throw(TraderException);
 
@@ -45,6 +45,7 @@ public:
   boost::gregorian::days invested_days(void) { return _invested_days; }
 
 private:
+  const std::string _symbol;
   const DB& _db;
 
   boost::gregorian::date _first_entry;

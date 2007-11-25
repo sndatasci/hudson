@@ -20,17 +20,14 @@
 #ifndef _AATRADER_HPP_
 #define _AATRADER_HPP_
 
-// STL
-#include <vector>
-
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 // Hudson
-#include "EODSeries.hpp"
-#include "EOMSeries.hpp"
-#include "Trader.hpp"
-#include "TA.hpp"
+#include <EODSeries.hpp>
+#include <EOMSeries.hpp>
+#include <Trader.hpp>
+#include <TA.hpp>
 
 //! Asset Allocator Trader.
 /*!

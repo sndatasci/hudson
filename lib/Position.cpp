@@ -43,7 +43,7 @@ Position::Position(ID id, const string& symbol):
 
 void Position::print(void) const
 {
-  cout << endl << _symbol << ":";
+  cout << _symbol << ":";
   _sExecutions.print();
   
   if( open() )

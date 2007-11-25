@@ -40,14 +40,9 @@ INCLUDES= \
 CFLAGS=-g
 CPPFLASG=
 LDFLAGS=
-DEPFLAGS=-M
-
 
 all: $(BIN)
 bin: $(BIN)
-
-%.d: %.cpp
-	@$(CXX) $(INCLUDES) $(DEPFLAGS) $< > $@
 
 %.o: %.cpp
 	$(CXX) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $< -o $@
@@ -60,5 +55,3 @@ clean:
 
 clobber:
 	\rm -f *.o *.d core $(BIN)
-
--include dep/$(SRC:.cpp=.d)

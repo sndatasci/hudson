@@ -44,6 +44,8 @@ SRC=\
 	PositionsReport.cpp \
 	SeriesFactor.cpp \
 	SeriesFactorSet.cpp \
+	StrategyPosition.cpp \
+	StrategyTrader.cpp \
 	Price.cpp \
 	PortfolioReturns.cpp \
 	PortfolioReport.cpp \
@@ -80,6 +82,8 @@ HDR=\
 	PortfolioReport.hpp \
 	SeriesFactor.hpp \
 	SeriesFactorSet.hpp \
+	StrategyPosition.hpp \
+	StrategyTrader.hpp \
 	Trader.hpp \
 	BnHTrader.hpp \
 	Price.hpp \
@@ -90,18 +94,17 @@ INCLUDES= \
 	-I/opt/local/include \
 	-I/opt/local/include/ta-lib
 
-CFLAGS=-g -O3
+CFLAGS=-g
 CPPFLASG=
 LDFLAGS=
 DEPFLAGS=-M
-
 
 all: $(LIB)
 
 lib: $(LIB)
 
-%.d: %.cpp
-	@$(CXX) $(INCLUDES) $(DEPFLAGS) $< > $@
+#%.d: %.cpp
+#	$(CXX) $(INCLUDES) $(DEPFLAGS) $< > .dep/$@
 
 %.o: %.cpp
 	$(CXX) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $< -o $@
@@ -116,5 +119,4 @@ clean:
 clobber:
 	\rm -f *.o *.d core $(BIN)
 
--include dep/$(SRC:.cpp=.d)
-
+#-include .dep/$(SRC:.cpp=.d)
