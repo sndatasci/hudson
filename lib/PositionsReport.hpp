@@ -39,8 +39,9 @@ class PositionsReport
 {
 public:
   /*!
-    PositionReport is initialized with unrealized factors statistics for a set of positions.
+    PositionReport prints unrealized factors statistics for a set of positions.
     \param pf Daily factors data for a set of Positions.
+    \see PositionFactorsSet.
   */
   PositionsReport(const PositionFactorsSet& pf);
 

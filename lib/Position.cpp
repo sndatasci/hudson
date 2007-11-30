@@ -58,7 +58,7 @@ boost::gregorian::date_period Position::hold_period( void ) const throw(Position
   if( _sExecutions.empty() )
     throw PositionException("No executions");
     
-  return (closed() ? boost::gregorian::date_period(_sExecutions.first_by_date().dt(), _sExecutions.last_by_date().dt())
-    : boost::gregorian::date_period(_sExecutions.first_by_date().dt(), Series::EODDB::instance().get(_symbol).rbegin()->first));
+  return (closed() ?
+            boost::gregorian::date_period(_sExecutions.first_by_date().dt(), _sExecutions.last_by_date().dt()) :
+              boost::gregorian::date_period(_sExecutions.first_by_date().dt(), Series::EODDB::instance().get(_symbol).rbegin()->first));
 }
-

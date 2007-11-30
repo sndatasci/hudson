@@ -62,18 +62,23 @@ public:
   virtual bool add(const PositionPtr pPos) throw(PositionException);
 
   //! Average buy price. 
-  virtual double avgEntryPrice(void) const throw(PositionException) { return _avgBuyPrice; }
+  virtual Price avgEntryPrice(void) const throw(PositionException) { return Price(_avgBuyPrice); }
   //! Average sell price.
-  virtual double avgExitPrice(void) const throw(PositionException) { return _avgSellPrice; }
+  virtual Price avgExitPrice(void) const throw(PositionException) { return Price(_avgSellPrice); }
 
   //! Current return factor: average sell price divided by average buy price.
   virtual double factor(void) const throw(PositionException);
-  //! Return factor calculated dividing the price parameter into the avgEntryPrice().
-  virtual double factor(const Price& price) const throw(PositionException);
-  //! XXX should be a static: curr_price / prev_price.
-  virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException);
-  //! Return monthly factor for month/year period
+  //! Return factor until dt using PriceType pt. Throw an exception if the input date precedes the Position opening Execution.
+  virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) const throw(PositionException);
+  //! Return factor for a given period using PriceType from_pt and to_pt.
+  virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType start_pt, Series::EODDB::PriceType end_pt) const throw(PositionException);
+  //! Return monthly factor for month/year period.
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException);
+  
+  //! Return series factors until dt using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);
+  //! Return all factors for the period dp using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);
 
   //! Add BuyExecution at specific price.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);

@@ -32,7 +32,6 @@
 #include "EODDB.hpp"
 
 using namespace std;
-using namespace boost::posix_time;
 using namespace boost::gregorian;
 using namespace Series;
 
@@ -42,33 +41,25 @@ PositionFactors::PositionFactors( const Position& pos ):
 {
   // Browse all price series from the position opening and build daily factors
   date prev_date = _pos.first_exec().dt();
-  double prev_price = _pos.avgEntryPrice();
 
-  double curr_price = 0;
-  date curr_date;
-
-  // Initialize all factors until the end of the series database
+  // Initialize all factors until the either the last (closing) execution date or the end of the series database
   //cout << "Initializing daily factors for position " << _pos.id() << " (" << _pos.first_exec().dt() << "/" << _pos.last_exec().dt() << ")" << endl;
-  const Series::EODSeries& series = Series::EODDB::instance().get(_pos.symbol());
+  const EODSeries& series = EODDB::instance().get(_pos.symbol());
   for( EODSeries::const_iterator iter = series.after(_pos.first_exec().dt()); iter != series.end(); ++iter ) {
 
     // If position is closed we only initialize factors up to the last execution
     if( _pos.closed() && iter->first > _pos.last_exec().dt() )
       break;
 
-    // Get current price mark
-    curr_price = iter->second.close;
-    curr_date  = iter->first;
-
     // Calculate position factor until this point
-    double f = _pos.factor(Price(prev_price), Price(curr_price));
+    double f = _pos.factor(date_period(prev_date, iter->first), EODDB::CLOSE, EODDB::CLOSE);
 
-    // Initialize SeriesFactorSet indexed by time to calculate bfe() and wae(). multi_index secondary index is too slow.
-    _sf_fromtm.insert(SeriesFactor(ptime(prev_date), ptime(curr_date), f));
-    _sf_totm.insert(SeriesFactor(ptime(prev_date), ptime(curr_date), f));
+    // Initialize SeriesFactorSet objects indexed both by from_time and to_time to calculate bfe() and wae().
+    // This is for performance reasons. multi_index secondary keys are slower than two primary key collections.
+    _sf_fromtm.insert(SeriesFactor(prev_date, iter->first, f));
+    _sf_totm.insert(SeriesFactor(prev_date, iter->first, f));
 
-    prev_price = curr_price;
-    prev_date = curr_date;
+    prev_date = iter->first;
   }
 
   //cout << "Time-based items (from_tm): " << (unsigned int)_sf_fromtm.size() << endl;
@@ -88,14 +79,14 @@ SeriesFactorSet PositionFactors::max_cons_pos(void) const
       continue;
     }
 
-    // Found a positive factor, keep going until it last
+    // Positive factor, look for positive sequence
     SeriesFactorSet sfset;
     while( iter != _sf_totm.end() && (*iter).factor() > 1 ) {
       sfset.insert(*iter);
       ++iter;
     }
 
-    // Store new record high if better than previous one
+    // Store new last consecutive-positive if better than previous one
     if( sfset.size() > maxSFS.size() )
       maxSFS = sfset;
   }
@@ -122,6 +113,7 @@ SeriesFactorSet PositionFactors::max_cons_neg(void) const
       ++iter;
     }
 
+    // Store new last consecutive-negative if better than previous one
     if( sfset.size() > maxSFS.size() )
       maxSFS = sfset;
   }

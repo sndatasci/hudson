@@ -129,31 +129,85 @@ void ShortPosition::sell( const boost::gregorian::date& dt, Series::EODDB::Price
 
 double ShortPosition::factor( void ) const throw(PositionException)
 {
-  if( _avgShortPrice <= 0 )
-    throw PositionException("Invalid average short price");
-
-  if( closed() && _avgCoverPrice <= 0 )
-    throw PositionException("Invalid average cover price");
+  if( !isValid() )
+    throw PositionException("Short position in invalid state");
 
   return closed() ? _avgShortPrice / _avgCoverPrice : _avgShortPrice / Series::EODDB::instance().get(_symbol).last().adjclose;
 }
 
 
-double ShortPosition::factor( const Price& price ) const throw(PositionException)
+double ShortPosition::factor( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) const throw(PositionException)
 {
-  if( closed() )
-    throw PositionException("Closed position");
+  if( !avgEntryPrice().isValid() )
+    throw PositionException("Invalid average sell short price");
 
-  if( _avgShortPrice <= 0 )
-    throw PositionException("Invalid short price");
+  if( dt <= first_exec().dt() )
+    throw PositionException("Input date after first execution date");
 
-  return _avgShortPrice / price.value();
+  return _avgShortPrice / Price::get(_symbol, dt, pt).value();
 }
 
 
-double ShortPosition::factor( const Price& prev_price, const Price& curr_price ) const throw(PositionException)
+double ShortPosition::factor( const boost::gregorian::date_period& dp, EODDB::PriceType start_pt, EODDB::PriceType end_pt ) const throw(PositionException)
 {
-  return prev_price / curr_price;
+  // Verify that input period is contained within position holding period
+  if( ! hold_period().contains(dp) )
+    throw PositionException("Requested factor period is out of Position range");
+
+  return Price::get(_symbol, dp.begin(), end_pt) / Price::get(_symbol, dp.end(), start_pt);
+}
+
+
+SeriesFactorSet ShortPosition::factors( const boost::gregorian::date& dt, Series::EODDB::PriceType pt /*= Series::EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
+{
+  SeriesFactorSet sfs;
+  date prev_date = first_exec().dt();
+
+  // Set start of series on position opening date
+  const EODSeries& series = EODDB::instance().get(_symbol);
+  for( EODSeries::const_iterator citer = series.after(first_exec().dt()); citer != series.end(); ++citer ) {
+
+    // If we're over the request date or position is closed and we're over the last execution date, then we're done
+    if( (*citer).first > dt || (closed() && (*citer).first > last_exec().dt()) )
+      break;
+
+    double f = factor(date_period(prev_date, citer->first), pt, pt);
+    sfs.insert(SeriesFactor(prev_date, citer->first, f));
+
+    prev_date = citer->first;
+  }
+
+  return sfs;
+}
+
+
+SeriesFactorSet ShortPosition::factors( const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt /*= Series::EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
+{
+  SeriesFactorSet sfs;
+
+  if( ! hold_period().contains(dp) )
+    throw PositionException("Requested period is out of range");
+
+  const EODSeries& series = EODDB::instance().get(_symbol);
+
+  EODSeries::const_iterator citer = series.after(dp.begin(), 0);
+  if( citer == series.end() )
+    throw PositionException("Can't find begin of period in series");
+
+  date prev_date = citer->first;
+
+  for( EODSeries::const_iterator citer = series.after(dp.begin()); citer != series.end(); ++citer ) {
+    // If we're over the end of period or position is closed and we're over the last execution date, then we're done
+    if( (*citer).first > dp.last() || (closed() && (*citer).first > last_exec().dt()) )
+      break;
+
+    double f = factor(date_period(prev_date, citer->first), pt, pt);
+    sfs.insert(SeriesFactor(prev_date, citer->first, f));
+
+    prev_date = citer->first;
+  }
+
+  return sfs;
 }
 
 
@@ -185,7 +239,7 @@ double ShortPosition::factor( const boost::gregorian::date::month_type& month, c
 
     // Else if position was opened after begin mark, use position opening price
   } else if( first_exec().dt() > begin_mark && first_exec().dt() <= end_mark ) {
-    begin_price = avgEntryPrice();
+    begin_price = avgEntryPrice().value();
     //cout << "Position opened after previous EOM mark price, using position avg entry price" << endl;
 
     // Should never end up here 
@@ -206,7 +260,7 @@ double ShortPosition::factor( const boost::gregorian::date::month_type& month, c
 
     // Else if position closing execution is before end-month mark, use execution price
   } else if( last_exec().dt() <= end_mark ) {
-    end_price = avgExitPrice();
+    end_price = avgExitPrice().value();
     //cout << "Position closed before EOM mark price, using position avg exit price" << endl;
 
     // Should never finish here

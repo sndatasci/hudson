@@ -34,9 +34,9 @@
 
 // Hudson
 #include "ExecutionSet.hpp"
+#include "SeriesFactorSet.hpp"
 #include "EODDB.hpp"
-
-class Price;
+#include "Price.hpp"
 
 
 class PositionException: public std::exception
@@ -89,9 +89,11 @@ public:
   int size(void) const { return _size; }
 
   //! Is Position open.
-  virtual bool open(void) const { return _size != 0; }
+  bool open(void) const { return _size != 0; }
   //! Is Position closed.
-  virtual bool closed(void) const { return !_sExecutions.empty() && !open(); }
+  bool closed(void) const { return !_sExecutions.empty() && !open(); }
+  //! Position consistency check. Either position is open or it was closed.
+  bool isValid(void) const { return avgEntryPrice().isValid() && ( open() || (closed() && avgExitPrice().isValid()) ); }
   //! Print position data.
   virtual void print(void) const;
 
@@ -112,9 +114,9 @@ public:
   boost::gregorian::date_period hold_period(void) const throw(PositionException);
 
   //! Return Position average entry price.
-  virtual double avgEntryPrice(void) const throw(PositionException) = 0;
+  virtual Price avgEntryPrice(void) const throw(PositionException) = 0;
   //! Return Position average exit price.
-  virtual double avgExitPrice(void) const throw(PositionException) = 0;
+  virtual Price avgExitPrice(void) const throw(PositionException) = 0;
   
   //! Add an existing Position to this Position. Only valid for composite positions.
   //! \return True if the Position was successfully added, false otherwise.
@@ -122,12 +124,17 @@ public:
 
   //! Return current return factor.
   virtual double factor(void) const = 0;
-  //! Return current return factor calculated from avgEntryPrice to price parameter.
-  virtual double factor(const Price& price) const throw(PositionException) = 0;
-  //! Return return factor from prev_price to curr_price. Factor calculation will change according to Position type.
-  virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException) = 0;
+  //! Return factor from avgEntryPrice() to dt using PriceType pt.
+  virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) const throw(PositionException) = 0;
+  //! Return factor for period dp using PriceType pt.
+  virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt) const throw(PositionException) = 0;
   //! Return monthly factor for month/year period.
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException) = 0;
+  
+  //! Return series factors until dt using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException) = 0;
+  //! Return all factors for the period dp using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException) = 0;
 
   //! Add BuyExecution at specific price.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;

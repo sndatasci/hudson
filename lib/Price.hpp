@@ -72,6 +72,7 @@ public:
 
   Price& operator=(const Price& src);
 
+  bool isValid(void) const { return _value > 0; }
   double value(void) const { return _value; }
 
 protected:

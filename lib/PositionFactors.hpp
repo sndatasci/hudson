@@ -30,6 +30,9 @@
 // STL
 #include <stdexcept>
 
+// Boost
+#include <boost/date_time/gregorian/gregorian.hpp>
+
 // Hudson
 #include "Position.hpp"
 #include "SeriesFactor.hpp"
@@ -54,46 +57,46 @@ class PositionFactorsException: public std::exception
 
 
 /*!
-* Position daily factors. Used to calculate Position unrealized peak/drawdown statistics.
+* Position daily factors. Used to calculate single Position unrealized peak/drawdown statistics.
 */
 class PositionFactors
 {
-  public:
-    /*!
-    * Initialize position daily factors for this position.
-    * \param pos Position that must be analyzed.
-    */
-    PositionFactors(const Position& pos);
+public:
+  /*!
+  * Initialize position daily factors for this position.
+  * \param pos Position that must be analyzed.
+  */
+  PositionFactors(const Position& pos);
 
-    //! Maximum consecutive positive daily factors.
-    SeriesFactorSet max_cons_pos(void) const;
-    //! Maximum consecutive negative daily factors.
-    SeriesFactorSet max_cons_neg(void) const;
+  //! Maximum consecutive positive daily factors.
+  SeriesFactorSet max_cons_pos(void) const;
+  //! Maximum consecutive negative daily factors.
+  SeriesFactorSet max_cons_neg(void) const;
 
-    //! Best daily peak.
-    SeriesFactorSet bfe(void) const throw(PositionFactorsException);
-    //! Worst daily drawdown.
-    SeriesFactorSet wae(void) const throw(PositionFactorsException);
+  //! Best daily peak.
+  SeriesFactorSet bfe(void) const throw(PositionFactorsException);
+  //! Worst daily drawdown.
+  SeriesFactorSet wae(void) const throw(PositionFactorsException);
 
-  private:
-    const Position& _pos;
+private:
+  const Position& _pos;
 
-    // Must index SeriesFactor by date to speed up excursion calculations
-    struct SeriesFactorToTmCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
-    {
-      bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.to_tm() < sf2.to_tm(); }
-    };
+  // Must index SeriesFactor by date to speed up excursion calculations
+  struct SeriesFactorToTmCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
+  {
+    bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.to_tm() < sf2.to_tm(); }
+  };
 
-    struct SeriesFactorFromTmCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
-    {
-      bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.from_tm() < sf2.from_tm(); }
-    };
+  struct SeriesFactorFromTmCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
+  {
+    bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.from_tm() < sf2.from_tm(); }
+  };
 
-    typedef std::set<SeriesFactor, SeriesFactorToTmCmp>   SF_TOTM;
-    typedef std::set<SeriesFactor, SeriesFactorFromTmCmp> SF_FROMTM;
+  typedef std::set<SeriesFactor, SeriesFactorToTmCmp>   SF_TOTM;
+  typedef std::set<SeriesFactor, SeriesFactorFromTmCmp> SF_FROMTM;
 
-    SF_TOTM   _sf_totm;
-    SF_FROMTM _sf_fromtm;    
+  SF_TOTM   _sf_totm;
+  SF_FROMTM _sf_fromtm;    
 
 private:
   struct PeriodFactor
@@ -102,8 +105,8 @@ private:
     bool isValid(void) const;
 
     double factor;
-    boost::posix_time::ptime from_tm;
-    boost::posix_time::ptime to_tm;
+    boost::gregorian::date from_tm;
+    boost::gregorian::date to_tm;
   };
 
   PeriodFactor _wae(SF_TOTM::const_iterator& start) const;

@@ -63,18 +63,23 @@ public:
   virtual bool add(const PositionPtr pPos) throw(PositionException);
   
   //! Average short price.
-  virtual double avgEntryPrice(void) const throw(PositionException) { return _avgShortPrice; }
+  virtual Price avgEntryPrice(void) const throw(PositionException) { return Price(_avgShortPrice); }
   //! Average cover price.
-  virtual double avgExitPrice(void) const throw(PositionException) { return _avgCoverPrice; }
+  virtual Price avgExitPrice(void) const throw(PositionException) { return Price(_avgCoverPrice); }
 
   //! Current return factor: average short price divided by the average cover price.
   virtual double factor(void) const throw(PositionException);
-  //! Return factor calculated dividing avgEntrPrice() into the price parameter.
-  virtual double factor(const Price& price) const throw(PositionException);
-  //! XXX: Should be a static.
-  virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException);
+  //! Return factor until dt using PriceType pt. Throw an exception if the input date precedes the Position opening Execution.
+  virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) const throw(PositionException);
+  //! Return factor for a given period using PriceType from_pt and to_pt
+  virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType start_pt, Series::EODDB::PriceType end_pt) const throw(PositionException);
   //! Return monthly factor for month/year period
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException);
+
+  //! Return series factors until dt using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);
+  //! Return all factors for the period dp using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);
   
   //! Throw an exception. ShortPosition can not be bought.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);

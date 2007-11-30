@@ -28,7 +28,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 // Hudson
-#include "StrategyTrader.hpp"
+#include <StrategyTrader.hpp>
 
 
 class JanTrader: public StrategyTrader
