@@ -23,7 +23,7 @@
 #include "SeriesFactor.hpp"
 
 
-SeriesFactor::SeriesFactor(const boost::posix_time::ptime& from, const boost::posix_time::ptime& to, double f):
+SeriesFactor::SeriesFactor(const boost::gregorian::date& from, const boost::gregorian::date& to, double f):
   _from(from),
   _to(to),
   _f(f)

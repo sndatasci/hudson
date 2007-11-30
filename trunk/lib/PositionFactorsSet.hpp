@@ -54,7 +54,10 @@ protected:
 
 /*!
   A collection of PositionFactors. Calculates peak/drawdown Position statistics for a set of PositionFactors.
-  \see PositionFactors.
+  While PositionFactors analyzes factors for a single Position, PositionFactorsSet look at the data for a number of
+  PositionFactors objects and extract some significant values, such as the highest peak among all the included
+  PositionFactors or the total bars longest drawdown.
+  \see ExcursionResults.
 */
 class PositionFactorsSet
 {

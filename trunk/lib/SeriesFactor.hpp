@@ -21,7 +21,7 @@
 #define _SERIESFACTOR_HPP_
 
 // Boost
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 /*!
 * Single daily factor. SeriesFactor and SeriesFactorSet are used in PositionFactors class to calculate single-position
@@ -38,21 +38,21 @@ public:
   * \param to Factor date/time end.
   * \param f Factor value.
   */
-  SeriesFactor(const boost::posix_time::ptime& from, const boost::posix_time::ptime& to, double f);
+  SeriesFactor(const boost::gregorian::date& from, const boost::gregorian::date& to, double f);
 
   bool operator<(const SeriesFactor& sf) const { return _f < sf._f; }
 
   //! Factor calculation start date/time.
-  const boost::posix_time::ptime& from_tm(void) const { return _from; }
+  const boost::gregorian::date& from_tm(void) const { return _from; }
   //! Factor calculation end date/time.
-  const boost::posix_time::ptime& to_tm(void) const { return _to; }
+  const boost::gregorian::date& to_tm(void) const { return _to; }
   
   //! Factor value.
   double factor(void) const { return _f; }
 
 private:
-  boost::posix_time::ptime _from;
-  boost::posix_time::ptime _to;
+  boost::gregorian::date _from;
+  boost::gregorian::date _to;
   double _f;
 };
 

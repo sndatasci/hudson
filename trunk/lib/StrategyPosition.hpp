@@ -29,8 +29,8 @@
 
 // Hudson
 #include "PositionSet.hpp"
+#include "Price.hpp"
 
-class Price;
 
 //! Composite Position class.
 /*!
@@ -89,19 +89,24 @@ public:
 
   //! Always throw an exception. A StrategyPosition does not have a single entry price.
   //! See get() to extract underlying Position objects and read average entry/exit prices.
-  virtual double avgEntryPrice(void) const throw(PositionException);
+  virtual Price avgEntryPrice(void) const throw(PositionException);
   //! Always throw an exception. A StrategyPosition does not have a unique entry price.
   //! See get() to extract underlying Position objects and read average entry/exit prices.
-  virtual double avgExitPrice(void) const throw(PositionException);
+  virtual Price avgExitPrice(void) const throw(PositionException);
 
   //! Return strategy factor. This is the product factor for all Position included in the strategy.
   virtual double factor(void) const;
-  //! Always throw an exception. A StrategyPosition does not a have a single entry/exit price.
-  virtual double factor(const Price& price) const throw(PositionException);
-  //! Always throw an exception. A StrategyPosition does not a have a single entry/exit price.
-  virtual double factor(const Price& prev_price, const Price& curr_price) const throw(PositionException);
+  //! Return factor until dt using PriceType pt. Throw an exception if the input date precedes the Position opening Execution.
+  virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) const throw(PositionException);
+  //! Return factor for a given period using PriceType from_pt and to_pt
+  virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType start_pt, Series::EODDB::PriceType end_pt) const throw(PositionException);
   //! Return monthly factor for month/year period.
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException);
+  
+  //! Return series factors until dt using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);
+  //! Return all factors for the period dp using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);
 
   //! Always throw an exception. A StrategyPosition can not be bought directly. See get() to buy a specific LongPosition.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);

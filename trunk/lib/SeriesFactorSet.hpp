@@ -29,11 +29,11 @@
 #include <string>
 
 // Boost
+#include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/tag.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 // Hudson
 #include "SeriesFactor.hpp"
@@ -48,8 +48,8 @@ typedef boost::multi_index::multi_index_container<
 
   boost::multi_index::indexed_by<
     boost::multi_index::ordered_unique<boost::multi_index::identity<SeriesFactor> >,
-    boost::multi_index::ordered_non_unique<boost::multi_index::tag<from_key>, boost::multi_index::const_mem_fun<SeriesFactor, const boost::posix_time::ptime&, &SeriesFactor::from_tm> >,
-    boost::multi_index::ordered_non_unique<boost::multi_index::tag<to_key>, boost::multi_index::const_mem_fun<SeriesFactor, const boost::posix_time::ptime&, &SeriesFactor::to_tm> >
+    boost::multi_index::ordered_non_unique<boost::multi_index::tag<from_key>, boost::multi_index::const_mem_fun<SeriesFactor, const boost::gregorian::date&, &SeriesFactor::from_tm> >,
+    boost::multi_index::ordered_non_unique<boost::multi_index::tag<to_key>, boost::multi_index::const_mem_fun<SeriesFactor, const boost::gregorian::date&, &SeriesFactor::to_tm> >
   >
 > __SeriesFactorSet;
 

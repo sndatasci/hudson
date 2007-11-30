@@ -32,11 +32,13 @@
 #include <boost/program_options.hpp>
 
 // Hudson
-#include "EODDB.hpp"
-#include "EOMReturnFactors.hpp"
-#include "EOMReport.hpp"
-#include "PositionFactorsSet.hpp"
-#include "PositionsReport.hpp"
+#include <EODDB.hpp>
+#include <EOMReturnFactors.hpp>
+#include <EOMReport.hpp>
+#include <PositionFactorsSet.hpp>
+#include <PositionsReport.hpp>
+
+// App
 #include "JanTrader.hpp"
 
 using namespace std;
@@ -142,13 +144,12 @@ int main(int argc, char* argv[])
     rp.print();
 
     /*
-    * Positions stats
-    * Can not calculate for StrategyPosition. 
+    * Position stats
     */
-    //Report::header("Positions stats");
-    //PositionFactorsSet pf(trader.positions().stratPos().closed());
-    //PositionsReport pr(pf);
-    //pr.print();
+    Report::header("Positions stats");
+    PositionFactorsSet pf(trader.positions().stratPos().closed());
+    PositionsReport pr(pf);
+    pr.print();
     
   } catch ( std::exception& ex ) {
   

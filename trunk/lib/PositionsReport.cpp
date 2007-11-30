@@ -79,7 +79,7 @@ void PositionsReport::favorable(void) const
   const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
 
   std::cout << "Best peak: " << (sfs.factor()-1)*100 << '%';
-  std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << std::endl;
+  std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
 }
 
 
@@ -110,5 +110,5 @@ void PositionsReport::adverse(void) const
   const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
 
   std::cout << "Worst drawdown: " << (sfs.factor()-1)*100 << '%';
-  std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << std::endl;
+  std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
 }

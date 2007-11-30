@@ -65,9 +65,7 @@ namespace Series
       PT_NA,
       OPEN,
       CLOSE,
-      ADJCLOSE,
-      MARKET,
-      LIMIT
+      ADJCLOSE
     };
 
   public:
