@@ -110,7 +110,7 @@ void ShortPosition::buy(const boost::gregorian::date& dt, const Price& price, un
   throw PositionException("Can't buy short position");
 }
 
-void ShortPosition::buy( const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size ) throw(PositionException)
+void ShortPosition::buy( const boost::gregorian::date& dt, EODDB::PriceType pt, unsigned size ) throw(PositionException)
 {
   throw PositionException("Can't buy short position");
 }
@@ -121,97 +121,44 @@ void ShortPosition::sell(const boost::gregorian::date& dt, const Price& price, u
 }
 
 
-void ShortPosition::sell( const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size ) throw(PositionException)
+void ShortPosition::sell( const boost::gregorian::date& dt, EODDB::PriceType pt, unsigned size ) throw(PositionException)
 {
   throw PositionException("Can't sell short position");
 }
 
 
-double ShortPosition::factor( void ) const throw(PositionException)
+double ShortPosition::factor( EODDB::PriceType pt ) const throw(PositionException)
 {
   if( !isValid() )
-    throw PositionException("Short position in invalid state");
+    throw PositionException("Invalid position state");
 
-  return closed() ? _avgShortPrice / _avgCoverPrice : _avgShortPrice / Series::EODDB::instance().get(_symbol).last().adjclose;
+  return closed() ? (_avgShortPrice / _avgCoverPrice) : (_avgShortPrice / Price::last(_symbol, pt).value());
 }
 
 
-double ShortPosition::factor( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) const throw(PositionException)
+double ShortPosition::factor( const boost::gregorian::date& dt, EODDB::PriceType pt ) const throw(PositionException)
 {
   if( !avgEntryPrice().isValid() )
     throw PositionException("Invalid average sell short price");
 
   if( dt <= first_exec().dt() )
-    throw PositionException("Input date after first execution date");
+    throw PositionException("Requested date after first execution date");
 
   return _avgShortPrice / Price::get(_symbol, dt, pt).value();
 }
 
 
-double ShortPosition::factor( const boost::gregorian::date_period& dp, EODDB::PriceType start_pt, EODDB::PriceType end_pt ) const throw(PositionException)
+double ShortPosition::factor( const boost::gregorian::date_period& dp, EODDB::PriceType pt ) const throw(PositionException)
 {
   // Verify that input period is contained within position holding period
   if( ! hold_period().contains(dp) )
     throw PositionException("Requested factor period is out of Position range");
 
-  return Price::get(_symbol, dp.begin(), end_pt) / Price::get(_symbol, dp.end(), start_pt);
+  return Price::get(_symbol, dp.begin(), pt) / Price::get(_symbol, dp.end(), pt);
 }
 
 
-SeriesFactorSet ShortPosition::factors( const boost::gregorian::date& dt, Series::EODDB::PriceType pt /*= Series::EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
-{
-  SeriesFactorSet sfs;
-  date prev_date = first_exec().dt();
-
-  // Set start of series on position opening date
-  const EODSeries& series = EODDB::instance().get(_symbol);
-  for( EODSeries::const_iterator citer = series.after(first_exec().dt()); citer != series.end(); ++citer ) {
-
-    // If we're over the request date or position is closed and we're over the last execution date, then we're done
-    if( (*citer).first > dt || (closed() && (*citer).first > last_exec().dt()) )
-      break;
-
-    double f = factor(date_period(prev_date, citer->first), pt, pt);
-    sfs.insert(SeriesFactor(prev_date, citer->first, f));
-
-    prev_date = citer->first;
-  }
-
-  return sfs;
-}
-
-
-SeriesFactorSet ShortPosition::factors( const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt /*= Series::EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
-{
-  SeriesFactorSet sfs;
-
-  if( ! hold_period().contains(dp) )
-    throw PositionException("Requested period is out of range");
-
-  const EODSeries& series = EODDB::instance().get(_symbol);
-
-  EODSeries::const_iterator citer = series.after(dp.begin(), 0);
-  if( citer == series.end() )
-    throw PositionException("Can't find begin of period in series");
-
-  date prev_date = citer->first;
-
-  for( EODSeries::const_iterator citer = series.after(dp.begin()); citer != series.end(); ++citer ) {
-    // If we're over the end of period or position is closed and we're over the last execution date, then we're done
-    if( (*citer).first > dp.last() || (closed() && (*citer).first > last_exec().dt()) )
-      break;
-
-    double f = factor(date_period(prev_date, citer->first), pt, pt);
-    sfs.insert(SeriesFactor(prev_date, citer->first, f));
-
-    prev_date = citer->first;
-  }
-
-  return sfs;
-}
-
-
-double ShortPosition::factor( const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year ) const throw(PositionException)
+double ShortPosition::factor( const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, EODDB::PriceType pt ) const throw(PositionException)
 {
   // Generate monthly begin/end dates
   date period_month(year, month, 1);
@@ -234,7 +181,7 @@ double ShortPosition::factor( const boost::gregorian::date::month_type& month, c
     if( citer == db.end() )
       throw PositionException("Can't get begin-period price");
 
-    begin_price = citer->second.adjclose;
+    begin_price = Price::get(_symbol, citer->first, pt).value();
     //cout << "Position opened before or at previous EOM mark price, using " << citer->first << " adjclose" << endl;
 
     // Else if position was opened after begin mark, use position opening price
@@ -255,7 +202,7 @@ double ShortPosition::factor( const boost::gregorian::date::month_type& month, c
     if( citer == db.end() )
       throw PositionException("Can't get end-period price");
 
-    end_price = citer->second.adjclose;
+    end_price = Price::get(_symbol, citer->first, pt).value();
     //cout << "Position still open or closed after EOM mark price, using " << em_mark->first << " adjclose" << endl;
 
     // Else if position closing execution is before end-month mark, use execution price
@@ -270,6 +217,59 @@ double ShortPosition::factor( const boost::gregorian::date::month_type& month, c
 
   // Return monthly factors
   return begin_price / end_price;
+}
+
+
+SeriesFactorSet ShortPosition::factors( const boost::gregorian::date& dt, EODDB::PriceType pt /*= EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
+{
+  SeriesFactorSet sfs;
+  date prev_date = first_exec().dt();
+
+  // Set start of series on position opening date
+  const EODSeries& series = EODDB::instance().get(_symbol);
+  for( EODSeries::const_iterator citer = series.after(first_exec().dt()); citer != series.end(); ++citer ) {
+
+    // If we're over the request date or position is closed and we're over the last execution date, then we're done
+    if( (*citer).first > dt || (closed() && (*citer).first > last_exec().dt()) )
+      break;
+
+    double f = factor(date_period(prev_date, citer->first), pt);
+    sfs.insert(SeriesFactor(prev_date, citer->first, f));
+
+    prev_date = citer->first;
+  }
+
+  return sfs;
+}
+
+
+SeriesFactorSet ShortPosition::factors( const boost::gregorian::date_period& dp, EODDB::PriceType pt /*= EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
+{
+  SeriesFactorSet sfs;
+
+  if( ! hold_period().contains(dp) )
+    throw PositionException("Requested period is out of range");
+
+  const EODSeries& series = EODDB::instance().get(_symbol);
+
+  EODSeries::const_iterator citer = series.after(dp.begin(), 0);
+  if( citer == series.end() )
+    throw PositionException("Can't find begin of period in series");
+
+  date prev_date = citer->first;
+
+  for( EODSeries::const_iterator citer = series.after(dp.begin()); citer != series.end(); ++citer ) {
+    // If we're over the end of period or position is closed and we're over the last execution date, then we're done
+    if( (*citer).first > dp.last() || (closed() && (*citer).first > last_exec().dt()) )
+      break;
+
+    double f = factor(date_period(prev_date, citer->first), pt);
+    sfs.insert(SeriesFactor(prev_date, citer->first, f));
+
+    prev_date = citer->first;
+  }
+
+  return sfs;
 }
 
 

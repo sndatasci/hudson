@@ -68,13 +68,13 @@ public:
   virtual Price avgExitPrice(void) const throw(PositionException) { return Price(_avgCoverPrice); }
 
   //! Current return factor: average short price divided by the average cover price.
-  virtual double factor(void) const throw(PositionException);
+  virtual double factor(Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return factor until dt using PriceType pt. Throw an exception if the input date precedes the Position opening Execution.
-  virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) const throw(PositionException);
+  virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return factor for a given period using PriceType from_pt and to_pt
-  virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType start_pt, Series::EODDB::PriceType end_pt) const throw(PositionException);
+  virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return monthly factor for month/year period
-  virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException);
+  virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
 
   //! Return series factors until dt using PriceType pt.
   virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);

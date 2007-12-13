@@ -52,7 +52,7 @@ PositionFactors::PositionFactors( const Position& pos ):
       break;
 
     // Calculate position factor until this point
-    double f = _pos.factor(date_period(prev_date, iter->first), EODDB::CLOSE, EODDB::CLOSE);
+    double f = _pos.factor(date_period(prev_date, iter->first), EODDB::CLOSE);
 
     // Initialize SeriesFactorSet objects indexed both by from_time and to_time to calculate bfe() and wae().
     // This is for performance reasons. multi_index secondary keys are slower than two primary key collections.
@@ -276,5 +276,5 @@ PositionFactors::PeriodFactor::PeriodFactor( double f ):
 
 bool PositionFactors::PeriodFactor::isValid( void ) const
 {
-  return from_tm != not_a_date_time && to_tm != not_a_date_time;
+  return from_tm.is_not_a_date() || to_tm.is_not_a_date();
 }
