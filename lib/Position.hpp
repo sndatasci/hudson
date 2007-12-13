@@ -123,13 +123,18 @@ public:
   virtual bool add(const PositionPtr pPos) throw(PositionException) = 0;
 
   //! Return current return factor.
-  virtual double factor(void) const = 0;
-  //! Return factor from avgEntryPrice() to dt using PriceType pt.
-  virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) const throw(PositionException) = 0;
-  //! Return factor for period dp using PriceType pt.
-  virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt) const throw(PositionException) = 0;
+  /*!
+    If Position is closed, use average entry price and average exit price to calculate Position return, otherwise use the last database
+    price for this symbol.
+    \param pt The last price type used to calculate the return for an open Position.
+  */
+  virtual double factor(Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
+  //! Return factor from avgEntryPrice() to a specific date.
+  virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
+  //! Return factor for a specific period.
+  virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
   //! Return monthly factor for month/year period.
-  virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year) const throw(PositionException) = 0;
+  virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
   
   //! Return series factors until dt using PriceType pt.
   virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException) = 0;

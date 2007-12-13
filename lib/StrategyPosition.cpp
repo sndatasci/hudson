@@ -26,6 +26,8 @@
 #include "StrategyPosition.hpp"
 
 using namespace std;
+using namespace Series;
+
 
 // XXX Strategy assumes equal weighting of all underlying positions
 
@@ -106,27 +108,17 @@ void StrategyPosition::close( const boost::gregorian::date& dt, Series::EODDB::P
 }
 
 
-double StrategyPosition::factor( void ) const
+double StrategyPosition::factor( EODDB::PriceType pt ) const
 {
   double f = 1;
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f *= (*citer)->factor();
+    f *= (*citer)->factor(pt);
     
   return f;
 }
 
 
-double StrategyPosition::factor( const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year ) const throw(PositionException) /*= 0*/
-{
-  double f = 1;
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f *= (*citer)->factor(month, year);
-
-  return f;
-}
-
-
-double StrategyPosition::factor( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) const throw(PositionException)
+double StrategyPosition::factor( const boost::gregorian::date& dt, EODDB::PriceType pt ) const throw(PositionException)
 {
   double f = 1;
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
@@ -136,17 +128,27 @@ double StrategyPosition::factor( const boost::gregorian::date& dt, Series::EODDB
 }
 
 
-double StrategyPosition::factor( const boost::gregorian::date_period& dp, Series::EODDB::PriceType start_pt, Series::EODDB::PriceType end_pt ) const throw(PositionException)
+double StrategyPosition::factor( const boost::gregorian::date_period& dp, EODDB::PriceType pt ) const throw(PositionException)
 {
   double f = 1;
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f *= (*citer)->factor(dp, start_pt, end_pt);
+    f *= (*citer)->factor(dp, pt);
 
   return f;
 }
 
 
-SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date& dt, Series::EODDB::PriceType pt /*= Series::EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
+double StrategyPosition::factor( const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, EODDB::PriceType pt ) const throw(PositionException)
+{
+  double f = 1;
+  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
+    f *= (*citer)->factor(month, year);
+
+  return f;
+}
+
+
+SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date& dt, EODDB::PriceType pt ) const throw(PositionException)
 {
   vector<SeriesFactorSet> vsfs;
 
@@ -155,17 +157,17 @@ SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date& dt, Ser
     vsfs.push_back(sfs);
   }
 
-  return f;
+  return SeriesFactorSet();
 }
 
 
-SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt /*= Series::EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
+SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date_period& dp, EODDB::PriceType pt ) const throw(PositionException)
 {
   double f = 1;
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f *= (*citer)->factor(dp, start_pt, end_pt);
+    f *= (*citer)->factor(dp, pt);
 
-  return f;
+  return SeriesFactorSet();
 }
 
 

@@ -61,19 +61,26 @@ public:
   /*!
   \param symbol The name of the database series where the lookup series will be performed.
   \param dt The index used to lookup the price in the database series.
-  \param pt The price type. Valid values should be PriceType::OPEN, PriceType::CLOSE or PriceType::ADJCLOSE.
+  \param pt The price type.
+  \return A Price at the specified date in symbol series.
   */
   static Price get(const std::string& symbol, const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PriceException);
+
+  /*!
+  \param symbol The name of the database series used to extract the last price.
+  \param pt The price type.
+  \return The last available Price of type pt in symbol series.
+  */
+  static Price last(const std::string& symbol, Series::EODDB::PriceType pt) throw(PriceException);
   
 public:
-  //! Initialize Price with value and checks for valid value > 0.
-  explicit Price(double value) throw(PriceException);
+  explicit Price(double value);
   Price(const Price& src);
 
   Price& operator=(const Price& src);
 
   bool isValid(void) const { return _value > 0; }
-  double value(void) const { return _value; }
+  double value(void) const throw(PriceException);
 
 protected:
   double _value;

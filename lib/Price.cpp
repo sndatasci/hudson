@@ -62,11 +62,36 @@ Price Price::get( const std::string& symbol, const boost::gregorian::date& dt, S
 }
 
 
-Price::Price(double value) throw(PriceException):
+Price Price::last( const std::string& symbol, Series::EODDB::PriceType pt ) throw(PriceException)
+{
+  if( Series::EODDB::instance().get(symbol).empty() )
+    throw PriceException("Empty series database");
+
+  Series::DayPrice item = Series::EODDB::instance().get(symbol).last();
+
+  double priceval = 0;
+  switch ( pt ) {
+
+    case EODDB::OPEN:
+      priceval = item.open;
+
+    case EODDB::CLOSE:
+      priceval = item.close;
+
+    case EODDB::ADJCLOSE:
+      priceval = item.adjclose;
+
+    default:
+      throw PriceException("Invalid price type");
+  }
+
+  return Price(priceval);
+}
+
+
+Price::Price(double value):
   _value(value)
 {
-  if( _value <= 0 )
-    throw PriceException("Invalid price");
 }
 
 
@@ -82,4 +107,13 @@ Price& Price::operator=(const Price& src)
     _value = src.value();
 
   return *this;
+}
+
+
+double Price::value( void ) const throw(PriceException)
+{
+  if( _value <= 0 )
+    throw PriceException("Invalid price");
+
+  return _value;
 }
