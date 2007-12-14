@@ -232,9 +232,9 @@ double LongPosition::factor( const boost::gregorian::date::month_type& month, co
 SeriesFactorSet LongPosition::factors( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) const throw(PositionException)
 {
   SeriesFactorSet sfs;
+
   date prev_date = first_exec().dt();
 
-  // Set start of series on position opening date
   const EODSeries& series = EODDB::instance().get(_symbol);
   for( EODSeries::const_iterator citer = series.after(first_exec().dt()); citer != series.end(); ++citer ) {
 

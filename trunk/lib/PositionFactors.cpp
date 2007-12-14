@@ -36,8 +36,9 @@ using namespace boost::gregorian;
 using namespace Series;
 
 
-PositionFactors::PositionFactors( const Position& pos ):
-  _pos(pos)
+PositionFactors::PositionFactors( const Position& pos, Series::EODDB::PriceType pt ):
+  _pos(pos),
+  _pt(pt)
 {
   // Browse all price series from the position opening and build daily factors
   date prev_date = _pos.first_exec().dt();
@@ -52,7 +53,7 @@ PositionFactors::PositionFactors( const Position& pos ):
       break;
 
     // Calculate position factor until this point
-    double f = _pos.factor(date_period(prev_date, iter->first), EODDB::CLOSE);
+    double f = _pos.factor(date_period(prev_date, iter->first), _pt);
 
     // Initialize SeriesFactorSet objects indexed both by from_time and to_time to calculate bfe() and wae().
     // This is for performance reasons. multi_index secondary keys are slower than two primary key collections.

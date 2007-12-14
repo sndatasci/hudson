@@ -66,7 +66,7 @@ public:
   * Initialize position daily factors for this position.
   * \param pos Position that must be analyzed.
   */
-  PositionFactors(const Position& pos);
+  PositionFactors(const Position& pos, Series::EODDB::PriceType = Series::EODDB::PriceType::ADJCLOSE);
 
   //! Maximum consecutive positive daily factors.
   SeriesFactorSet max_cons_pos(void) const;
@@ -80,6 +80,7 @@ public:
 
 private:
   const Position& _pos;
+  const Series::EODDB::PriceType _pt;
 
   // Must index SeriesFactor by date to speed up excursion calculations
   struct SeriesFactorToTmCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>

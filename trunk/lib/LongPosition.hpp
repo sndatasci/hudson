@@ -59,7 +59,7 @@ public:
   
   //! Always throws an exception. LongPosition are not composite positions.
   //! \see StrategyPosition.
-  virtual bool add(const PositionPtr pPos) throw(PositionException) { throw PositionException("Can not add position to long position"); }
+  virtual bool add(const PositionPtr pPos) throw(PositionException) { throw PositionException("Can't add position to long position"); }
 
   //! Average buy price. 
   virtual Price avgEntryPrice(void) const throw(PositionException) { return Price(_avgBuyPrice); }

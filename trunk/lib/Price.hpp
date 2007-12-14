@@ -62,7 +62,7 @@ public:
   \param symbol The name of the database series where the lookup series will be performed.
   \param dt The index used to lookup the price in the database series.
   \param pt The price type.
-  \return A Price at the specified date in symbol series.
+  \return The Price matching the specified date in the symbol series database.
   */
   static Price get(const std::string& symbol, const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PriceException);
 

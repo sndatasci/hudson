@@ -146,10 +146,10 @@ int main(int argc, char* argv[])
     /*
     * Position stats
     */
-    Report::header("Positions stats");
-    PositionFactorsSet pf(trader.positions().stratPos().closed());
-    PositionsReport pr(pf);
-    pr.print();
+    //Report::header("Positions stats");
+    //PositionFactorsSet pf(trader.positions().stratPos().closed());
+    //PositionsReport pr(pf);
+    //pr.print();
     
   } catch ( std::exception& ex ) {
   

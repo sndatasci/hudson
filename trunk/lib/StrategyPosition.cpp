@@ -150,14 +150,36 @@ double StrategyPosition::factor( const boost::gregorian::date::month_type& month
 
 SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date& dt, EODDB::PriceType pt ) const throw(PositionException)
 {
-  vector<SeriesFactorSet> vsfs;
+  // We need to accumulate all factors with the same begin/end day until dt for all positions in this strategy.
+  // First add all positions indexed by first execution date in a multi_set
+  SeriesFactorMultiSetFrom sfsAll;
+  SeriesFactorSet sfsStrategy;
 
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer ) {
     SeriesFactorSet sfs = (*citer)->factors(dt, pt);
-    vsfs.push_back(sfs);
+    for( SeriesFactorSet::const_iterator sfs_citer = sfs.begin(); sfs_citer != sfs.end(); ++sfs_citer )
+      sfsAll.insert(*sfs_citer);
   }
 
-  return SeriesFactorSet();
+  for( SeriesFactorMultiSetFrom::const_iterator citer = sfsAll.begin(); citer != sfsAll.end(); ++citer ) {
+    SeriesFactor currentFactor = *citer;
+    double acc = currentFactor.factor();
+
+    SeriesFactorMultiSetFrom::const_iterator citer_next = citer;
+    while( ++citer_next != sfsAll.end() ) {
+      SeriesFactor nextFactor = *citer_next;
+      if( currentFactor.from_tm() == nextFactor.from_tm() && currentFactor.to_tm() == nextFactor.to_tm() ) {
+        // Cumulate factors
+        acc *= nextFactor.factor();
+        ++citer;
+      }
+    }
+
+    // Add cumulated factor
+    sfsStrategy.insert(SeriesFactor(currentFactor.from_tm(), currentFactor.to_tm(), acc));
+  }
+
+  return sfsStrategy;
 }
 
 
@@ -201,10 +223,12 @@ bool StrategyPosition::closed( void ) const
 
 void StrategyPosition::print( void ) const
 {
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
+  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer ) {
     (*citer)->print();
+    cout << endl;
+  }
     
-  cout << endl << "Strategy factor " << factor() << " (" << (factor()-1)*100 << "%)" << endl;
+  cout << "Strategy factor " << factor() << " (" << (factor()-1)*100 << "%)" << endl;
 }
 
 

@@ -56,13 +56,11 @@ protected:
   std::string _Str;
 };
 
-//! Calculate return factor statistics for a set of positions.
+//! Calculate return factor statistics for a PositionSet.
 /*!
-  ReturnFactors are relative to a number of positions and calculate statistics for realized loss/profits. ReturnFactors
-  should not be confused with PositionFactors, which are positions daily factors and are used to calculate position
-  unrealized returns statistics.
+  ReturnFactors calculates a number of P/L statistics for one or more Position(s). While ReturnFactors is used to analyze Position returns,
+  PositionFactors calculates statistics on a single Position by extracting its daily factors.
   \see PositionFactors.
-  \see PositionFactorsSet.
 */
 class ReturnFactors
 {
