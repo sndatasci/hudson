@@ -26,10 +26,12 @@
 
 // STL
 #include <string>
+#include <multiset>
 
 // Hudson
 #include "PositionSet.hpp"
 #include "Price.hpp"
+#include "SeriesFactor.hpp"
 
 
 //! Composite Position class.
@@ -140,6 +142,14 @@ public:
 
 protected:
   PositionSet _sPositions;
+
+private:
+  struct SeriesFactorFromCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>
+  {
+    bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.from_tm() < sf2.from_tm(); }
+  };
+
+  typedef std::multiset<SeriesFactor, SeriesFactorFromCmp> SeriesFactorMultiSetFrom;
 };
 
 #endif // _STRATEGYPOSITION_HPP_

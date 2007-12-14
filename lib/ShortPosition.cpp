@@ -272,8 +272,3 @@ SeriesFactorSet ShortPosition::factors( const boost::gregorian::date_period& dp,
   return sfs;
 }
 
-
-bool ShortPosition::add( const PositionPtr pPos ) throw(PositionException)
-{
-  throw PositionException("Can not add Position to ShortPosition");
-}

@@ -60,7 +60,7 @@ public:
   
   //! Always throws an exception. ShortPosition are not composite positions.
   //! \see StrategyPosition.
-  virtual bool add(const PositionPtr pPos) throw(PositionException);
+  virtual bool add(const PositionPtr pPos) throw(PositionException) { throw PositionException("Can't add position to short position"); }
   
   //! Average short price.
   virtual Price avgEntryPrice(void) const throw(PositionException) { return Price(_avgShortPrice); }

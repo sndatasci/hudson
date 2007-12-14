@@ -26,6 +26,7 @@
 
 using namespace std;
 using namespace boost::gregorian;
+using namespace Series;
 
 
 JanTrader::JanTrader(const std::string& long_symbol,  const std::string& hedge_symbol):
@@ -76,7 +77,7 @@ void JanTrader::run(int entry_offset, int exit_offset) throw(TraderException)
 		  continue;
 	  }
 
-    Position::ID strat_id = strategy_buy("JanSpread", longdb.name(), long_entry_iter->first, Price(long_entry_iter->second.adjclose));
+    Position::ID strat_id     = strategy_buy("JanSpread", longdb.name(), long_entry_iter->first, Price(long_entry_iter->second.adjclose));
     Position::ID short_pos_id = strategy_sell_short(strat_id, hedgedb.name(), hedge_entry_iter->first, Price(hedge_entry_iter->second.adjclose));
 	  
 	  strategy_close(strat_id, long_exit_iter->first, Series::EODDB::ADJCLOSE);
