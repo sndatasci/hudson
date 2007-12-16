@@ -110,10 +110,12 @@ void ShortPosition::buy(const boost::gregorian::date& dt, const Price& price, un
   throw PositionException("Can't buy short position");
 }
 
+
 void ShortPosition::buy( const boost::gregorian::date& dt, EODDB::PriceType pt, unsigned size ) throw(PositionException)
 {
   throw PositionException("Can't buy short position");
 }
+
 
 void ShortPosition::sell(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException)
 {
@@ -220,26 +222,19 @@ double ShortPosition::factor( const boost::gregorian::date::month_type& month, c
 }
 
 
-SeriesFactorSet ShortPosition::factors( const boost::gregorian::date& dt, EODDB::PriceType pt /*= EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
+SeriesFactorSet ShortPosition::factors(Series::EODDB::PriceType pt) const throw(PositionException)
 {
-  SeriesFactorSet sfs;
-  date prev_date = first_exec().dt();
+  date last_dt = (closed() ? last_exec().dt() : EODDB::instance().get(_symbol).rbegin()->first);
 
-  // Set start of series on position opening date
-  const EODSeries& series = EODDB::instance().get(_symbol);
-  for( EODSeries::const_iterator citer = series.after(first_exec().dt()); citer != series.end(); ++citer ) {
+  date_period dp(first_exec().dt(), last_dt);
+  return factors(dp, pt);
+}
 
-    // If we're over the request date or position is closed and we're over the last execution date, then we're done
-    if( (*citer).first > dt || (closed() && (*citer).first > last_exec().dt()) )
-      break;
 
-    double f = factor(date_period(prev_date, citer->first), pt);
-    sfs.insert(SeriesFactor(prev_date, citer->first, f));
-
-    prev_date = citer->first;
-  }
-
-  return sfs;
+SeriesFactorSet ShortPosition::factors( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) const throw(PositionException)
+{
+  date_period dp(first_exec().dt(), dt);
+  return factors(dp, pt);
 }
 
 

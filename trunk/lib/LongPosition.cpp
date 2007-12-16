@@ -229,26 +229,19 @@ double LongPosition::factor( const boost::gregorian::date::month_type& month, co
 }
 
 
+SeriesFactorSet LongPosition::factors(Series::EODDB::PriceType pt) const throw(PositionException)
+{
+  date last_dt = (closed() ? last_exec().dt() : EODDB::instance().get(_symbol).rbegin()->first);
+
+  date_period dp(first_exec().dt(), last_dt);
+  return factors(dp, pt);
+}
+
+
 SeriesFactorSet LongPosition::factors( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) const throw(PositionException)
 {
-  SeriesFactorSet sfs;
-
-  date prev_date = first_exec().dt();
-
-  const EODSeries& series = EODDB::instance().get(_symbol);
-  for( EODSeries::const_iterator citer = series.after(first_exec().dt()); citer != series.end(); ++citer ) {
-
-    // If we're over the request date, or position is closed and we're over the last execution date, then we're done
-    if( (*citer).first > dt || (closed() && (*citer).first > last_exec().dt()) )
-      break;
-
-    double f = factor(date_period(prev_date, citer->first), pt);
-    sfs.insert(SeriesFactor(prev_date, citer->first, f));
-
-    prev_date = citer->first;
-  }
-
-  return sfs;
+  date_period dp(first_exec().dt(), dt);
+  return factors(dp, pt);
 }
 
 

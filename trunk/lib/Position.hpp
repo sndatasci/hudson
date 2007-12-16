@@ -71,9 +71,9 @@ public:
   typedef unsigned long ID;
 
   enum Type {
-	  LONG,
-	  SHORT,
-	  STRATEGY
+    LONG,
+    SHORT,
+    STRATEGY
   };
 
 public:  
@@ -135,11 +135,14 @@ public:
   virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
   //! Return monthly factor for month/year period.
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
-  
-  //! Return series factors until dt using PriceType pt.
-  virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException) = 0;
-  //! Return all factors for the period dp using PriceType pt.
-  virtual SeriesFactorSet factors(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException) = 0;
+
+  //! Return daily factors. If the position is closed, return daily factors from the opening execution to the closing execution. If the Position is open,
+  //! return daily factors from the first execution to the last available entry in the database.
+  virtual SeriesFactorSet factors(Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
+  //! Return series daily factors until dt using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
+  //! Return all daily factors for the period dp using PriceType pt.
+  virtual SeriesFactorSet factors(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException) = 0;
 
   //! Add BuyExecution at specific price.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException) = 0;

@@ -26,7 +26,7 @@
 
 // STL
 #include <string>
-#include <multiset>
+#include <set>
 
 // Hudson
 #include "PositionSet.hpp"
@@ -97,7 +97,7 @@ public:
   virtual Price avgExitPrice(void) const throw(PositionException);
 
   //! Return strategy factor. This is the product factor for all Position included in the strategy.
-  virtual double factor(Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const;
+  virtual double factor(Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return factor until dt using PriceType pt. Throw an exception if the input date precedes the Position opening Execution.
   virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return factor for a given period using PriceType from_pt and to_pt
@@ -105,10 +105,15 @@ public:
   //! Return monthly factor for month/year period.
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   
+
+  //! Return daily factors. If the position is closed, return daily factors from the opening execution to the closing execution. If the Position is open,
+  //! return daily factors from the first execution to the last available entry in the database.
+
+  virtual SeriesFactorSet factors(Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return series factors until dt using PriceType pt.
-  virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);
+  virtual SeriesFactorSet factors(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return all factors for the period dp using PriceType pt.
-  virtual SeriesFactorSet factors(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::PriceType::ADJCLOSE) const throw(PositionException);
+  virtual SeriesFactorSet factors(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
 
   //! Always throw an exception. A StrategyPosition can not be bought directly. See get() to buy a specific LongPosition.
   virtual void buy(const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
@@ -150,6 +155,8 @@ private:
   };
 
   typedef std::multiset<SeriesFactor, SeriesFactorFromCmp> SeriesFactorMultiSetFrom;
+
+  SeriesFactorSet _matchFactors(const SeriesFactorMultiSetFrom& sfsAll) const;
 };
 
 #endif // _STRATEGYPOSITION_HPP_
