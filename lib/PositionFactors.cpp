@@ -40,27 +40,13 @@ PositionFactors::PositionFactors( const Position& pos, Series::EODDB::PriceType 
   _pos(pos),
   _pt(pt)
 {
-  // Browse all price series from the position opening and build daily factors
-  date prev_date = _pos.first_exec().dt();
+  SeriesFactorSet sfsAll = _pos.factors(pt);
 
-  // Initialize all factors until the either the last (closing) execution date or the end of the series database
-  //cout << "Initializing daily factors for position " << _pos.id() << " (" << _pos.first_exec().dt() << "/" << _pos.last_exec().dt() << ")" << endl;
-  const EODSeries& series = EODDB::instance().get(_pos.symbol());
-  for( EODSeries::const_iterator iter = series.after(_pos.first_exec().dt()); iter != series.end(); ++iter ) {
-
-    // If position is closed we only initialize factors up to the last execution
-    if( _pos.closed() && iter->first > _pos.last_exec().dt() )
-      break;
-
-    // Calculate position factor until this point
-    double f = _pos.factor(date_period(prev_date, iter->first), _pt);
-
+  for( SeriesFactorSet::const_iterator citer = sfsAll.begin(); citer != sfsAll.end(); ++citer ) {
     // Initialize SeriesFactorSet objects indexed both by from_time and to_time to calculate bfe() and wae().
     // This is for performance reasons. multi_index secondary keys are slower than two primary key collections.
-    _sf_fromtm.insert(SeriesFactor(prev_date, iter->first, f));
-    _sf_totm.insert(SeriesFactor(prev_date, iter->first, f));
-
-    prev_date = iter->first;
+    _sf_fromtm.insert(*citer);
+    _sf_totm.insert(*citer);
   }
 
   //cout << "Time-based items (from_tm): " << (unsigned int)_sf_fromtm.size() << endl;

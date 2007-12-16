@@ -66,7 +66,7 @@ public:
   * Initialize position daily factors for this position.
   * \param pos Position that must be analyzed.
   */
-  PositionFactors(const Position& pos, Series::EODDB::PriceType = Series::EODDB::PriceType::ADJCLOSE);
+  PositionFactors(const Position& pos, Series::EODDB::PriceType = Series::EODDB::ADJCLOSE);
 
   //! Maximum consecutive positive daily factors.
   SeriesFactorSet max_cons_pos(void) const;

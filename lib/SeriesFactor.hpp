@@ -46,6 +46,8 @@ public:
   const boost::gregorian::date& from_tm(void) const { return _from; }
   //! Factor calculation end date/time.
   const boost::gregorian::date& to_tm(void) const { return _to; }
+  //! Match the same start/end time
+  const bool match(const SeriesFactor& sf2) const { return _from == sf2.from_tm() && _to == sf2.to_tm(); } 
   
   //! Factor value.
   double factor(void) const { return _f; }
