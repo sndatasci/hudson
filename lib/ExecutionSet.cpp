@@ -71,9 +71,10 @@ bool ExecutionSet::cover(boost::gregorian::date dt, const Price& price, unsigned
 }
 
 
-void ExecutionSet::add( const ExecutionSet& sExecutions )
+void ExecutionSet::add( const ExecutionSet& other )
 {
-  for (ExecutionSet::const_iterator citer = sExecutions.begin(); citer != sExecutions.end(); ++citer ) {
-    insert(*citer);
-  }
+  for( ExecutionSet::const_iterator citer = other.begin(); citer != other.end(); ++citer )
+    if( insert(*citer).second )
+      cout << "Execution " << (*citer)->id() << " inserted" << endl;
 }
+

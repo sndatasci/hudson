@@ -32,7 +32,6 @@ using namespace std;
 using namespace boost::gregorian;
 using namespace Series;
 
-
 // XXX Strategy assumes equal weighting of all underlying positions
 
 
@@ -96,6 +95,7 @@ void StrategyPosition::cover( const boost::gregorian::date& dt, const Price& pri
   throw PositionException("StrategyPosition can not be covered");
 }
 
+
 void StrategyPosition::cover( const boost::gregorian::date& dt, Series::EODDB::PriceType pt, unsigned size ) throw(PositionException)
 {
   throw PositionException("StrategyPosition can not be covered");
@@ -112,6 +112,15 @@ void StrategyPosition::close( const boost::gregorian::date& dt, Series::EODDB::P
 {
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
     (*citer)->close(dt, pt);
+}
+
+
+ExecutionSet StrategyPosition::executions( void )
+{
+  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
+    _sExecutions.add((*citer)->executions());
+
+  return _sExecutions;
 }
 
 
@@ -157,6 +166,10 @@ double StrategyPosition::factor( const boost::gregorian::date::month_type& month
 
 SeriesFactorSet StrategyPosition::factors(Series::EODDB::PriceType pt) const throw(PositionException)
 {
+  cout << "Strategy Position " << _id << " first exec " << first_exec().dt() << ", last exec " << last_exec().dt() << endl;
+  cout << "Number of legs: " << _sPositions.size() << endl;
+  cout << "Symbol " << _symbol << " end of database: " << EODDB::instance().get(_symbol).rbegin()->first << endl;
+  cout << "Is Position closed: " << closed() << endl;
   date last_dt = (closed() ? last_exec().dt() : EODDB::instance().get(_symbol).rbegin()->first);
 
   date_period dp(first_exec().dt(), last_dt);
@@ -224,9 +237,7 @@ bool StrategyPosition::add( const PositionPtr p ) throw(PositionException)
   // Add position pointers
   if( ! _sPositions.insert(p).second )
     return false;
-  
-  // Add new Position executions to this Position set
-  _sExecutions.add(p->executions());
+
   return true;
 }
 
@@ -256,5 +267,3 @@ void StrategyPosition::print( void ) const
     
   cout << "Strategy factor " << factor() << " (" << (factor()-1)*100 << "%)" << endl;
 }
-
-
