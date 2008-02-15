@@ -99,9 +99,6 @@ void LongPosition::sell(const boost::gregorian::date& dt, const Price& price, un
 
 void LongPosition::close(const boost::gregorian::date& dt, const Price& price) throw(PositionException)
 {
-  if( closed() )
-	  throw PositionException("Position is closed");
-
   sell(dt, price, _size);
 }
 
@@ -231,6 +228,10 @@ double LongPosition::factor( const boost::gregorian::date::month_type& month, co
 
 SeriesFactorSet LongPosition::factors(Series::EODDB::PriceType pt) const throw(PositionException)
 {
+  cout << "Long Position " << _id << " first exec " << first_exec().dt() << ", last exec " << last_exec().dt() << endl;
+  cout << "Symbol " << _symbol << " end of database: " << EODDB::instance().get(_symbol).rbegin()->first << endl;
+  cout << "Is Position closed: " << closed() << endl;
+
   date last_dt = (closed() ? last_exec().dt() : EODDB::instance().get(_symbol).rbegin()->first);
 
   date_period dp(first_exec().dt(), last_dt);
@@ -249,6 +250,8 @@ SeriesFactorSet LongPosition::factors( const boost::gregorian::date_period& dp, 
 {
   SeriesFactorSet sfs;
 
+  cout << "Extracting daily factors for position " << _id << " from " << dp.begin() << " to " << dp.last() << endl;
+
   if( ! hold_period().contains(dp) )
     throw PositionException("Requested period is out of range");
 
@@ -261,6 +264,9 @@ SeriesFactorSet LongPosition::factors( const boost::gregorian::date_period& dp, 
   date prev_date = citer->first;
 
   for( EODSeries::const_iterator citer = series.after(dp.begin()); citer != series.end(); ++citer ) {
+
+    cout << "Previous date: " << prev_date << ", current date: " << citer->first << endl;
+
     // If we're over the end of the requested period, or position is closed and we're over the last execution date, then we're done
     if( (*citer).first > dp.last() || (closed() && (*citer).first > last_exec().dt()) )
       break;

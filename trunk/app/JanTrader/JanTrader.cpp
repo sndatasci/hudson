@@ -58,23 +58,23 @@ void JanTrader::run(int entry_offset, int exit_offset) throw(TraderException)
       Series::EODSeries::const_iterator hedge_exit_iter = hedgedb.at_or_before(calendar_exit);
 
       if( long_entry_iter == longdb.end() ) {
-	cerr << "Can't locate long trade day entry around " << calendar_entry << endl;
-	continue;
+	      cerr << "Can't locate long trade day entry around " << calendar_entry << endl;
+	      continue;
       }
 
       if( hedge_entry_iter == hedgedb.end() ) {
-	cerr << "Can't locate hedge trade day entry around " << calendar_entry << endl;
-	continue;
+	      cerr << "Can't locate hedge trade day entry around " << calendar_entry << endl;
+	      continue;
       }
 
       if( long_exit_iter == longdb.end() ) {
-	cerr << "Can't locate long trade day exit around " << calendar_exit << endl;
-	continue;
+	      cerr << "Can't locate long trade day exit around " << calendar_exit << endl;
+	      continue;
       }
 
       if( hedge_exit_iter == hedgedb.end() ) {
-	cerr << "Can't locate hedge trade day exit around " << calendar_exit << endl;
-	continue;
+	      cerr << "Can't locate hedge trade day exit around " << calendar_exit << endl;
+	      continue;
       }
 
       Position::ID strat_id     = strategy_buy("JanSpread", longdb.name(), long_entry_iter->first, Price(long_entry_iter->second.adjclose));

@@ -35,7 +35,7 @@ Price Price::get( const std::string& symbol, const boost::gregorian::date& dt, S
   Series::EODSeries::const_iterator citer = Series::EODDB::instance().get(symbol).find(dt);
   if( citer == Series::EODDB::instance().get(symbol).end() ) {
     stringstream ss;
-    ss << "Can't find " << dt << " price record in " << symbol.c_str() << " series";
+    ss << "Can't find " << dt << " price record in " << symbol << " series";
     throw PriceException(ss.str());
   }
 

@@ -98,9 +98,6 @@ void ShortPosition::cover(const date& dt, const Price& price, unsigned size) thr
 
 void ShortPosition::close(const date& dt, const Price& price) throw(PositionException)
 {
-  if( closed() )
-	  throw PositionException("Position is closed");
-
   cover(dt, price, _size);
 }
 

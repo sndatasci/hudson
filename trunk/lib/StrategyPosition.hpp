@@ -37,8 +37,8 @@
 //! Composite Position class.
 /*!
   StrategyPosition is a composite pattern class that aggregates executions for one or more Position objects. The factor() method is redefined
-  to accumulate factors for all Position included in the StrategyPosition. Any type of Position can be added to the StrategyPosition,
-  including another StrategyPosition. This class can be used to build multi-leg strategies such as spread trades or pair trades, and calculate
+  to accumulate factors for all Position included in a StrategyPosition. Any type of Position can be added to the StrategyPosition,
+  including another StrategyPosition. This class can be used to build multi-leg positions such as spread trades or pair trades, and calculate
   simulation statistics based on multiple Position composite returns.
   \see ReturnFactors.
   \see EOMReturnFactors.
@@ -96,7 +96,14 @@ public:
   //! See get() to extract underlying Position objects and read average entry/exit prices.
   virtual Price avgExitPrice(void) const throw(PositionException);
 
-  //! Return strategy factor. This is the product factor for all Position included in the strategy.
+  //! First Execution by time.
+  virtual const Execution first_exec(void) { return executions().first_by_date(); }
+  //! Last Execution by time.
+  virtual const Execution last_exec(void) { return executions().last_by_date(); }
+  //! Return all Execution that are part of this strategy.
+  virtual ExecutionSet executions(void);
+
+  //! Return strategy factor. This is the product factor for all Positions included in the strategy.
   virtual double factor(Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return factor until dt using PriceType pt. Throw an exception if the input date precedes the Position opening Execution.
   virtual double factor(const boost::gregorian::date& dt, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
@@ -105,7 +112,6 @@ public:
   //! Return monthly factor for month/year period.
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   
-
   //! Return daily factors. If the position is closed, return daily factors from the opening execution to the closing execution. If the Position is open,
   //! return daily factors from the first execution to the last available entry in the database.
 

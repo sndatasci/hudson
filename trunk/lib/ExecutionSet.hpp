@@ -74,14 +74,14 @@ public:
   bool sell_short(boost::gregorian::date dt, const Price& price, unsigned size);
   //! Add a cover transaction.
   bool cover(boost::gregorian::date dt, const Price& price, unsigned size);
-  
-  //! Add multiple Executions.
-  void add(const ExecutionSet& sExecutions);
 
   //! Return the first Execution by date.
   const Execution& first_by_date(void) const { return **(get<date_key>().begin()); }
   //! Return the last Execution by date.
   const Execution& last_by_date(void) const { return **(get<date_key>().rbegin()); }
+
+  //! Add a set of executions
+  void add(const ExecutionSet& other);
 
   //! Print all Execution data in this collection.
   void print(void) const;

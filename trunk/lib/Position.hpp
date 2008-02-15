@@ -103,11 +103,11 @@ public:
   virtual std::string type_str(void) const = 0;
 
   //! First Execution by time.
-  virtual const Execution& first_exec(void) const { return _sExecutions.first_by_date(); }
+  virtual Execution& first_exec(void) { return _sExecutions.first_by_date(); }
   //! Last Execution by time.
-  virtual const Execution& last_exec(void) const { return _sExecutions.last_by_date(); }
+  virtual Execution& last_exec(void) { return _sExecutions.last_by_date(); }
   //! Return all Execution.
-  const ExecutionSet& executions(void) const { return _sExecutions; }
+  virtual ExecutionSet executions(void) { return _sExecutions; }
   
   //! Return Position holding period, from first opening execution to last closing position execution,
   //! or the last date in the database for the position symbol.

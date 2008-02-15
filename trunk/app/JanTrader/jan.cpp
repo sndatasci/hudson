@@ -79,8 +79,8 @@ int main(int argc, char* argv[])
     }
 
     if( vm["long_dbfile"].empty() || vm["hedge_dbfile"].empty() ||
-	vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
-	vm["begin_date"].empty()  || vm["end_date"].empty() ) {
+      	vm["long_symbol"].empty() || vm["hedge_symbol"].empty() ||
+	      vm["begin_date"].empty()  || vm["end_date"].empty() ) {
       cout << desc << endl;
       exit(EXIT_FAILURE);
     }
