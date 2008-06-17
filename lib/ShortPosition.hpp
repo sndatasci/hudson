@@ -25,8 +25,8 @@
 #endif
 
 // Hudson
-#include "Position.hpp"
 #include "Price.hpp"
+#include "Position.hpp"
 
 
 //! A new short position.
@@ -49,13 +49,14 @@ public:
     \see Execution.
   */
   ShortPosition(ID id, const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
+  virtual ~ShortPosition(void) { }
 
   virtual Type type(void) const { return SHORT; }
   virtual std::string type_str(void) const { return "Short"; }
 
-  //! The number of short executions run on this position.
+  //! The number of short executions on this position.
   unsigned shorts(void) const { return _shorts; }
-  //! The number of cover executions run on this position.
+  //! The number of cover executions on this position.
   unsigned covers(void) const { return _covers; }
   
   //! Always throws an exception. ShortPosition are not composite positions.

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 A. Giannetti
 *
 * This file is part of Hudson.
 *
@@ -42,7 +42,6 @@ struct symbol_key { };
 struct first_exec_key { };
 struct last_exec_key { };
 
-
 typedef boost::multi_index::multi_index_container<
 
   PositionPtr,
@@ -50,15 +49,16 @@ typedef boost::multi_index::multi_index_container<
   boost::multi_index::indexed_by<
     boost::multi_index::ordered_unique<boost::multi_index::identity<Position> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<symbol_key>, boost::multi_index::const_mem_fun<Position, std::string, &Position::symbol> >,
-    boost::multi_index::ordered_non_unique<boost::multi_index::tag<first_exec_key>, boost::multi_index::const_mem_fun<Position, const Execution&, &Position::first_exec> >,
-    boost::multi_index::ordered_non_unique<boost::multi_index::tag<last_exec_key>, boost::multi_index::const_mem_fun<Position, const Execution&, &Position::last_exec> >
+    boost::multi_index::ordered_non_unique<boost::multi_index::tag<first_exec_key>, boost::multi_index::const_mem_fun<Position, const ExecutionPtr, &Position::first_exec> >,
+    boost::multi_index::ordered_non_unique<boost::multi_index::tag<last_exec_key>, boost::multi_index::const_mem_fun<Position, const ExecutionPtr, &Position::last_exec> >
   >
 > __PositionSet;
 
 /*!
-  PositionSet is a multi index PositionPtr collection that can be indexed by Position ID,
-  symbol, first Position execution (opening transaction) or last Position execution (closing transaction for closed Position).
-  A specific Position can be retrieved using Boost multi_index features. Example:
+  PositionSet is a multi index PositionPtr collection indexed by Position ID,
+  symbol, first Position execution (opening transaction for first Position in time)
+  or last Position execution (closing transaction for last Position in time).
+  A Position can be retrieved by ID or by symbol. Example:
   
   Look for position by ID:
   PositionSet::iterator iter = positions.find(id, pos_comp_id());
@@ -99,7 +99,9 @@ public:
   //! Return all short positions.
   //! \see ShortPosition
   PositionSet shortPos(void) const;
-  //! Return all strategies positions.
+  //! Return natural positions, ie not synthetic.
+  PositionSet naturalPos(void) const;
+  //! Return synthetic positions.
   //! \see StrategyPosition
   PositionSet stratPos(void) const;
   //! Return all closed positions for symbol.

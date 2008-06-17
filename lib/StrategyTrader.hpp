@@ -51,7 +51,7 @@ public:
   Position::ID strategy(const std::string& symbol, PositionPtr pPos) throw(TraderException);
   
   /*!
-  \brief Create a new StrategyPosition by opening a new LongPosition in pos_symbol.
+  \brief Create a new StrategyPosition by opening a new LongPosition.
   \return The new StrategyPosition identifier.
   \param strat_symbol The new StrategyPosition name.
   \param pos_symbol The new LongPosition name.
@@ -62,7 +62,7 @@ public:
   Position::ID strategy_buy(const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);  
   /*!
   \brief Add a new LongPosition to an existing StrategyPosition.
-  \param strat_id The StrategyPosition unique identifier.
+  \param strat_id The StrategyPosition identifier.
   \param pos_symbol The new LongPosition name.
   \param dt New LongPosition transaction date.
   \param price New LongPosition transaction Price.
@@ -71,7 +71,7 @@ public:
   Position::ID strategy_buy(Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
   
   /*!
-  \brief Create a new StrategyPosition by opening a new ShortPosition in pos_symbol.
+  \brief Create a new StrategyPosition by opening a new ShortPosition.
   \return The new StrategyPosition identifier.
   \param symbol The name of the new ShortPosition.
   \param dt Transaction date.
@@ -81,7 +81,7 @@ public:
   Position::ID strategy_sell_short(const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);  
   /*!
   \brief Add a new ShortPosition to an existing StrategyPosition.
-  \param strat_id The StrategyPosition unique identifier.
+  \param strat_id The StrategyPosition identifier.
   \param pos_symbol The new ShortPosition name.
   \param dt The new ShortPosition transaction date.
   \param price The new ShortPosition transaction Price.
@@ -90,7 +90,7 @@ public:
   Position::ID strategy_sell_short(Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
   
   /*!
-  \brief Close a StrategyPosition, that is close all the underlying Position.
+  \brief Close all the underlying Position.
   \param strat_id StrategyPosition identifier.
   \param dt Close transaction date.
   \param pt Close transaction PriceType.

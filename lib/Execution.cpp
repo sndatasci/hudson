@@ -24,12 +24,15 @@
 
 // Hudson
 #include "Execution.hpp"
+#include "Position.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
 
+const Execution::ID Execution::NullID = 0;
 
-Execution::Execution(Execution::ID id, const date& dt, const Price& price, unsigned size):
+Execution::Execution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
+  _symbol(symbol),
   _id(id),
   _dt(dt),
   _price(price),
@@ -41,32 +44,32 @@ Execution::Execution(Execution::ID id, const date& dt, const Price& price, unsig
 void Execution::print(void) const
 {
   cout << action()
-	   << ' ' << _size
-	   << ' ' << _price.value()
-	   << ' ' << to_simple_string(_dt) 
-	   << " (" << _dt.day_of_week() << ")";
+       << ' ' << _size
+       << " @" << _price.value()
+       << ' ' << to_simple_string(_dt) 
+       << " (" << _dt.day_of_week() << ")";
 }
 
 
-BuyExecution::BuyExecution(Execution::ID id, const date& dt, const Price& price, unsigned size):
-  Execution(id, dt, price, size)
+BuyExecution::BuyExecution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
+  Execution(symbol, id, dt, price, size)
 {
 }
 
 
-SellExecution::SellExecution(Execution::ID id, const date& dt, const Price& price, unsigned size):
-  Execution(id, dt, price, size)
+SellExecution::SellExecution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
+  Execution(symbol, id, dt, price, size)
 {
 }
 
 
-SellShortExecution::SellShortExecution(Execution::ID id, const date& dt, const Price& price, unsigned size):
-  Execution(id, dt, price, size)
+SellShortExecution::SellShortExecution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
+  Execution(symbol, id, dt, price, size)
 {
 }
 
 
-CoverExecution::CoverExecution(Execution::ID id, const date& dt, const Price& price, unsigned size):
-  Execution(id, dt, price, size)
+CoverExecution::CoverExecution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
+  Execution(symbol, id, dt, price, size)
 {
 }

@@ -169,10 +169,10 @@ void Report::max_dd( void ) const
 void Report::_begin_end( const Position& pos ) const
 {
   // Print begin/end transactions
-  cout << " [" << pos.first_exec().dt();
+  cout << " [" << pos.first_exec()->dt();
   
   if( pos.closed() )
-    cout << '/' << pos.last_exec().dt();
+    cout << '/' << pos.last_exec()->dt();
   else
     cout << " (Open)";
     
@@ -185,10 +185,10 @@ void Report::_begin_end( const PositionSet& pset ) const
   PositionPtr pFirstPos = *(pset.get<last_exec_key>().begin());
   PositionPtr pLastPos = *(pset.get<last_exec_key>().rbegin());
 
-  cout << " [" << pFirstPos->first_exec().dt() << '/';
+  cout << " [" << pFirstPos->first_exec()->dt() << '/';
   
   if( pLastPos->closed() )
-    cout << pLastPos->last_exec().dt();
+    cout << pLastPos->last_exec()->dt();
   else
     cout << " (Open)";
     

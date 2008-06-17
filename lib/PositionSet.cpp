@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 A. Giannetti
 *
 * This file is part of Hudson.
 *
@@ -151,6 +151,18 @@ PositionSet PositionSet::stratPos( void ) const
 
   for( const_iterator iter = begin(); iter != end(); ++iter )
     if( (*iter)->type() == Position::STRATEGY )
+      sPos.insert(*iter);
+
+  return sPos;
+}
+
+
+PositionSet PositionSet::naturalPos(void) const
+{
+  PositionSet sPos;
+
+  for( const_iterator iter = begin(); iter != end(); ++iter )
+    if( (*iter)->type() != Position::STRATEGY )
       sPos.insert(*iter);
 
   return sPos;

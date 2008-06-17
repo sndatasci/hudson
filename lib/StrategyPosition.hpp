@@ -32,27 +32,32 @@
 #include "PositionSet.hpp"
 #include "Price.hpp"
 #include "SeriesFactor.hpp"
+#include "ExecutionObserver.hpp"
 
 
 //! Composite Position class.
 /*!
-  StrategyPosition is a composite pattern class that aggregates executions for one or more Position objects. The factor() method is redefined
+  StrategyPosition aggregates executions for one or more Position objects. The factor() method is redefined
   to accumulate factors for all Position included in a StrategyPosition. Any type of Position can be added to the StrategyPosition,
   including another StrategyPosition. This class can be used to build multi-leg positions such as spread trades or pair trades, and calculate
   simulation statistics based on multiple Position composite returns.
   \see ReturnFactors.
   \see EOMReturnFactors.
  */
-class StrategyPosition: public Position
+class StrategyPosition: public Position, public ExecutionObserver
 {
 public:
   //! Initialize a new StrategyPosition.
   /*!
     \param id A unique Position identifier.
     \param symbol A virtual symbol name used to name this composite position.
-    \param pPos The first Position to be added to the strategy.
+    \param pPos The first Position added to this strategy.
   */
   StrategyPosition(Position::ID id, const std::string& symbol, const PositionPtr pPos);
+  virtual ~StrategyPosition(void) { }
+
+  virtual void attach(ExecutionObserver* pObserver) throw(PositionException);
+  virtual void detach(ExecutionObserver* pObserver) throw(PositionException);
 
   //! Add a new Position.
   /*!
@@ -61,15 +66,16 @@ public:
   */
   virtual bool add(const PositionPtr p) throw(PositionException);
 
-  //! Get a specific Position by ID.
+  //! Get underlying Position by ID.
   /*!
     \param id The unique identifier of the wanted Position.
     \return An iterator to the PositionPtr in PositionSet matching id, or PositionSet::end() if not found.
   */
   PositionSet::const_iterator get(Position::ID id) const { return _sPositions.find(id, pos_comp_id()); }
-  //! Get all Position objects included in this StrategyPosition.
+
+  //! Get all Positions included in this StrategyPosition.
   //! \return A reference to the complete set of Positions for this StrategyPosition.
-  const PositionSet& get(void) const { return _sPositions; }
+  PositionSet get(void) const { return _sPositions; }
 
   //! Is this StrategyPosition open.
   /*!
@@ -97,11 +103,9 @@ public:
   virtual Price avgExitPrice(void) const throw(PositionException);
 
   //! First Execution by time.
-  virtual const Execution first_exec(void) { return executions().first_by_date(); }
+  virtual const ExecutionPtr first_exec(void) const { return executions().first_by_date(); }
   //! Last Execution by time.
-  virtual const Execution last_exec(void) { return executions().last_by_date(); }
-  //! Return all Execution that are part of this strategy.
-  virtual ExecutionSet executions(void);
+  virtual const ExecutionPtr last_exec(void) const { return executions().last_by_date(); }
 
   //! Return strategy factor. This is the product factor for all Positions included in the strategy.
   virtual double factor(Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
@@ -111,7 +115,7 @@ public:
   virtual double factor(const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
   //! Return monthly factor for month/year period.
   virtual double factor(const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, Series::EODDB::PriceType pt = Series::EODDB::ADJCLOSE) const throw(PositionException);
-  
+
   //! Return daily factors. If the position is closed, return daily factors from the opening execution to the closing execution. If the Position is open,
   //! return daily factors from the first execution to the last available entry in the database.
 
@@ -151,6 +155,9 @@ public:
   */
   virtual void close(const boost::gregorian::date& dt, Series::EODDB::PriceType pt) throw(PositionException);
 
+  //! Execution notification for underlying NaturalPosition instances
+  virtual void update(const ExecutionPtr pExe);
+
 protected:
   PositionSet _sPositions;
 
@@ -160,6 +167,7 @@ private:
     bool operator()(const SeriesFactor& sf1, const SeriesFactor& sf2) const { return sf1.from_tm() < sf2.from_tm(); }
   };
 
+  //! Set of SeriesFactor indexed by 'from' date
   typedef std::multiset<SeriesFactor, SeriesFactorFromCmp> SeriesFactorMultiSetFrom;
 
   SeriesFactorSet _matchFactors(const SeriesFactorMultiSetFrom& sfsAll) const;

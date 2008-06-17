@@ -101,7 +101,6 @@ private:
   double _factor;
 };
 
-
 typedef SeriesFactorSet::by_from series_factor_by_begin_mark;
 typedef SeriesFactorSet::by_to series_factor_by_end_mark;
 

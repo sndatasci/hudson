@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 A. Giannetti
 *
 * This file is part of Hudson.
 *
@@ -44,13 +44,10 @@ PositionFactors::PositionFactors( const Position& pos, Series::EODDB::PriceType 
 
   for( SeriesFactorSet::const_iterator citer = sfsAll.begin(); citer != sfsAll.end(); ++citer ) {
     // Initialize SeriesFactorSet objects indexed both by from_time and to_time to calculate bfe() and wae().
-    // This is for performance reasons. multi_index secondary keys are slower than two primary key collections.
+    // This is for performance reasons. multi_index secondary key access is slower than primary key.
     _sf_fromtm.insert(*citer);
     _sf_totm.insert(*citer);
   }
-
-  //cout << "Time-based items (from_tm): " << (unsigned int)_sf_fromtm.size() << endl;
-  //cout << "Time-based items (to_tm): " << (unsigned int)_sf_totm.size() << endl;
 }
 
 
@@ -111,23 +108,24 @@ SeriesFactorSet PositionFactors::max_cons_neg(void) const
 
 SeriesFactorSet PositionFactors::wae( void ) const throw(PositionFactorsException)
 {
-  // Look for worst position excursion period starting from each entry in daily series
-  //cout << "Calculating worst excursion period for position " << _pos.id() << endl;
+  // Look for position worst excursion starting from each entry in position daily series
+
+  PeriodFactor worst_pf; // Worst found so far
+  bool never_set = true; // Whether worst found has been set once already
 
   // For each SeriesFactor bar
-  PeriodFactor worst_pf;
-  bool never_set = true;
   for( SF_TOTM::const_iterator iter = _sf_totm.begin(); iter != _sf_totm.end(); ++iter ) {
 
-    // Calculate worst adverse excursion from this point
-    //cout << "Calculating position adverse excursion from " << (*iter).from_tm() << endl;
+    // Calculate worst adverse excursion from this point to the end
     PeriodFactor pf = _wae(iter); // return drawdown from this bar
 
-    // Store worst adverse excursion
+    // Compate last worst adverse excursion to previous set
     if( never_set || pf.factor < worst_pf.factor ) {
       worst_pf = pf;
       never_set = false;
-      //cout << "WAE set from " << worst_pf.from_tm << " to " << worst_pf.to_tm << " (" << worst_pf.factor << ")" << endl;
+#ifdef DEBUG
+      cout << "WAE set from " << worst_pf.from_tm << " to " << worst_pf.to_tm << " (" << worst_pf.factor << ")" << endl;
+#endif
     }
   }
 
@@ -137,7 +135,9 @@ SeriesFactorSet PositionFactors::wae( void ) const throw(PositionFactorsExceptio
     throw PositionFactorsException(ss.str());
   }
 
+#ifdef DEBUG
   //cout << "Found worst excursion from " << worst_pf.from_tm << " to " << worst_pf.to_tm << endl;
+#endif
 
   // Locate beginning of stored worst adverse excursion in SeriesFactor set
   SeriesFactor sf(worst_pf.from_tm, worst_pf.to_tm, worst_pf.factor);
@@ -148,13 +148,15 @@ SeriesFactorSet PositionFactors::wae( void ) const throw(PositionFactorsExceptio
     throw PositionFactorsException(ss.str());
   }
 
-  // Initialize SeriesFactorSet with SeriesFactor(s) included in worst_pf range
+  // Initialize a new SeriesFactorSet with SeriesFactor included in worst_pf range
   SeriesFactorSet sfs;
+#ifdef DEBUG
   //cout << "Adding SeriesFactor from " << (*src_begin).from_tm() << " to " << worst_pf.to_tm << endl;
+#endif
   for( SF_FROMTM::const_iterator iter(src_begin); iter != _sf_fromtm.end() && (*iter).to_tm() <= worst_pf.to_tm; ++iter )
     sfs.insert(*iter);
 
-  return sfs; // Return worst drawdown for this position
+  return sfs; // Return worst drawdown series factor set for this position
 }
 
 
@@ -162,9 +164,9 @@ PositionFactors::PeriodFactor PositionFactors::_wae(SF_TOTM::const_iterator& sta
 {
   // Return value defaults
   PeriodFactor pf;
-  pf.from_tm = (*start).from_tm(); // Begin of excursion no matter what. Index must be set to from_tm() for later retrieval by from_tm() key
+  pf.from_tm = (*start).from_tm(); // Begin of excursion analysis
 
-  // Calculate worst excursion from 'start'. Can't use multi_index secondary index for performance reasons.
+  // Calculate worst excursion from 'start'.
   SeriesFactorSet sfs;
   bool never_set = true;
   for( SF_TOTM::const_iterator iter = start; iter != _sf_totm.end(); ++iter ) {
@@ -188,7 +190,6 @@ PositionFactors::PeriodFactor PositionFactors::_wae(SF_TOTM::const_iterator& sta
 SeriesFactorSet PositionFactors::bfe(void) const throw(PositionFactorsException)
 {
   // Look for worst position excursion period starting from each entry in daily series
-  //cout << "Calculating best excursion period for position " << _pos.id() << endl;
 
   // For each SeriesFactor bar
   PeriodFactor best_pf;
@@ -196,7 +197,6 @@ SeriesFactorSet PositionFactors::bfe(void) const throw(PositionFactorsException)
   for( SF_TOTM::const_iterator iter = _sf_totm.begin(); iter != _sf_totm.end(); ++iter ) {
 
     // Calculate best favorable excursion from this point
-    //cout << "Calculating position favorable excursion from " << (*iter).from_tm() << endl;
     PeriodFactor pf = _bfe(iter); // return best favorable excursion from this bar
 
     // Store best favorable excursion till now
@@ -263,5 +263,5 @@ PositionFactors::PeriodFactor::PeriodFactor( double f ):
 
 bool PositionFactors::PeriodFactor::isValid( void ) const
 {
-  return from_tm.is_not_a_date() || to_tm.is_not_a_date();
+  return (from_tm.is_not_a_date() || to_tm.is_not_a_date()) ? false : true;
 }

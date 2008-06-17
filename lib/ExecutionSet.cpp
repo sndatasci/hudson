@@ -27,9 +27,10 @@
 
 using namespace std;
 
+Execution::ID ExecutionSet::_eid = 0;
 
-ExecutionSet::ExecutionSet(void):
-  _eid(0)
+
+ExecutionSet::ExecutionSet(void)
 {
 }
 
@@ -43,38 +44,49 @@ void ExecutionSet::print(void) const
 }
 
 
-bool ExecutionSet::buy(boost::gregorian::date dt, const Price& price, unsigned size)
+Execution::ID ExecutionSet::buy(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size)
 {
-  ExecutionPtr pExe(new BuyExecution(++_eid, dt, price, size));
-  return insert(pExe).second;
+  ExecutionPtr pExe(new BuyExecution(symbol, ++_eid, dt, price, size));
+  if( insert(pExe).second == false )
+    return Execution::NullID;
+
+  notify(pExe); // Notify all observers about new execution
+
+  return _eid;
 }
 
 
-bool ExecutionSet::sell(boost::gregorian::date dt, const Price& price, unsigned size)
+Execution::ID ExecutionSet::sell(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size)
 {
-  ExecutionPtr pExe(new SellExecution(++_eid, dt, price, size));
-  return insert(pExe).second;
+  ExecutionPtr pExe(new SellExecution(symbol, ++_eid, dt, price, size));
+  if( insert(pExe).second == false )
+    return Execution::NullID;
+
+  notify(pExe);
+
+  return _eid;
 }
 
 
-bool ExecutionSet::sell_short(boost::gregorian::date dt, const Price& price, unsigned size)
+Execution::ID ExecutionSet::sell_short(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size)
 {
-  ExecutionPtr pExe(new SellShortExecution(++_eid, dt, price, size));
-  return insert(pExe).second;
+  ExecutionPtr pExe(new SellShortExecution(symbol, ++_eid, dt, price, size));
+  if( insert(pExe).second == false )
+    return Execution::NullID;
+
+  notify(pExe);
+
+  return _eid;
 }
 
 
-bool ExecutionSet::cover(boost::gregorian::date dt, const Price& price, unsigned size)
+Execution::ID ExecutionSet::cover(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size)
 {
-  ExecutionPtr pExe(new CoverExecution(++_eid, dt, price, size));
-  return insert(pExe).second;
+  ExecutionPtr pExe(new CoverExecution(symbol, ++_eid, dt, price, size));
+  if( insert(pExe).second == false )
+    return Execution::NullID;
+
+  notify(pExe);
+
+  return _eid;
 }
-
-
-void ExecutionSet::add( const ExecutionSet& other )
-{
-  for( ExecutionSet::const_iterator citer = other.begin(); citer != other.end(); ++citer )
-    if( insert(*citer).second )
-      cout << "Execution " << (*citer)->id() << " inserted" << endl;
-}
-
