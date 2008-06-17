@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 A. Giannetti
 *
 * This file is part of Hudson.
 *
@@ -24,7 +24,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 /*!
-* Single daily factor. SeriesFactor and SeriesFactorSet are used in PositionFactors class to calculate single-position
+* Single daily factor. SeriesFactor and SeriesFactorSet are used in PositionFactors to calculate single-position
 * unrealized return statistics.
 * Includes the opening/close date and time used to calculate this factor value.
 * \see PositionFactors.

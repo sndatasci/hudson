@@ -42,6 +42,50 @@ StrategyPosition::StrategyPosition( Position::ID id, const std::string& symbol, 
 }
 
 
+void StrategyPosition::update(const ExecutionPtr pExe)
+{
+#ifdef DEBUG
+  cout << "Synthetic Position " << _id << ", underlying Position " << pExe->position()->id() << ", adding execution " << pExe->id() << ", symbol " << pExe->position()->symbol() << endl;
+#endif
+
+  if( _sExecutions.insert(pExe).second == false )
+    throw PositionException("Can not insert execution in StrategyPosition set");
+}
+
+
+bool StrategyPosition::add( const PositionPtr pPos ) throw(PositionException)
+{
+  // Add position to list
+  if( ! _sPositions.insert(pPos).second )
+    return false;
+
+  ExecutionSet execs = pPos->executions();
+  for( ExecutionSet::const_iterator iter(execs.begin()); iter != execs.end(); ++iter ) {
+#ifdef DEBUG
+    cout << "Synthetic Position " << _id << ", underlying Position " << pPos->id() << ", adding execution " << (*iter)->id() << ", symbol " << (*iter)->position()->symbol() << endl;
+#endif
+    _sExecutions.insert(*iter);
+  }
+
+  // Register for Exection updates
+  pPos->attach(this);
+
+  return true;
+}
+
+
+void StrategyPosition::attach(ExecutionObserver* pObserver) throw(PositionException)
+{
+  throw PositionException("StrategyPosition does not contain any execution");
+}
+
+
+void StrategyPosition::detach(ExecutionObserver* pObserver) throw(PositionException)
+{
+  throw PositionException("StrategyPosition does not contain any execution");
+}
+
+
 Price StrategyPosition::avgEntryPrice( void ) const throw(PositionException)
 {
   throw PositionException("StrategyPosition does not have single average entry price");
@@ -104,7 +148,7 @@ void StrategyPosition::cover( const boost::gregorian::date& dt, Series::EODDB::P
 
 void StrategyPosition::close( const boost::gregorian::date& dt, const Price& price ) throw(PositionException)
 {
-  throw PositionException("StrategyPosition can not be closed at single price");
+  throw PositionException("StrategyPosition can not be closed at a specific price");
 }
 
 
@@ -115,85 +159,84 @@ void StrategyPosition::close( const boost::gregorian::date& dt, Series::EODDB::P
 }
 
 
-ExecutionSet StrategyPosition::executions( void )
-{
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    _sExecutions.add((*citer)->executions());
-
-  return _sExecutions;
-}
-
-
 double StrategyPosition::factor( EODDB::PriceType pt ) const throw(PositionException)
 {
-  double f = 1;
+  double f_acc = 0;
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f *= (*citer)->factor(pt);
-    
-  return f;
+    f_acc += (*citer)->factor(pt);
+
+  // Normalize to single position
+  return (f_acc - _sPositions.size()) + 1;
 }
 
 
 double StrategyPosition::factor( const boost::gregorian::date& dt, EODDB::PriceType pt ) const throw(PositionException)
 {
-  double f = 1;
+  double f_acc = 0;
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f *= (*citer)->factor(dt, pt);
+    f_acc += (*citer)->factor(dt, pt);
 
-  return f;
+  // Normalize to single position
+  return (f_acc - _sPositions.size()) + 1;
 }
 
 
 double StrategyPosition::factor( const boost::gregorian::date_period& dp, EODDB::PriceType pt ) const throw(PositionException)
 {
-  double f = 1;
+  double f_acc = 0;
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f *= (*citer)->factor(dp, pt);
+    f_acc += (*citer)->factor(dp, pt);
 
-  return f;
+  // Normalize to single position
+  return (f_acc - _sPositions.size()) + 1;
 }
 
 
 double StrategyPosition::factor( const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, EODDB::PriceType pt ) const throw(PositionException)
 {
-  double f = 1;
+  double f_acc = 0;
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f *= (*citer)->factor(month, year);
+    f_acc += (*citer)->factor(month, year);
 
-  return f;
+  // Normalize to single position
+  return (f_acc - _sPositions.size()) + 1;
 }
 
 
 SeriesFactorSet StrategyPosition::factors(Series::EODDB::PriceType pt) const throw(PositionException)
 {
-  cout << "Strategy Position " << _id << " first exec " << first_exec().dt() << ", last exec " << last_exec().dt() << endl;
+#ifdef DEBUG
+  cout << "Strategy Position " << _id << " first exec " << first_exec()->dt() << ", last exec " << last_exec()->dt() << endl;
   cout << "Number of legs: " << _sPositions.size() << endl;
-  cout << "Symbol " << _symbol << " end of database: " << EODDB::instance().get(_symbol).rbegin()->first << endl;
-  cout << "Is Position closed: " << closed() << endl;
-  date last_dt = (closed() ? last_exec().dt() : EODDB::instance().get(_symbol).rbegin()->first);
+#endif
+  date last_dt = (closed() ? last_exec()->dt() : EODDB::instance().get(_symbol).rbegin()->first);
 
-  date_period dp(first_exec().dt(), last_dt);
+  date_period dp(first_exec()->dt(), last_dt);
   return factors(dp, pt);
 }
 
 
 SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) const throw(PositionException)
 {
-  date_period dp(first_exec().dt(), dt);
+  date_period dp(first_exec()->dt(), dt);
   return factors(dp, pt);
 }
 
 
 SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date_period& dp, EODDB::PriceType pt ) const throw(PositionException)
 {
-  // Accumulate all factors with the same begin and end date until dt for all positions in this strategy.
+  // Accumulate all factors with the same begin/end date for all underlying positions
   SeriesFactorMultiSetFrom sfsAll;
 
-  // Add all SeriesFactor for all positions indexed by first execution date
+  // Add all SeriesFactor for all underlying positions indexed by first execution date
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer ) {
     SeriesFactorSet sfs = (*citer)->factors(dp, pt);
-    for( SeriesFactorSet::const_iterator sfs_citer = sfs.begin(); sfs_citer != sfs.end(); ++sfs_citer )
+    for( SeriesFactorSet::const_iterator sfs_citer = sfs.begin(); sfs_citer != sfs.end(); ++sfs_citer ) {
+#ifdef DEBUG
+      cout << "Inserting position " << (*citer)->id() << " factor from " << (*sfs_citer).from_tm() << ", to " << (*sfs_citer).to_tm() << endl;
+#endif
       sfsAll.insert(*sfs_citer);
+    }
   }
 
   return _matchFactors(sfsAll);
@@ -211,13 +254,17 @@ SeriesFactorSet StrategyPosition::_matchFactors(const SeriesFactorMultiSetFrom& 
     SeriesFactor currentFactor = *citer;
     double acc = currentFactor.factor();
 
+#ifdef DEBUG
     cout << "Analyzing Position daily factor from " << currentFactor.from_tm() << " to " << currentFactor.to_tm()
 	 << " factor " << currentFactor.factor() << endl;
+#endif
 
     // Accumulate all the following factors with the same from/to date
     SeriesFactorMultiSetFrom::const_iterator citer_next = citer;
     while( ++citer_next != sfsAll.end() && citer_next->from_tm() == currentFactor.from_tm() && citer_next->to_tm() == currentFactor.to_tm() ) {
+#ifdef DEBUG
       cout << "Found daily factor with same from/to dates, factor " << citer_next->factor() << endl;
+#endif
       acc *= citer_next->factor();
     }
 
@@ -229,16 +276,6 @@ SeriesFactorSet StrategyPosition::_matchFactors(const SeriesFactorMultiSetFrom& 
   }
 
   return sfsStrategy;
-}
-
-
-bool StrategyPosition::add( const PositionPtr p ) throw(PositionException)
-{
-  // Add position pointers
-  if( ! _sPositions.insert(p).second )
-    return false;
-
-  return true;
 }
 
 
@@ -260,10 +297,11 @@ bool StrategyPosition::closed( void ) const
 
 void StrategyPosition::print( void ) const
 {
+  cout << "Synthetic " << _symbol << " (" << _id << ")" << " - " << "Factor " << factor() << " (" << (factor()-1)*100 << "%): " << endl;
+
   for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer ) {
+    cout << '\t';
     (*citer)->print();
     cout << endl;
   }
-    
-  cout << "Strategy factor " << factor() << " (" << (factor()-1)*100 << "%)" << endl;
 }

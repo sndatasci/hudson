@@ -128,24 +128,24 @@ public:
   void close(Position::ID id, const boost::gregorian::date& dt, const Price& price) throw(TraderException);
   
   /*!
-  \brief Return all the positions opened and closed by this Trader.
+  \brief Return all open and closed positions.
   */
-  const PositionSet& positions(void) const { return _miPositions; }
+  PositionSet positions(void) const { return _miPositions; }
   /*!
-  \brief Return all positions opened and closed by this Trader for a specific symbol.
+  \brief Return all opened and closed positions for a specific symbol.
   \param symbol The name of the Position objects that will be returned.
   */
   PositionSet positions(const std::string& symbol);
 
 protected:
   /*!
-  \brief Find Position by its identifier. Throw an exception if not found.
+  \brief Find Position by position id. Throw an exception if not found.
   Application should use the public helper functions and in general not rely on single position extraction.
   */
   PositionPtr get(Position::ID id) const throw(TraderException);
  
 protected:
-  Position::ID _pid; //! Position id counter
+  static Position::ID _pid; //! Unique Position id
   PositionSet _miPositions; //! Complete set of open/closed PositionPtr for this Trader
 };
 

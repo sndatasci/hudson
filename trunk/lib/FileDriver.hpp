@@ -57,17 +57,19 @@ namespace Series
   class FileDriver 
   {
   public:
+    virtual ~FileDriver(void) { }
+
     //! Open a file for parsing.
     /*!
       \param filename File path to parse.
     */
-	  virtual bool open(const std::string& filename) = 0;
-	  //! Close file.
-	  virtual void close(void) = 0;
-	  //! Read the next EOD record from the file.
-	  virtual bool next(DayPrice& record) throw(DriverException) = 0;
-	  //! EOF check.
-	  virtual bool eof(void) = 0;
+    virtual bool open(const std::string& filename) = 0;
+    //! Close file.
+    virtual void close(void) = 0;
+    //! Read the next EOD record from the file.
+    virtual bool next(DayPrice& record) throw(DriverException) = 0;
+    //! EOF check.
+    virtual bool eof(void) = 0;
   };
   
 } // namespace Series

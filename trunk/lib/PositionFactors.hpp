@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 A. Giannetti
 *
 * This file is part of Hudson.
 *
@@ -57,7 +57,7 @@ class PositionFactorsException: public std::exception
 
 
 /*!
-* Position daily factors. Used to calculate single Position unrealized peak/drawdown statistics.
+* Position daily factors. Calculates Position unrealized peak/drawdown statistics.
 */
 class PositionFactors
 {

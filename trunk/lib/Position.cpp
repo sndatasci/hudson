@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 A. Giannetti
 *
 * This file is part of Hudson.
 *
@@ -59,6 +59,6 @@ boost::gregorian::date_period Position::hold_period( void ) const throw(Position
     throw PositionException("No executions");
     
   return (closed() ?
-            boost::gregorian::date_period(_sExecutions.first_by_date().dt(), _sExecutions.last_by_date().dt()) :
-              boost::gregorian::date_period(_sExecutions.first_by_date().dt(), Series::EODDB::instance().get(_symbol).rbegin()->first));
+            boost::gregorian::date_period(_sExecutions.first_by_date()->dt(), _sExecutions.last_by_date()->dt()) :
+              boost::gregorian::date_period(_sExecutions.first_by_date()->dt(), Series::EODDB::instance().get(_symbol).rbegin()->first));
 }

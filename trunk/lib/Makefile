@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2007, Alberto Giannetti
+# Copyright (C) 2007,2008 A. Giannetti
 #
 # This file is part of Hudson.
 #
@@ -18,16 +18,18 @@
 #
 
 CXX=g++
+DEPEND=gcc -MD
 
 LIB=libhudson.a
 
-SRC=\
+SRCS=\
 	YahooDriver.cpp \
 	DMYCloseDriver.cpp \
 	EODSeries.cpp \
 	EOMSeries.cpp \
 	EOWSeries.cpp \
 	EODDB.cpp \
+	ExecutionNotifier.cpp \
 	ReturnFactors.cpp \
 	EOMReturnFactors.cpp \
 	Position.cpp \
@@ -54,7 +56,7 @@ SRC=\
 	StdAfx.cpp \
 	TA.cpp
 
-HDR=\
+HDRS=\
 	FileDriver.hpp \
 	DayPrice.hpp \
 	WeekPrice.hpp \
@@ -63,10 +65,13 @@ HDR=\
 	EOWSeries.hpp \
 	EOMSeries.hpp \
 	EODDB.hpp \
+	ExecutionPtr.hpp \
 	DMYCloseDriver.hpp \
 	YahooDriver.hpp \
 	ReturnFactors.hpp \
 	EOMReturnFactors.hpp \
+	ExecutionObserver.hpp \
+	ExecutionNotifier.hpp \
 	Report.hpp \
 	EOMReport.hpp \
 	Execution.hpp \
@@ -74,6 +79,7 @@ HDR=\
 	LongPosition.hpp \
 	ShortPosition.hpp \
 	Position.hpp \
+	PositionPtr.hpp \
 	PositionSet.hpp \
 	PositionFactors.hpp \
 	PositionFactorsSet.hpp \
@@ -94,7 +100,8 @@ INCLUDES= \
 	-I/opt/local/include \
 	-I/opt/local/include/ta-lib
 
-CFLAGS=-g
+CFLAGS=-MMD -g -Wall
+#CFLAGS=-MMD -O3 -Wall -Wwrite-strings -Wpointer-arith -Wconversion -Wstrict-prototypes -Wmissing-prototypes
 CPPFLASG=
 LDFLAGS=
 DEPFLAGS=-M
@@ -103,13 +110,10 @@ all: $(LIB)
 
 lib: $(LIB)
 
-#%.d: %.cpp
-#	$(CXX) $(INCLUDES) $(DEPFLAGS) $< > .dep/$@
-
 %.o: %.cpp
 	$(CXX) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
-libhudson.a: $(SRC:.cpp=.o)
+libhudson.a: $(SRCS:.cpp=.o)
 	ar r $@ $^
 	ranlib $@
 
@@ -119,4 +123,7 @@ clean:
 clobber:
 	\rm -f *.o *.d core $(BIN)
 
-#-include .dep/$(SRC:.cpp=.d)
+DEPS := $(wildcard *.d)
+ifneq ($(DEPS),)
+include $(DEPS)
+endif

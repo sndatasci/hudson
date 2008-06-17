@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007, 2008, A. Giannetti
 *
 * This file is part of Hudson.
 *
@@ -34,6 +34,7 @@
 
 // Hudson
 #include "ExecutionSet.hpp"
+#include "ExecutionNotifier.hpp"
 #include "SeriesFactorSet.hpp"
 #include "EODDB.hpp"
 #include "Price.hpp"
@@ -76,7 +77,9 @@ public:
     STRATEGY
   };
 
-public:  
+public:
+  virtual ~Position(void) { }
+
   //! Default comparison by Position ID.
   bool operator<(const Position& p) const { return _id < p._id; }
   bool operator==(const Position& p) const { return _id == p._id; }
@@ -102,12 +105,18 @@ public:
   //! Return Position type as string.
   virtual std::string type_str(void) const = 0;
 
-  //! First Execution by time.
-  virtual Execution& first_exec(void) { return _sExecutions.first_by_date(); }
-  //! Last Execution by time.
-  virtual Execution& last_exec(void) { return _sExecutions.last_by_date(); }
-  //! Return all Execution.
-  virtual ExecutionSet executions(void) { return _sExecutions; }
+  //! Register for Position executions.
+  //! \see NaturalPosition
+  //! \see StrategyPosition
+  virtual void attach(ExecutionObserver* pObserver) { _sExecutions.attach(pObserver); }
+  virtual void detach(ExecutionObserver* pObserver) { _sExecutions.detach(pObserver); }
+
+  //! Return Position ExecutionSet.
+  virtual ExecutionSet executions(void) const { return _sExecutions; }
+  //! Return first Position execution by time. Required to index a PositionSet by execution time.
+  virtual const ExecutionPtr first_exec(void) const { return _sExecutions.first_by_date(); }
+  // ! Return last Position execution by time. Required to index a PositionSet by execution time.
+  virtual const ExecutionPtr last_exec(void) const { return _sExecutions.last_by_date(); }
   
   //! Return Position holding period, from first opening execution to last closing position execution,
   //! or the last date in the database for the position symbol.
@@ -118,7 +127,7 @@ public:
   //! Return Position average exit price.
   virtual Price avgExitPrice(void) const throw(PositionException) = 0;
   
-  //! Add an existing Position to this Position. Only valid for composite positions.
+  //! Add an existing Position to this Position. Only valid for StrategyPosition derived class.
   //! \return True if the Position was successfully added, false otherwise.
   virtual bool add(const PositionPtr pPos) throw(PositionException) = 0;
 
@@ -172,8 +181,8 @@ public:
 protected:
   Position(ID id, const std::string& symbol);
 
-  ID _id;
-  std::string _symbol;
+  const ID _id;
+  const std::string _symbol;
   unsigned _size;
 
   ExecutionSet _sExecutions;

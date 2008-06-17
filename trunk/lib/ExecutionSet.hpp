@@ -32,12 +32,10 @@
 
 // Hudson
 #include "Execution.hpp"
-
+#include "ExecutionNotifier.hpp"
 
 struct date_key { };
 struct side_key { };
-
-typedef boost::shared_ptr<Execution> ExecutionPtr;
 
 typedef boost::multi_index::multi_index_container<
 
@@ -47,47 +45,54 @@ typedef boost::multi_index::multi_index_container<
     boost::multi_index::ordered_unique<boost::multi_index::identity<Execution> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<date_key>, boost::multi_index::const_mem_fun<Execution, boost::gregorian::date, &Execution::dt> >,
     boost::multi_index::ordered_non_unique<boost::multi_index::tag<side_key>, boost::multi_index::const_mem_fun<Execution, Execution::Side, &Execution::side> >
-  >
-> __ExecutionSet;
+    >
+  > __ExecutionSet;
 
 
 /*!
-  ExecutionSet is a multi index collection containing a set of transactions. The collection can be indexed by Execution ID,
-  execution date or execution side.
+  ExecutionSet is a multi index collection containing a set of transactions, indexed by Execution ID,
+  execution date and execution side.
   \see Execution
 */
-class ExecutionSet: private __ExecutionSet
+class ExecutionSet: private __ExecutionSet, public ExecutionNotifier
 {
 public:
+  typedef __ExecutionSet::iterator iterator;
+  typedef __ExecutionSet::const_iterator const_iterator;
+
   using __ExecutionSet::size;
   using __ExecutionSet::empty;
+  using __ExecutionSet::begin;
+  using __ExecutionSet::end;
+  using __ExecutionSet::insert;
+  using __ExecutionSet::find;
 
 public:
   ExecutionSet(void);
   ~ExecutionSet(void) { }
 
   //! Add a long transaction.
-  bool buy(boost::gregorian::date dt, const Price& price, unsigned size);
+  Execution::ID buy(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size);
   //! Add a sell transaction. 
-  bool sell(boost::gregorian::date dt, const Price& price, unsigned size);
+  Execution::ID sell(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size);
   //! Add a short transaction.
-  bool sell_short(boost::gregorian::date dt, const Price& price, unsigned size);
+  Execution::ID sell_short(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size);
   //! Add a cover transaction.
-  bool cover(boost::gregorian::date dt, const Price& price, unsigned size);
+  Execution::ID cover(const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size);
 
   //! Return the first Execution by date.
-  const Execution& first_by_date(void) const { return **(get<date_key>().begin()); }
+  //! \note Execution is a pure virtual class, return type must be a reference or a pointer
+  const ExecutionPtr first_by_date(void) const { return *(get<date_key>().begin()); }
   //! Return the last Execution by date.
-  const Execution& last_by_date(void) const { return **(get<date_key>().rbegin()); }
-
-  //! Add a set of executions
-  void add(const ExecutionSet& other);
+  //! \note Execution is a pure virtual class, return type must be a reference or a pointer
+  const ExecutionPtr last_by_date(void) const { return *(get<date_key>().rbegin()); }
 
   //! Print all Execution data in this collection.
   void print(void) const;
 
 private:
-  Execution::ID _eid;
+  //! Unique execution identifier
+  static Execution::ID _eid;
 
 private:
   typedef __ExecutionSet::index<side_key>::type by_side;

@@ -25,8 +25,8 @@
 #endif
 
 // Hudson
-#include "Position.hpp"
 #include "Price.hpp"
+#include "Position.hpp"
 
 //! A new long position.
 /*!
@@ -48,13 +48,14 @@ public:
     \see Execution.
   */
   LongPosition(ID id, const std::string& symbol, const boost::gregorian::date& dt, const Price& price, unsigned size) throw(PositionException);
+  virtual ~LongPosition(void) { }
 
   virtual Type type(void) const { return LONG; }
   virtual std::string type_str(void) const { return "Long"; }
 
-  //! The number of buy executions run on this position.
+  //! The number of buy executions on this position.
   unsigned buys(void) const { return _buys; }
-  //! The number of sell executions run on this position.
+  //! The number of sell executions on this position.
   unsigned sells(void) const { return _sells; }
   
   //! Always throws an exception. LongPosition are not composite positions.

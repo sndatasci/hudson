@@ -57,13 +57,15 @@ void PositionsReport::favorable(void) const
   if( _pf.num() == 0 )
     return; // avoid exception in report
 
+  std::cout << "Favorable Excursion" << std::endl;
+
   PositionFactorsSet::ExcursionResults er = _pf.favorable();
 
-  // Average peak
-  std::cout << "Avg peak: " << er.avg*100 << '%' << std::endl;
+  // Average favorable excursion
+  std::cout << "Average FE: " << er.avg*100 << '%' << std::endl;
   
-  // Consecutive positives
-  cout << "Longest peak: ";
+  // Longest favorable excursion
+  cout << "Longest FE: ";
   if( er.consecutive.empty() ) {
     cout << 0 << endl;
   } else {
@@ -73,12 +75,12 @@ void PositionsReport::favorable(void) const
     cout << (int)er.consecutive.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
   }
 
-  // Best peak
+  // Best FA
   const SeriesFactorSet& sfs = er.high;
   const SeriesFactor& sf_begin = *(er.high.get<from_key>().begin());
   const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
 
-  std::cout << "Best peak: " << (sfs.factor()-1)*100 << '%';
+  std::cout << "Best FE: " << (sfs.factor()-1)*100 << '%';
   std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
 }
 
@@ -88,13 +90,15 @@ void PositionsReport::adverse(void) const
   if( _pf.num() == 0 )
     return; // avoid exception in report
 
+  std::cout << "Adverse Excursion" << std::endl;
+
   PositionFactorsSet::ExcursionResults er = _pf.adverse();
 
   // Average adverse excursion
-  std::cout << "Avg drawdown: " << er.avg*100 << '%' << std::endl;
+  std::cout << "Avg AE: " << er.avg*100 << '%' << std::endl;
   
   // Consecutive adverse
-  cout << "Longest drawdown: ";
+  cout << "Longest AE: ";
   if( er.consecutive.empty() ) {
     cout << 0 << endl;
   } else {
@@ -109,6 +113,6 @@ void PositionsReport::adverse(void) const
   const SeriesFactor& sf_begin = *(er.high.get<from_key>().begin());
   const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
 
-  std::cout << "Worst drawdown: " << (sfs.factor()-1)*100 << '%';
+  std::cout << "Worst AE: " << (sfs.factor()-1)*100 << '%';
   std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
 }
