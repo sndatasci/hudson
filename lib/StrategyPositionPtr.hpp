@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007,2008 Alberto Giannetti
+* Copyright (C) 2007,2008 A. Giannetti
 *
 * This file is part of Hudson.
 *
@@ -17,26 +17,12 @@
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _EXECUTIONOBSERVER_HPP_
-#define _EXECUTIONOBSERVER_HPP_
+#ifndef _STRATEGYPOSITIONPTR_HPP_
+#define _STRATEGYPOSITIONPTR_HPP_
 
-#ifdef WIN32
-#pragma warning (disable:4290)
-#endif
+#include <boost/shared_ptr.hpp>
 
-// Hudson
-#include "ExecutionPtr.hpp"
+class StrategyPosition;
+typedef boost::shared_ptr<StrategyPosition> StrategyPositionPtr;
 
-
-class ExecutionObserver
-{
-public:
-  virtual ~ExecutionObserver(void) { }
-
-  virtual void update(const ExecutionPtr pExe) = 0;
-
-protected:
-  ExecutionObserver(void) { }
-};
-
-#endif // _EXECUTIONOBSERVER_HPP_
+#endif // _STRATEGYPOSITIONPTR_HPP_

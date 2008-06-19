@@ -22,20 +22,22 @@
 // Hudson
 #include "StrategyTrader.hpp"
 #include "StrategyPosition.hpp"
+#include "StrategyPositionPtr.hpp"
 
 using namespace std;
+using namespace boost;
 using namespace boost::gregorian;
 using namespace boost::multi_index;
 using namespace Series;
 
 
-Position::ID StrategyTrader::strategy( const std::string& symbol, PositionPtr pPos ) throw(TraderException)
+Position::ID StrategyTrader::strategy( const std::string& symbol, PositionPtr pPos, double weight ) throw(TraderException)
 {
   PositionPtr pStratPos; // The new StrategyPosition
 
   try {
 
-    pStratPos = PositionPtr(new StrategyPosition(++_pid, symbol, pPos));
+    pStratPos = PositionPtr(new StrategyPosition(++_pid, symbol, pPos, weight));
 
   } catch (const std::exception& ex) {
 
@@ -51,7 +53,7 @@ Position::ID StrategyTrader::strategy( const std::string& symbol, PositionPtr pP
 }
 
 
-Position::ID StrategyTrader::strategy_buy( const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size /*= 1*/ ) throw(TraderException)
+Position::ID StrategyTrader::strategy_buy( const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size, double weight ) throw(TraderException)
 {
   Position::ID long_pos_id = buy(pos_symbol, dt, price, size);
   PositionSet::const_iterator long_pos_citer = _miPositions.find(long_pos_id, pos_comp_id());
@@ -59,18 +61,21 @@ Position::ID StrategyTrader::strategy_buy( const std::string& strat_symbol, cons
     throw TraderException("Can't find newly created LongPosition after strategy buy");
     
   PositionPtr pLongPos = *long_pos_citer;
-  return strategy(strat_symbol, pLongPos);
+  return strategy(strat_symbol, pLongPos, weight);
 }
 
 
-Position::ID StrategyTrader::strategy_buy( Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size /*= 1*/ ) throw(TraderException)
+Position::ID StrategyTrader::strategy_buy( Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size, double weight ) throw(TraderException)
 {
   // Get StrategyPosition pointer
-  PositionSet::const_iterator strat_pos_citer = _miPositions.find(strat_id, pos_comp_id());
-  if( strat_pos_citer == _miPositions.end() )
+  PositionSet::const_iterator pos_citer = _miPositions.find(strat_id, pos_comp_id());
+  if( pos_citer == _miPositions.end() )
     throw TraderException("Can't find strategy position");
     
-  PositionPtr pStratPos = *strat_pos_citer;
+  // Make sure this is a StrategyPosition
+  StrategyPositionPtr pStratPos = dynamic_pointer_cast<StrategyPosition>(*pos_citer);
+  if( pStratPos == NULL )
+    throw TraderException("Not a strategy position");
   
   // Execute new LongPosition opening transaction
   Position::ID long_pos_id = buy(pos_symbol, dt, price, size);
@@ -80,15 +85,14 @@ Position::ID StrategyTrader::strategy_buy( Position::ID strat_id, const std::str
   if( long_pos_citer == _miPositions.end() )
     throw TraderException("Can't find newly create long position");
     
-  PositionPtr pLongPos = *long_pos_citer;
-  pStratPos->add(pLongPos);
+  pStratPos->add(*long_pos_citer, weight);
   
   // Return new LongPosition id
   return long_pos_id;
 }
 
 
-Position::ID StrategyTrader::strategy_sell_short(const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size /*= 1*/) throw(TraderException)
+Position::ID StrategyTrader::strategy_sell_short(const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size, double weight) throw(TraderException)
 {
   Position::ID short_pos_id = sell_short(pos_symbol, dt, price, size);
   PositionSet::const_iterator short_pos_citer = _miPositions.find(short_pos_id, pos_comp_id());
@@ -96,18 +100,21 @@ Position::ID StrategyTrader::strategy_sell_short(const std::string& strat_symbol
     throw TraderException("Can't find newly created ShortPosition after strategy sell short");
 
   PositionPtr pShortPos = *short_pos_citer;
-  return strategy(strat_symbol, pShortPos);
+  return strategy(strat_symbol, pShortPos, weight);
 }
 
 
-Position::ID StrategyTrader::strategy_sell_short( Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size /*= 1*/ ) throw(TraderException)
+Position::ID StrategyTrader::strategy_sell_short( Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size, double weight ) throw(TraderException)
 {
   // Get StrategyPosition pointer
-  PositionSet::const_iterator strat_pos_citer = _miPositions.find(strat_id, pos_comp_id());
-  if( strat_pos_citer == _miPositions.end() )
+  PositionSet::const_iterator pos_citer = _miPositions.find(strat_id, pos_comp_id());
+  if( pos_citer == _miPositions.end() )
     throw TraderException("Can't find strategy position");
 
-  PositionPtr pStratPos = *strat_pos_citer;
+  // Make sure this is a StrategyPosition
+  StrategyPositionPtr pStratPos = dynamic_pointer_cast<StrategyPosition>(*pos_citer);
+  if( pStratPos == NULL )
+    throw TraderException("Not a strategy position");
 
   // Execute new ShortPosition opening transaction
   Position::ID short_pos_id = sell_short(pos_symbol, dt, price, size);
@@ -115,9 +122,7 @@ Position::ID StrategyTrader::strategy_sell_short( Position::ID strat_id, const s
   if( short_pos_citer == _miPositions.end() )
     throw TraderException("Can't find newly created short position");
 
-  PositionPtr pShortPos = *short_pos_citer;
-
-  pStratPos->add(pShortPos);
+  pStratPos->add(*short_pos_citer, weight);
   
   return short_pos_id;
 }

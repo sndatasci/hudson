@@ -46,9 +46,9 @@ public:
   \return The new StrategyPosition identifier.
   \param symbol The name of the new StrategyPosition being added.
   \param pPos The first position added to the strategy.
-  \see StrategyPosition.
+  \param weight The weight of pPos in the new StrategyPosition
   */
-  Position::ID strategy(const std::string& symbol, PositionPtr pPos) throw(TraderException);
+  Position::ID strategy(const std::string& symbol, PositionPtr pPos, double weight = 1) throw(TraderException);
   
   /*!
   \brief Create a new StrategyPosition by opening a new LongPosition.
@@ -58,8 +58,9 @@ public:
   \param dt Transaction date.
   \param price Transaction Price.
   \param size Transaction size.
+  \param weight The weight of the new LongPosition in StrategyPosition.
   */
-  Position::ID strategy_buy(const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);  
+  Position::ID strategy_buy(const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1, double weight = 1) throw(TraderException);  
   /*!
   \brief Add a new LongPosition to an existing StrategyPosition.
   \param strat_id The StrategyPosition identifier.
@@ -67,8 +68,9 @@ public:
   \param dt New LongPosition transaction date.
   \param price New LongPosition transaction Price.
   \param size New LongPosition size.
+  \param weight The weight of the new LongPosition in StrategyPosition.
   */
-  Position::ID strategy_buy(Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  Position::ID strategy_buy(Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1, double weight = 1) throw(TraderException);
   
   /*!
   \brief Create a new StrategyPosition by opening a new ShortPosition.
@@ -77,8 +79,9 @@ public:
   \param dt Transaction date.
   \param price Transaction Price.
   \param size Transaction size.
+  \param weight The weight of the new ShortPosition in StrategyPosition.
   */ 
-  Position::ID strategy_sell_short(const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);  
+  Position::ID strategy_sell_short(const std::string& strat_symbol, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1, double weight = 1) throw(TraderException);  
   /*!
   \brief Add a new ShortPosition to an existing StrategyPosition.
   \param strat_id The StrategyPosition identifier.
@@ -86,8 +89,9 @@ public:
   \param dt The new ShortPosition transaction date.
   \param price The new ShortPosition transaction Price.
   \param size The new ShortPosition size.
+  \param weight The weight of the new ShortPosition in StrategyPosition
   */
-  Position::ID strategy_sell_short(Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1) throw(TraderException);
+  Position::ID strategy_sell_short(Position::ID strat_id, const std::string& pos_symbol, const boost::gregorian::date& dt, const Price& price, unsigned size = 1, double weight = 1) throw(TraderException);
   
   /*!
   \brief Close all the underlying Position.

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 Alberto Giannetti
 *
 * This file is part of Hudson.
 *
@@ -27,20 +27,21 @@
 // STL
 #include <string>
 #include <set>
+#include <map>
 
 // Hudson
-#include "PositionSet.hpp"
 #include "Price.hpp"
 #include "SeriesFactor.hpp"
+#include "Position.hpp"
 #include "ExecutionObserver.hpp"
 
 
 //! Composite Position class.
 /*!
-  StrategyPosition aggregates executions for one or more Position objects. The factor() method is redefined
-  to accumulate factors for all Position included in a StrategyPosition. Any type of Position can be added to the StrategyPosition,
-  including another StrategyPosition. This class can be used to build multi-leg positions such as spread trades or pair trades, and calculate
-  simulation statistics based on multiple Position composite returns.
+  StrategyPosition is a composite Position that contains one or more LongPosition/ShortPosition objects.
+  Each underlying Position has a weighting factor that is used to calculate the StrategyPosition factors.
+  This class can be used to build multi-leg positions such as spread trades or pair trades, and calculate
+  one virtual Position simulation statistics from multiple Position returns.
   \see ReturnFactors.
   \see EOMReturnFactors.
  */
@@ -53,7 +54,7 @@ public:
     \param symbol A virtual symbol name used to name this composite position.
     \param pPos The first Position added to this strategy.
   */
-  StrategyPosition(Position::ID id, const std::string& symbol, const PositionPtr pPos);
+  StrategyPosition(Position::ID id, const std::string& symbol, const PositionPtr pPos, double weight = 1) throw(PositionException);
   virtual ~StrategyPosition(void) { }
 
   virtual void attach(ExecutionObserver* pObserver) throw(PositionException);
@@ -61,21 +62,10 @@ public:
 
   //! Add a new Position.
   /*!
-    \param p A pointer to the Position that will be added to this StrategyPosition.
-    \return True if the Position was successfully added, false otherwise.
+    \param pPos A pointer to the Position that will be added to this StrategyPosition.
+    \param weight The weight of the Position
   */
-  virtual bool add(const PositionPtr p) throw(PositionException);
-
-  //! Get underlying Position by ID.
-  /*!
-    \param id The unique identifier of the wanted Position.
-    \return An iterator to the PositionPtr in PositionSet matching id, or PositionSet::end() if not found.
-  */
-  PositionSet::const_iterator get(Position::ID id) const { return _sPositions.find(id, pos_comp_id()); }
-
-  //! Get all Positions included in this StrategyPosition.
-  //! \return A reference to the complete set of Positions for this StrategyPosition.
-  PositionSet get(void) const { return _sPositions; }
+  virtual void add(const PositionPtr pPos, double weight = 1) throw(PositionException);
 
   //! Is this StrategyPosition open.
   /*!
@@ -159,7 +149,14 @@ public:
   virtual void update(const ExecutionPtr pExe);
 
 protected:
-  PositionSet _sPositions;
+  struct PositionWeight
+  {
+    PositionPtr pPos;
+    double weight;
+  };
+  typedef std::map<Position::ID, PositionWeight> POSW_MAP;
+  //! Position/weight mapping
+  POSW_MAP _mPositions;
 
 private:
   struct SeriesFactorFromCmp: public std::binary_function<SeriesFactor, SeriesFactor, bool>

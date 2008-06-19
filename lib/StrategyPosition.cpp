@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 Alberto Giannetti
 *
 * This file is part of Hudson.
 *
@@ -32,13 +32,11 @@ using namespace std;
 using namespace boost::gregorian;
 using namespace Series;
 
-// XXX Strategy assumes equal weighting of all underlying positions
 
-
-StrategyPosition::StrategyPosition( Position::ID id, const std::string& symbol, const PositionPtr pPos ):
+StrategyPosition::StrategyPosition( Position::ID id, const std::string& symbol, const PositionPtr pPos, double weight ) throw(PositionException):
   Position(id, symbol)
 {
-  add(pPos);
+  add(pPos, weight);
 }
 
 
@@ -53,24 +51,27 @@ void StrategyPosition::update(const ExecutionPtr pExe)
 }
 
 
-bool StrategyPosition::add( const PositionPtr pPos ) throw(PositionException)
+void StrategyPosition::add( const PositionPtr pPos, double weight ) throw(PositionException)
 {
-  // Add position to list
-  if( ! _sPositions.insert(pPos).second )
-    return false;
+  // Add position to local map
+  PositionWeight pweight;
+  pweight.pPos = pPos;
+  pweight.weight = weight;
 
+  if( _mPositions.insert(POSW_MAP::value_type(pPos->id(), pweight)).second == false )
+    throw PositionException("Can not add StrategyPosition");
+
+  // Add position executions to local set
   ExecutionSet execs = pPos->executions();
   for( ExecutionSet::const_iterator iter(execs.begin()); iter != execs.end(); ++iter ) {
 #ifdef DEBUG
-    cout << "Synthetic Position " << _id << ", underlying Position " << pPos->id() << ", adding execution " << (*iter)->id() << ", symbol " << (*iter)->position()->symbol() << endl;
+    cout << "StrategyPosition " << _id << ", underlying Position " << pPos->id() << ", adding execution " << (*iter)->id() << ", symbol " << (*iter)->position()->symbol() << endl;
 #endif
     _sExecutions.insert(*iter);
   }
 
-  // Register for Exection updates
+  // Listen Position executions
   pPos->attach(this);
-
-  return true;
 }
 
 
@@ -154,52 +155,48 @@ void StrategyPosition::close( const boost::gregorian::date& dt, const Price& pri
 
 void StrategyPosition::close( const boost::gregorian::date& dt, Series::EODDB::PriceType pt ) throw(PositionException)
 {
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    (*citer)->close(dt, pt);
+  for( POSW_MAP::const_iterator citer = _mPositions.begin(); citer != _mPositions.end(); ++citer )
+    (*citer).second.pPos->close(dt, pt);
 }
 
 
 double StrategyPosition::factor( EODDB::PriceType pt ) const throw(PositionException)
 {
-  double f_acc = 0;
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f_acc += (*citer)->factor(pt);
+  double f_acc = 1;
+  for( POSW_MAP::const_iterator citer = _mPositions.begin(); citer != _mPositions.end(); ++citer )
+    f_acc += (((*citer).second.pPos->factor(pt) * (*citer).second.weight) - 1); // Adjust underlying position for weighting in StrategyPosition
 
-  // Normalize to single position
-  return (f_acc - _sPositions.size()) + 1;
+  return f_acc;
 }
 
 
 double StrategyPosition::factor( const boost::gregorian::date& dt, EODDB::PriceType pt ) const throw(PositionException)
 {
-  double f_acc = 0;
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f_acc += (*citer)->factor(dt, pt);
+  double f_acc = 1;
+  for( POSW_MAP::const_iterator citer = _mPositions.begin(); citer != _mPositions.end(); ++citer )
+    f_acc += (((*citer).second.pPos->factor(dt, pt) * (*citer).second.weight) - 1); // Adjust underlying position for weighting in StrategyPosition
 
-  // Normalize to single position
-  return (f_acc - _sPositions.size()) + 1;
+  return f_acc;
 }
 
 
 double StrategyPosition::factor( const boost::gregorian::date_period& dp, EODDB::PriceType pt ) const throw(PositionException)
 {
-  double f_acc = 0;
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f_acc += (*citer)->factor(dp, pt);
+  double f_acc = 1;
+  for( POSW_MAP::const_iterator citer = _mPositions.begin(); citer != _mPositions.end(); ++citer )
+    f_acc += (((*citer).second.pPos->factor(dp, pt) * (*citer).second.weight) - 1); // Adjust underlying position for weighting in StrategyPosition
 
-  // Normalize to single position
-  return (f_acc - _sPositions.size()) + 1;
+  return f_acc;
 }
 
 
 double StrategyPosition::factor( const boost::gregorian::date::month_type& month, const boost::gregorian::date::year_type& year, EODDB::PriceType pt ) const throw(PositionException)
 {
-  double f_acc = 0;
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    f_acc += (*citer)->factor(month, year);
+  double f_acc = 1;
+  for( POSW_MAP::const_iterator citer = _mPositions.begin(); citer != _mPositions.end(); ++citer )
+    f_acc += (((*citer).second.pPos->factor(month, year) * (*citer).second.weight) - 1); // Adjust underlying position for weighting in StrategyPosition
 
-  // Normalize to single position
-  return (f_acc - _sPositions.size()) + 1;
+  return f_acc;
 }
 
 
@@ -207,7 +204,7 @@ SeriesFactorSet StrategyPosition::factors(Series::EODDB::PriceType pt) const thr
 {
 #ifdef DEBUG
   cout << "Strategy Position " << _id << " first exec " << first_exec()->dt() << ", last exec " << last_exec()->dt() << endl;
-  cout << "Number of legs: " << _sPositions.size() << endl;
+  cout << "Number of legs: " << _mPositions.size() << endl;
 #endif
   date last_dt = (closed() ? last_exec()->dt() : EODDB::instance().get(_symbol).rbegin()->first);
 
@@ -229,8 +226,8 @@ SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date_period& 
   SeriesFactorMultiSetFrom sfsAll;
 
   // Add all SeriesFactor for all underlying positions indexed by first execution date
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer ) {
-    SeriesFactorSet sfs = (*citer)->factors(dp, pt);
+  for( POSW_MAP::const_iterator citer = _mPositions.begin(); citer != _mPositions.end(); ++citer ) {
+    SeriesFactorSet sfs = (*citer).second.pPos->factors(dp, pt);
     for( SeriesFactorSet::const_iterator sfs_citer = sfs.begin(); sfs_citer != sfs.end(); ++sfs_citer ) {
 #ifdef DEBUG
       cout << "Inserting position " << (*citer)->id() << " factor from " << (*sfs_citer).from_tm() << ", to " << (*sfs_citer).to_tm() << endl;
@@ -281,8 +278,8 @@ SeriesFactorSet StrategyPosition::_matchFactors(const SeriesFactorMultiSetFrom& 
 
 bool StrategyPosition::open( void ) const
 {
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer )
-    if( (*citer)->open() )
+  for( POSW_MAP::const_iterator citer = _mPositions.begin(); citer != _mPositions.end(); ++citer )
+    if( (*citer).second.pPos->open() )
       return true;
       
   return false;
@@ -297,11 +294,11 @@ bool StrategyPosition::closed( void ) const
 
 void StrategyPosition::print( void ) const
 {
-  cout << "Synthetic " << _symbol << " (" << _id << ")" << " - " << "Factor " << factor() << " (" << (factor()-1)*100 << "%): " << endl;
+  cout << "Strategy " << _symbol << " (" << _id << ")" << " - " << "Factor " << factor() << " (" << (factor()-1)*100 << "%): " << endl;
 
-  for( PositionSet::const_iterator citer = _sPositions.begin(); citer != _sPositions.end(); ++citer ) {
+  for( POSW_MAP::const_iterator citer = _mPositions.begin(); citer != _mPositions.end(); ++citer ) {
     cout << '\t';
-    (*citer)->print();
+    (*citer).second.pPos->print();
     cout << endl;
   }
 }
