@@ -127,10 +127,6 @@ public:
   //! Return Position average exit price.
   virtual Price avgExitPrice(void) const throw(PositionException) = 0;
   
-  //! Add an existing Position to this Position. Only valid for StrategyPosition derived class.
-  //! \return True if the Position was successfully added, false otherwise.
-  virtual bool add(const PositionPtr pPos) throw(PositionException) = 0;
-
   //! Return current return factor.
   /*!
     If Position is closed, use average entry price and average exit price to calculate Position return, otherwise use the last database
