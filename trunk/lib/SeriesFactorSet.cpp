@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 Alberto Giannetti
 *
 * This file is part of Hudson.
 *
@@ -23,7 +23,8 @@
 #include "SeriesFactorSet.hpp"
 
 
-SeriesFactorSet::SeriesFactorSet( void ):
+SeriesFactorSet::SeriesFactorSet( Position::ID id ):
+  _id(id),
   _factor(1)
 {
 }

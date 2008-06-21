@@ -36,15 +36,15 @@ using namespace boost::gregorian;
 using namespace Series;
 
 
-PositionFactors::PositionFactors( const Position& pos, Series::EODDB::PriceType pt ):
-  _pos(pos),
+PositionFactors::PositionFactors( const PositionPtr pPos, Series::EODDB::PriceType pt ):
+  _pPos(pPos),
   _pt(pt)
 {
-  SeriesFactorSet sfsAll = _pos.factors(pt);
+  SeriesFactorSet sfsAll = _pPos->factors(pt);
 
   for( SeriesFactorSet::const_iterator citer = sfsAll.begin(); citer != sfsAll.end(); ++citer ) {
     // Initialize SeriesFactorSet objects indexed both by from_time and to_time to calculate bfe() and wae().
-    // This is for performance reasons. multi_index secondary key access is slower than primary key.
+    // This is for performance reasons. SeriesFactorSet multi_index secondary key access is much slower than primary key.
     _sf_fromtm.insert(*citer);
     _sf_totm.insert(*citer);
   }
@@ -53,7 +53,7 @@ PositionFactors::PositionFactors( const Position& pos, Series::EODDB::PriceType 
 
 SeriesFactorSet PositionFactors::max_cons_pos(void) const
 {
-  SeriesFactorSet maxSFS;
+  SeriesFactorSet maxSFS(_pPos->id());
 
   SF_TOTM::const_iterator iter = _sf_totm.begin();
   while( iter != _sf_totm.end() ) {
@@ -64,7 +64,7 @@ SeriesFactorSet PositionFactors::max_cons_pos(void) const
     }
 
     // Positive factor, look for positive sequence
-    SeriesFactorSet sfset;
+    SeriesFactorSet sfset(_pPos->id());
     while( iter != _sf_totm.end() && (*iter).factor() > 1 ) {
       sfset.insert(*iter);
       ++iter;
@@ -81,7 +81,7 @@ SeriesFactorSet PositionFactors::max_cons_pos(void) const
 
 SeriesFactorSet PositionFactors::max_cons_neg(void) const
 {
-  SeriesFactorSet maxSFS;
+  SeriesFactorSet maxSFS(_pPos->id());
 
   SF_TOTM::const_iterator iter = _sf_totm.begin();
   while ( iter != _sf_totm.end() ) {
@@ -91,7 +91,7 @@ SeriesFactorSet PositionFactors::max_cons_neg(void) const
     }
 
     // Negative factor, look for negative sequence
-    SeriesFactorSet sfset;
+    SeriesFactorSet sfset(_pPos->id());
     while( iter != _sf_totm.end() && (*iter).factor() < 1 ) {
       sfset.insert(*iter);
       ++iter;
@@ -131,7 +131,7 @@ SeriesFactorSet PositionFactors::wae( void ) const throw(PositionFactorsExceptio
 
   if( !worst_pf.isValid() ) {
     stringstream ss;
-    ss << "Can't get position " << _pos.id() << " worst adverse excursion period";
+    ss << "Can't get position " << _pPos->id() << " worst adverse excursion period";
     throw PositionFactorsException(ss.str());
   }
 
@@ -144,12 +144,12 @@ SeriesFactorSet PositionFactors::wae( void ) const throw(PositionFactorsExceptio
   SF_FROMTM::const_iterator src_begin = _sf_fromtm.find(sf);
   if( src_begin == _sf_fromtm.end() ) {
     stringstream ss;
-    ss << "Can't get position " << _pos.id() << " beginning of worst adverse excursion period" << endl;
+    ss << "Can't get position " << _pPos->id() << " beginning of worst adverse excursion period" << endl;
     throw PositionFactorsException(ss.str());
   }
 
   // Initialize a new SeriesFactorSet with SeriesFactor included in worst_pf range
-  SeriesFactorSet sfs;
+  SeriesFactorSet sfs(_pPos->id());
 #ifdef DEBUG
   //cout << "Adding SeriesFactor from " << (*src_begin).from_tm() << " to " << worst_pf.to_tm << endl;
 #endif
@@ -167,7 +167,7 @@ PositionFactors::PeriodFactor PositionFactors::_wae(SF_TOTM::const_iterator& sta
   pf.from_tm = (*start).from_tm(); // Begin of excursion analysis
 
   // Calculate worst excursion from 'start'.
-  SeriesFactorSet sfs;
+  SeriesFactorSet sfs(_pPos->id());
   bool never_set = true;
   for( SF_TOTM::const_iterator iter = start; iter != _sf_totm.end(); ++iter ) {
 
@@ -208,7 +208,7 @@ SeriesFactorSet PositionFactors::bfe(void) const throw(PositionFactorsException)
 
   if( !best_pf.isValid() ) {
     stringstream ss;
-    ss << "Can't get position " << _pos.id() << " best favorable excursion period";
+    ss << "Can't get position " << _pPos->id() << " best favorable excursion period";
     throw PositionFactorsException(ss.str());
   }
 
@@ -217,12 +217,12 @@ SeriesFactorSet PositionFactors::bfe(void) const throw(PositionFactorsException)
   SF_FROMTM::const_iterator src_begin = _sf_fromtm.find(sf);
   if( src_begin == _sf_fromtm.end() ) {
     stringstream ss;
-    ss << "Can't get position " << _pos.id() << " beginning of best favorable excursion period" << endl;
+    ss << "Can't get position " << _pPos->id() << " beginning of best favorable excursion period" << endl;
     throw PositionFactorsException(ss.str());
   }
 
   // Initialize SeriesFactorSet with SeriesFactor(s) included in best_pf range
-  SeriesFactorSet sfs;
+  SeriesFactorSet sfs(_pPos->id());
   for( SF_FROMTM::const_iterator iter(src_begin); (*iter).to_tm() <= best_pf.to_tm && iter != _sf_fromtm.end(); ++iter )
     sfs.insert(*iter);
 
@@ -237,7 +237,7 @@ PositionFactors::PeriodFactor PositionFactors::_bfe(SF_TOTM::const_iterator& sta
   pf.from_tm = (*start).from_tm(); // Begin of excursion no matter what
 
   // Calculate best excursion from 'start'. We can't use multi_index secondary index for performance reasons.
-  SeriesFactorSet sfs;
+  SeriesFactorSet sfs(_pPos->id());
   bool never_set = true;
   for( SF_TOTM::const_iterator iter = start; iter != _sf_totm.end(); ++iter ) {
     sfs.insert(*iter);

@@ -22,11 +22,9 @@
 // STDLIB
 #include <iostream>
 
-// Boost
-#include <boost/date_time/gregorian/gregorian.hpp>
-
 // Hudson
 #include "StrategyPosition.hpp"
+#include "SeriesFactorSet.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -230,11 +228,17 @@ SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date_period& 
     SeriesFactorSet sfs = (*citer).second.pPos->factors(dp, pt);
     for( SeriesFactorSet::const_iterator sfs_citer = sfs.begin(); sfs_citer != sfs.end(); ++sfs_citer ) {
 #ifdef DEBUG
-      cout << "Inserting position " << (*citer)->id() << " factor from " << (*sfs_citer).from_tm() << ", to " << (*sfs_citer).to_tm() << endl;
+      cout << "Inserting position " << (*citer).second.pPos->id() << " factor from " << (*sfs_citer).from_tm() << ", to " << (*sfs_citer).to_tm() << endl;
 #endif
       sfsAll.insert(*sfs_citer);
     }
   }
+
+#ifdef DEBUG
+  cout << "Printing all factors..." << endl;
+  for( SeriesFactorMultiSetFrom::const_iterator citer = sfsAll.begin(); citer != sfsAll.end(); ++citer )
+    cout << "Factor " << (*citer).factor() << " from " << (*citer).from_tm() << " to " << (*citer).to_tm() << endl;
+#endif
 
   return _matchFactors(sfsAll);
 }
@@ -242,16 +246,18 @@ SeriesFactorSet StrategyPosition::factors( const boost::gregorian::date_period& 
 
 SeriesFactorSet StrategyPosition::_matchFactors(const SeriesFactorMultiSetFrom& sfsAll) const
 {
-  SeriesFactorSet sfsStrategy;
+  SeriesFactorSet sfsStrategy(_id);
 
   // Extract current factor
   for( SeriesFactorMultiSetFrom::const_iterator citer = sfsAll.begin(); citer != sfsAll.end(); ) {
 
+    double acc = 1;
     // Get current factor
     SeriesFactor currentFactor = *citer;
-    double acc = currentFactor.factor();
+    acc += (currentFactor.factor() - 1);
 
 #ifdef DEBUG
+
     cout << "Analyzing Position daily factor from " << currentFactor.from_tm() << " to " << currentFactor.to_tm()
 	 << " factor " << currentFactor.factor() << endl;
 #endif
@@ -262,10 +268,13 @@ SeriesFactorSet StrategyPosition::_matchFactors(const SeriesFactorMultiSetFrom& 
 #ifdef DEBUG
       cout << "Found daily factor with same from/to dates, factor " << citer_next->factor() << endl;
 #endif
-      acc *= citer_next->factor();
+      acc += (citer_next->factor() - 1);
     }
 
     // Add cumulated factor
+#ifdef DEBUG
+    cout << "Adding acc factor " << acc << " from " << currentFactor.from_tm() << " to " << currentFactor.to_tm() << endl;
+#endif
     sfsStrategy.insert(SeriesFactor(currentFactor.from_tm(), currentFactor.to_tm(), acc));
 
     // Start from first SeriesFactor with different from/to date

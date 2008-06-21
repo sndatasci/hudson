@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 Alberto Giannetti
 *
 * This file is part of Hudson.
 *
@@ -72,7 +72,7 @@ void PositionsReport::favorable(void) const
     const SeriesFactor& sf_begin = *(er.consecutive.get<to_key>().begin());
     const SeriesFactor& sf_end   = *(er.consecutive.get<to_key>().rbegin());
 
-    cout << (int)er.consecutive.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
+    cout << " Position " << er.consecutive.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
   }
 
   // Best FA
@@ -80,8 +80,8 @@ void PositionsReport::favorable(void) const
   const SeriesFactor& sf_begin = *(er.high.get<from_key>().begin());
   const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
 
-  std::cout << "Best FE: " << (sfs.factor()-1)*100 << '%';
-  std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
+  cout << "Best FE: " << (sfs.factor()-1)*100 << '%';
+  cout << " Position " << sfs.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl << endl;
 }
 
 
@@ -105,7 +105,7 @@ void PositionsReport::adverse(void) const
     const SeriesFactor& sf_begin = *(er.consecutive.get<to_key>().begin());
     const SeriesFactor& sf_end   = *(er.consecutive.get<to_key>().rbegin());
 
-    cout << (int)er.consecutive.size() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
+    cout << " Position " << er.consecutive.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
   }
 
   // Worst adverse excursion
@@ -114,5 +114,5 @@ void PositionsReport::adverse(void) const
   const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
 
   std::cout << "Worst AE: " << (sfs.factor()-1)*100 << '%';
-  std::cout << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
+  std::cout << " Position " << sfs.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl << endl;
 }

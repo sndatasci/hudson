@@ -23,6 +23,7 @@
 #include "LongPosition.hpp"
 #include "EODDB.hpp"
 #include "EODSeries.hpp"
+#include "SeriesFactorSet.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -255,14 +256,13 @@ SeriesFactorSet LongPosition::factors( const boost::gregorian::date& dt, Series:
 
 SeriesFactorSet LongPosition::factors( const boost::gregorian::date_period& dp, Series::EODDB::PriceType pt ) const throw(PositionException)
 {
-  SeriesFactorSet sfs;
+  SeriesFactorSet sfs(_id);
 
 #ifdef DEBUG
   cout << "Extracting daily factors for long position " << _id << " (" << _symbol << ") from " << dp.begin() << " to " << dp.last() << endl;
 #endif
 
   if( ! hold_period().contains(dp) )
-
     throw PositionException("Requested period is out of range");
 
   const EODSeries& series = EODDB::instance().get(_symbol);

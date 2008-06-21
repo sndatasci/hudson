@@ -37,7 +37,7 @@
 
 // Hudson
 #include "SeriesFactor.hpp"
-
+#include "Position.hpp"
 
 struct from_key {};
 struct to_key {};
@@ -89,8 +89,9 @@ public:
   using __SeriesFactorSet::end;
 
 public:
-  SeriesFactorSet(void);
+  SeriesFactorSet(Position::ID id);
 
+  Position::ID position(void) const { return _id; }
   //! Override insert() to calculate factor value after inserting a new SeriesFactor.
   bool insert(const SeriesFactor& sf);
 
@@ -98,6 +99,7 @@ public:
   double factor(void) const throw(SeriesFactorSetException);
 
 private:
+  Position::ID _id;
   double _factor;
 };
 

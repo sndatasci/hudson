@@ -41,12 +41,11 @@ PositionFactorsSet::ExcursionResults PositionFactorsSet::favorable(void) const t
   if ( _sPositions.empty() )
     throw PositionFactorsSetException("Empty position set");
 
-  ExcursionResults ret;
   std::vector<SeriesFactorSet> vSFSHighest, vSFSConsecutive;
 
   // Calculate average favorable position excursion
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
-    PositionFactors pf(*(*iter));
+    PositionFactors pf(*iter);
     vSFSHighest.push_back(pf.bfe()); // Best favorable excursion for this position
     vSFSConsecutive.push_back(pf.max_cons_pos()); // Maximum consecutive favorable bars for this position
   }
@@ -56,15 +55,11 @@ PositionFactorsSet::ExcursionResults PositionFactorsSet::favorable(void) const t
   for( unsigned i = 0; i < vSFSHighest.size(); i++ )
     acc += vSFSHighest[i].factor();
 
-  ret.avg = (acc ? (acc/vSFSHighest.size()) - 1 : 0);
+  double avg = (acc ? (acc/vSFSHighest.size()) - 1 : 0);
 
-  // Set best favorable excursion
-  ret.high = *max_element(vSFSHighest.begin(), vSFSHighest.end(), SeriesFactorSetFactorLtCmp());
-
-  // Set longest favorable excursion
-  ret.consecutive = *max_element(vSFSConsecutive.begin(), vSFSConsecutive.end(), SeriesFactorSetSizeLtCmp());
-
-  return ret;
+  return ExcursionResults(avg,
+                          *max_element(vSFSHighest.begin(), vSFSHighest.end(), SeriesFactorSetFactorLtCmp()),
+                          *max_element(vSFSConsecutive.begin(), vSFSConsecutive.end(), SeriesFactorSetSizeLtCmp()));
 }
 
 
@@ -73,12 +68,11 @@ PositionFactorsSet::ExcursionResults PositionFactorsSet::adverse(void) const thr
   if ( _sPositions.empty() )
     throw PositionFactorsSetException("Empty position set");
 
-  ExcursionResults ret;
   std::vector<SeriesFactorSet> vSFSHighest, vSFSConsecutive;
 
   // Calculate average adverse position excursion
   for( PositionSet::const_iterator iter = _sPositions.begin(); iter != _sPositions.end(); ++iter ) {
-    PositionFactors pf(*(*iter));
+    PositionFactors pf(*iter);
     vSFSHighest.push_back(pf.wae()); // Worst adverse excursion for this position
     vSFSConsecutive.push_back(pf.max_cons_neg()); // Maximum consecutive adverse bars for this position
   }
@@ -88,19 +82,17 @@ PositionFactorsSet::ExcursionResults PositionFactorsSet::adverse(void) const thr
   for( unsigned i = 0; i < vSFSHighest.size(); i++ )
     acc += vSFSHighest[i].factor();
 
-  ret.avg = (acc ? (acc/vSFSHighest.size()) - 1 : 0);
+  double avg = (acc ? (acc/vSFSHighest.size()) - 1 : 0);
 
-  // Set worst adverse excursion
-  ret.high = *min_element(vSFSHighest.begin(), vSFSHighest.end(), SeriesFactorSetFactorLtCmp());
-
-  // Set longest adverse excursion
-  ret.consecutive = *max_element(vSFSConsecutive.begin(), vSFSConsecutive.end(), SeriesFactorSetSizeLtCmp());
-
-  return ret;
+  return ExcursionResults(avg,
+                          *min_element(vSFSHighest.begin(), vSFSHighest.end(), SeriesFactorSetFactorLtCmp()),
+                          *max_element(vSFSConsecutive.begin(), vSFSConsecutive.end(), SeriesFactorSetSizeLtCmp()));
 }
 
 
-PositionFactorsSet::ExcursionResults::ExcursionResults( void ):
-  avg(0)
+PositionFactorsSet::ExcursionResults::ExcursionResults( double a, const SeriesFactorSet& h, const SeriesFactorSet& co ):
+  avg(a),
+  high(h),
+  consecutive(co)
 {
 }
