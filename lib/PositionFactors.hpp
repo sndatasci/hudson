@@ -34,7 +34,9 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 // Hudson
-#include "Position.hpp"
+#include "EODDB.hpp"
+#include "Price.hpp"
+#include "PositionPtr.hpp"
 #include "SeriesFactor.hpp"
 #include "SeriesFactorSet.hpp"
 
@@ -66,7 +68,7 @@ public:
   * Initialize position daily factors for this position.
   * \param pos Position that must be analyzed.
   */
-  PositionFactors(const Position& pos, Series::EODDB::PriceType = Series::EODDB::ADJCLOSE);
+  PositionFactors(const PositionPtr pPos, Series::EODDB::PriceType = Series::EODDB::ADJCLOSE);
 
   //! Maximum consecutive positive daily factors.
   SeriesFactorSet max_cons_pos(void) const;
@@ -79,7 +81,7 @@ public:
   SeriesFactorSet wae(void) const throw(PositionFactorsException);
 
 private:
-  const Position& _pos;
+  const PositionPtr _pPos;
   const Series::EODDB::PriceType _pt;
 
   // Must index SeriesFactor by date to speed up excursion calculations

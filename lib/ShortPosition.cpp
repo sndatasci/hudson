@@ -22,6 +22,7 @@
 // Hudson
 #include "ShortPosition.hpp"
 #include "EODDB.hpp"
+#include "SeriesFactorSet.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -248,7 +249,7 @@ SeriesFactorSet ShortPosition::factors( const boost::gregorian::date& dt, Series
 
 SeriesFactorSet ShortPosition::factors( const boost::gregorian::date_period& dp, EODDB::PriceType pt /*= EODDB::PriceType::ADJCLOSE*/ ) const throw(PositionException)
 {
-  SeriesFactorSet sfs;
+  SeriesFactorSet sfs(_id);
 
 #ifdef DEBUG
   cout << "Extracting daily factors for short position " << _id << " (" << _symbol << ") from " << dp.begin() << " to " << dp.last() << endl;

@@ -24,20 +24,15 @@
 #pragma warning (disable:4290)
 #endif
 
-// STL
-#include <stdexcept>
-#include <string>
-
-// Boost
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/shared_ptr.hpp>
+#include "StdAfx.h"
 
 // Hudson
 #include "ExecutionSet.hpp"
 #include "ExecutionNotifier.hpp"
-#include "SeriesFactorSet.hpp"
 #include "EODDB.hpp"
 #include "Price.hpp"
+
+class SeriesFactorSet;
 
 
 class PositionException: public std::exception

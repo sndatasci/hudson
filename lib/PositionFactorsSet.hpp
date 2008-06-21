@@ -31,7 +31,6 @@
 
 // Hudson
 #include "PositionSet.hpp"
-
 #include "SeriesFactorSet.hpp"
 
 
@@ -72,7 +71,7 @@ public:
   */
   struct ExcursionResults 
   {
-    ExcursionResults(void);
+    ExcursionResults(double a, const SeriesFactorSet& h, const SeriesFactorSet& co);
 
     double avg; //! Average excursion.
     SeriesFactorSet high; //! Best/Worst unrealized Position peak/drawdown.
