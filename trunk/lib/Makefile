@@ -24,6 +24,7 @@ LIB=libhudson.a
 
 SRCS=\
 	YahooDriver.cpp \
+	Database.cpp \
 	DMYCloseDriver.cpp \
 	EODSeries.cpp \
 	EOMSeries.cpp \
@@ -58,6 +59,7 @@ SRCS=\
 
 HDRS=\
 	FileDriver.hpp \
+	Database.hpp \
 	DayPrice.hpp \
 	WeekPrice.hpp \
 	MonthPrice.hpp \
