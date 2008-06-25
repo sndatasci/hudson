@@ -19,7 +19,7 @@
 
 CXX=g++
 
-BIN=jan
+BIN=jan jan_matrix
 
 LIBS=-lhudson -lboost_date_time -lboost_program_options -lta_common -lta_func -lgsl -lgslcblas
 
@@ -47,8 +47,11 @@ bin: $(BIN)
 %.o: %.cpp
 	$(CXX) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
-jan: $(LIB) jan.o JanTrader.o
+jan: $(LIB) jan.o JanTrader.o ../../lib/libhudson.a
 	$(CXX) -o $@ $(LDFLAGS) jan.o JanTrader.o $(LIBPATH) $(LIBS)
+
+jan_matrix: $(LIB) jan_matrix.o JanTrader.o ../../lib/libhudson.a
+	$(CXX) -o $@ $(LDFLAGS) jan_matrix.o JanTrader.o $(LIBPATH) $(LIBS)
 
 clean:
 	\rm -f *.o *.d core
