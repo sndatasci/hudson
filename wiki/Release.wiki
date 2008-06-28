@@ -2,7 +2,7 @@
 
 == Introduction ==
 
-This new release replaces the older 0.9 release. It adds support for strategy positions (composite positions) and fixes some bugs found in the previous release.
+This new release replaces the older 0.9.1 release. It adds support for strategy positions (composite positions) and fixes some bugs found in the previous release.
 
 
 == Details ==
