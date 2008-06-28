@@ -32,9 +32,9 @@ BOWTrader::BOWTrader(const string& symbol, const DB& db):
 }
 
 
-void BOWTrader::run(unsigned entry_offset, char entry_oc, unsigned exit_offset, char exit_oc) throw(TraderException)
+void BOWTrader::run(unsigned entry_offset, unsigned exit_offset) throw(TraderException)
 {
-  assert(entry_offset <= exit_offset);
+  assert(entry_offset < exit_offset);
 
   _invested_days = days(0);
   date my_first_entry;
@@ -81,8 +81,8 @@ void BOWTrader::run(unsigned entry_offset, char entry_oc, unsigned exit_offset, 
 
 	try {
 
-	  double entry_price = (toupper(entry_oc) == 'O' ? entry_iter->second.open : entry_iter->second.close);
-	  double exit_price  = (toupper(exit_oc) == 'O' ? exit_iter->second.open : exit_iter->second.close);
+	  double entry_price = entry_iter->second.open;
+	  double exit_price  = exit_iter->second.open;
 
 	  Position::ID id = sell_short(_symbol, entry_iter->first, Price(entry_price));
 	  close(id, exit_iter->first, Price(exit_price));

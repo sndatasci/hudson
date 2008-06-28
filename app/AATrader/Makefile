@@ -49,7 +49,7 @@ bin: $(BIN)
 %.o: %.cpp
 	$(CXX) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
-aa: $(LIB) aa.o AATrader.o
+aa: $(LIB) aa.o AATrader.o ../../lib/libhudson.a
 	$(CXX) -o $@ $(LDFLAGS) aa.o AATrader.o $(LIBPATH) $(LIBS)
 
 clean:

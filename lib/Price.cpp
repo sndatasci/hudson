@@ -74,12 +74,15 @@ Price Price::last( const std::string& symbol, Series::EODDB::PriceType pt ) thro
 
     case EODDB::OPEN:
       priceval = item.open;
+      break;
 
     case EODDB::CLOSE:
       priceval = item.close;
+      break;
 
     case EODDB::ADJCLOSE:
       priceval = item.adjclose;
+      break;
 
     default:
       throw PriceException("Invalid price type");
