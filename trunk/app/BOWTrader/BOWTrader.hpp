@@ -38,7 +38,7 @@ class BOWTrader: public Trader
 public:
   BOWTrader(const std::string& symbol, const DB& db);
 
-  void run(unsigned entry_offset, char entry_oc, unsigned exit_offset, char exit_oc) throw(TraderException);
+  void run(unsigned entry_offset, unsigned exit_offset) throw(TraderException);
 
   boost::gregorian::date first_entry(void) { return _first_entry; }
   boost::gregorian::date last_exit(void) { return _last_exit; }

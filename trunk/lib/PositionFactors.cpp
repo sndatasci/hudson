@@ -129,6 +129,9 @@ SeriesFactorSet PositionFactors::wae( void ) const throw(PositionFactorsExceptio
     }
   }
 
+  if( never_set )
+    return SeriesFactorSet(_pPos->id()); // Return empty set
+
   if( !worst_pf.isValid() ) {
     stringstream ss;
     ss << "Can't get position " << _pPos->id() << " worst adverse excursion period";
@@ -205,6 +208,9 @@ SeriesFactorSet PositionFactors::bfe(void) const throw(PositionFactorsException)
       never_set = false;
     }
   }
+
+  if( never_set )
+    return SeriesFactorSet(_pPos->id());
 
   if( !best_pf.isValid() ) {
     stringstream ss;
