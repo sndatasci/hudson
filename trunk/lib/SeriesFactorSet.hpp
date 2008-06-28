@@ -96,7 +96,7 @@ public:
   bool insert(const SeriesFactor& sf);
 
   //! Return factor value.
-  double factor(void) const throw(SeriesFactorSetException);
+  double factor(void) const { return _factor; }
 
 private:
   Position::ID _id;

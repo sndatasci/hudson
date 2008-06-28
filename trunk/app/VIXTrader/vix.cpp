@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2008 Alberto Giannetti
 *
 * This file is part of Hudson.
 *
@@ -17,101 +17,54 @@
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// STD
+#include <iostream>
+#include <string>
+
 // Boost
 #include <boost/program_options.hpp>
 
 // Hudson
-#include <EODDB.hpp>
-#include <ReturnFactors.hpp>
-#include <PositionFactors.hpp>
+#include <Database.hpp>
 #include <PositionFactorsSet.hpp>
 #include <BnHTrader.hpp>
 #include <Report.hpp>
 #include <PositionsReport.hpp>
 
+// App
 #include "VIXTrader.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
 using namespace Series;
 
-namespace po = boost::program_options;
-
 
 int main(int argc, char* argv[])
 {
-  string begin_date, end_date;
-  string spx_file, vix_file;
-
   try {
 
-    /*
-    * Extract simulation options
-    */
-    po::options_description desc("Allowed options");
-    desc.add_options()
-      ("help", "produce help message")
-      ("spx_file",        po::value<string>(&spx_file),      "SPX series database")
-      ("vix_file",        po::value<string>(&vix_file),      "VIX series database")
-      ("begin_date",      po::value<string>(&begin_date),    "start of trading period (YYYY-MM-DD)")
-      ("end_date",        po::value<string>(&end_date),      "end of trading period (YYYY-MM-DD)")
-      ;
+    Database::SeriesFile sf;
+    Database::SERIES_MAP mSeries;
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
+    // SPX
+    sf.filename = "../../db/SPX.csv";
+    sf.driver = EODDB::YAHOO;
+    mSeries.insert(Database::SERIES_MAP::value_type("SPX", sf));
 
-    if( vm.count("help") ) {
-      cout << desc << endl;
-      exit(0);
-    }
+    // VIX
+    sf.filename = "../../db/VIX.csv";
+    sf.driver = EODDB::YAHOO;
+    mSeries.insert(Database::SERIES_MAP::value_type("VIX", sf));
 
-    if( vm["spx_file"].empty() ||
-        vm["vix_file"].empty() ||
-	vm["begin_date"].empty() ||
-	vm["end_date"].empty() ) {
-      cout << desc << endl;
-      exit(1);
-    }
+    date begin(1991, Jan, 1), end(2008, May, 31);
+    Database db(date_period(begin, end), mSeries);
+    db.load();
+    db.print();
 
-    cout << "SPX series file: " << spx_file << endl;
-    cout << "VIX series file: " << vix_file << endl;
-
-    /*
-    * Load series data
-    */
-    const string spx_symbol = "SPX";
-    const string vix_symbol = "VIX";
-
-    date load_begin(from_simple_string(begin_date));
-    if( load_begin.is_not_a_date() ) {
-      cerr << "Invalid begin date " << begin_date << endl;
-      exit(EXIT_FAILURE);
-    }
-
-    date load_end(from_simple_string(end_date));
-    if( load_end.is_not_a_date() ) {
-      cerr << "Invalid end date " << end_date << endl;
-      exit(EXIT_FAILURE);
-    }
-
-    cout << "Loading " << spx_file << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    Series::EODDB::instance().load(spx_symbol, spx_file, Series::EODDB::YAHOO, load_begin, load_end);
-
-    cout << "Loading " << vix_file << " from " << to_simple_string(load_begin) << " to " << to_simple_string(load_end) << "..." << endl;
-    Series::EODDB::instance().load(vix_symbol, vix_file, Series::EODDB::YAHOO, load_begin, load_end);
-
-    const Series::EODSeries& spx_db = Series::EODDB::instance().get(spx_symbol);
-    const Series::EODSeries& vix_db = Series::EODDB::instance().get(vix_symbol);
-
-    cout << "SPX Records: " << spx_db.size() << endl;
-    cout << "SPX Period: " << spx_db.period() << endl;
-    cout << "SPX Total days: " << spx_db.duration().days() << endl;
-
-    cout << "VIX Records: " << vix_db.size() << endl;
-    cout << "VIX Period: " << vix_db.period() << endl;
-    cout << "VIX Total days: " << vix_db.duration().days() << endl;
-
+    // Initialize and run strategy
+    const EODSeries& spx_db = EODDB::instance().get("SPX");
+    const EODSeries& vix_db = EODDB::instance().get("VIX");
+    
     /*
     * Initialize and run strategy
     */
@@ -147,7 +100,7 @@ int main(int argc, char* argv[])
 
   } catch( std::exception& ex ) {
 
-    cerr << ex.what() << endl;
+    cerr << "Unhandled exception: " << ex.what() << endl;
     exit(EXIT_FAILURE);
   }
 

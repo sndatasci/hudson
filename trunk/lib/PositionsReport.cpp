@@ -57,31 +57,15 @@ void PositionsReport::favorable(void) const
   if( _pf.num() == 0 )
     return; // avoid exception in report
 
-  std::cout << "Favorable Excursion" << std::endl;
+  cout << "Favorable Excursion" << endl;
 
   PositionFactorsSet::ExcursionResults er = _pf.favorable();
 
   // Average favorable excursion
-  std::cout << "Average FE: " << er.avg*100 << '%' << std::endl;
+  cout << "Average FE: " << er.avg*100 << '%' << endl;
   
-  // Longest favorable excursion
-  cout << "Longest FE: ";
-  if( er.consecutive.empty() ) {
-    cout << 0 << endl;
-  } else {
-    const SeriesFactor& sf_begin = *(er.consecutive.get<to_key>().begin());
-    const SeriesFactor& sf_end   = *(er.consecutive.get<to_key>().rbegin());
-
-    cout << " Position " << er.consecutive.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
-  }
-
-  // Best FA
-  const SeriesFactorSet& sfs = er.high;
-  const SeriesFactor& sf_begin = *(er.high.get<from_key>().begin());
-  const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
-
-  cout << "Best FE: " << (sfs.factor()-1)*100 << '%';
-  cout << " Position " << sfs.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl << endl;
+  _consecutive_favorable(er.consecutive);
+  _best_favorable(er.high);
 }
 
 
@@ -96,23 +80,69 @@ void PositionsReport::adverse(void) const
 
   // Average adverse excursion
   std::cout << "Avg AE: " << er.avg*100 << '%' << std::endl;
-  
-  // Consecutive adverse
-  cout << "Longest AE: ";
-  if( er.consecutive.empty() ) {
-    cout << 0 << endl;
-  } else {
-    const SeriesFactor& sf_begin = *(er.consecutive.get<to_key>().begin());
-    const SeriesFactor& sf_end   = *(er.consecutive.get<to_key>().rbegin());
 
-    cout << " Position " << er.consecutive.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
+  _consecutive_adverse(er.consecutive);
+  _worst_adverse(er.high);
+}
+
+
+void PositionsReport::_consecutive_favorable(const SeriesFactorSet& consecutive) const
+{
+  cout << "Longest FE: ";
+  if( consecutive.empty() ) {
+    cout << 0 << endl;
+    return;
+  }
+   
+  const SeriesFactor& sf_begin = *(consecutive.get<to_key>().begin());
+  const SeriesFactor& sf_end   = *(consecutive.get<to_key>().rbegin());
+
+  cout << " Position " << consecutive.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
+}
+
+
+void PositionsReport::_best_favorable(const SeriesFactorSet& high) const
+{
+  cout << "Best FE: ";
+  if( high.empty() ) {
+    cout << 0 << endl;
+    return;
   }
 
-  // Worst adverse excursion
-  const SeriesFactorSet& sfs = er.high;
-  const SeriesFactor& sf_begin = *(er.high.get<from_key>().begin());
-  const SeriesFactor& sf_end = *(er.high.get<to_key>().rbegin());
+  const SeriesFactor& sf_begin = *(high.get<from_key>().begin());
+  const SeriesFactor& sf_end = *(high.get<to_key>().rbegin());
 
-  std::cout << "Worst AE: " << (sfs.factor()-1)*100 << '%';
-  std::cout << " Position " << sfs.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl << endl;
+  cout << (high.factor()-1)*100 << '%';
+  cout << " Position " << high.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl << endl;
+}
+
+
+void PositionsReport::_consecutive_adverse(const SeriesFactorSet& consecutive) const
+{
+  cout << "Longest AE: ";
+  if( consecutive.empty() ) {
+    cout << 0 << endl;
+    return;
+  }
+
+  const SeriesFactor& sf_begin = *(consecutive.get<to_key>().begin());
+  const SeriesFactor& sf_end   = *(consecutive.get<to_key>().rbegin());
+
+  cout << " Position " << consecutive.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl;
+}
+
+
+void PositionsReport::_worst_adverse(const SeriesFactorSet& high) const
+{
+  cout << "Worst AE: ";
+  if( high.empty() ) {
+    cout << 0 << endl;
+    return;
+  }
+
+  const SeriesFactor& sf_begin = *(high.get<from_key>().begin());
+  const SeriesFactor& sf_end = *(high.get<to_key>().rbegin());
+
+  cout << (high.factor()-1)*100 << '%';
+  cout << " Position " << high.position() << " [" << sf_begin.from_tm() << '/' << sf_end.to_tm() << ']' << endl << endl;
 }

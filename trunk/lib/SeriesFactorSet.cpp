@@ -40,12 +40,3 @@ bool SeriesFactorSet::insert( const SeriesFactor& sf )
 
   return true;
 }
-
-
-double SeriesFactorSet::factor( void ) const throw(SeriesFactorSetException)
-{
-  if( empty() )
-    throw SeriesFactorSetException("Invalid factor for empty set");
-
-  return _factor;
-}
