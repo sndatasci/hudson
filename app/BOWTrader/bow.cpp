@@ -26,7 +26,6 @@
 
 // Hudson
 #include <Database.hpp>
-#include <EODDB.hpp>
 #include <EOMReturnFactors.hpp>
 #include <PositionFactorsSet.hpp>
 #include <PositionsReport.hpp>

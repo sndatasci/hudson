@@ -55,6 +55,12 @@ public:
 
 private:
   const PositionFactorsSet& _pf;
+
+private:
+  void _consecutive_adverse(const SeriesFactorSet& consecutive) const;
+  void _consecutive_favorable(const SeriesFactorSet& consecutive) const;
+  void _worst_adverse(const SeriesFactorSet& high) const;
+  void _best_favorable(const SeriesFactorSet& high) const;
 };
 
 #endif // _POSITIONSREPORT_HPP_
