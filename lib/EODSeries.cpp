@@ -159,7 +159,9 @@ Series::EODSeries::ThisMap::const_iterator Series::EODSeries::before(const boost
 Series::EODSeries::ThisMap::const_iterator Series::EODSeries::after(const boost::gregorian::date& k, unsigned recs) const
 {
   ThisMap::const_iterator iter;
+  // Find exact match
   if( (iter = ThisMap::find(k)) == ThisMap::end() ) {
+    // No exact match, try upper_bound(), or first date *after* k
     if( (iter = ThisMap::upper_bound(k)) == ThisMap::end() ) {
       return ThisMap::end();				// k out of range
     } else {
