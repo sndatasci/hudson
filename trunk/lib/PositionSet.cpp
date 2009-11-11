@@ -17,9 +17,7 @@
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "StdAfx.h"
-
-// STL
+// STD
 #include <iostream>
 #include <functional>
 #include <algorithm>

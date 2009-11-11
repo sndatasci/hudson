@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007-2009, Alberto Giannetti
 *
 * This file is part of Hudson.
 *
@@ -16,8 +16,6 @@
 * You should have received a copy of the GNU General Public License
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include <StdAfx.h>
 
 // Hudson
 #include "EOMReport.hpp"

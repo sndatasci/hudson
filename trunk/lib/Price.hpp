@@ -24,10 +24,8 @@
 #pragma warning (disable:4290)
 #endif
 
-// STDLIB
+// STD
 #include <stdexcept>
-
-// STL
 #include <string>
 
 // Boost

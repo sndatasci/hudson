@@ -17,11 +17,8 @@
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "StdAfx.h"
-
 // Hudson
 #include "EOWSeries.hpp"
-
 
 using namespace std;
 using namespace boost::gregorian;

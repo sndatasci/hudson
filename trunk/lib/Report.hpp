@@ -24,10 +24,8 @@
 #pragma warning (disable:4290)
 #endif
 
-// C++
+// STD
 #include <iostream>
-
-// STL
 #include <string>
 
 // Hudson

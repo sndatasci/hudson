@@ -17,7 +17,8 @@
 * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "StdAfx.h"
+// STD
+#include <exception>
 
 // Hudson
 #include "StrategyTrader.hpp"
@@ -141,7 +142,7 @@ void StrategyTrader::strategy_close( Position::ID strat_id, const boost::gregori
 
     pPos->close(dt, pt);
 
-  } catch( const exception& ex ) {
+  } catch( const std::exception& ex ) {
 
     throw TraderException(ex.what());
   }

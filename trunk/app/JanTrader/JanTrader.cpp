@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007,2008 A. Giannetti
+ * Copyright (C) 2007-2009 A. Giannetti
  *
  * This file is part of Hudson.
  *
