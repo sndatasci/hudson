@@ -24,7 +24,8 @@
 #pragma warning (disable:4290)
 #endif
 
-#include "StdAfx.h"
+// STD
+#include <string>
 
 // Hudson
 #include "ExecutionSet.hpp"

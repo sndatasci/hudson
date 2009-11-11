@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, Alberto Giannetti
+* Copyright (C) 2007,2009 Alberto Giannetti
 *
 * This file is part of Hudson.
 *
@@ -24,7 +24,7 @@
 #pragma warning (disable:4290)
 #endif
 
-// STL
+// STD
 #include <fstream>
 #include <string>
 

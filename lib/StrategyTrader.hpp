@@ -24,7 +24,7 @@
 #pragma warning (disable:4290)
 #endif
 
-// STL
+// STD
 #include <string>
 
 // Boost
