@@ -20,10 +20,6 @@
 #ifndef _YAHOODRIVER_HPP_
 #define _YAHOODRIVER_HPP_
 
-#ifdef WIN32
-#pragma warning (disable:4290)
-#endif
-
 // STL
 #include <fstream>
 #include <string>

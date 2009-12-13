@@ -46,7 +46,7 @@ void Series::Database::load(void) throw(DatabaseException)
 
     } catch(const std::exception& ex) {
       cerr << "Cannot load series " << symbol << " from file " << iter->second.filename << ": " << ex.what() << endl;
-      continue;
+      throw DatabaseException("Invalid series");
     }
 
   } // for(;;)

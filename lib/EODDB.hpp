@@ -60,7 +60,7 @@ namespace Series
       YAHOO,
       DMYC
     };
-    
+ 
     enum PriceType {
       PT_NA,
       OPEN,

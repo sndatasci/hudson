@@ -36,12 +36,12 @@ Series::EODSeries::EODSeries(const std::string& name):
 }
 
 
-size_t Series::EODSeries::load(FileDriver& driver, const std::string& filename)
+size_t Series::EODSeries::load(FileDriver& driver, const std::string& filename) throw(EODSeriesException)
 {
   ThisMap::clear();
 
   if( !driver.open(filename) )
-    return 0;
+    throw EODSeriesException("Can't open series file");
 
   DayPrice rec;
   while( !driver.eof() ) {
@@ -71,12 +71,12 @@ size_t Series::EODSeries::load(FileDriver& driver, const std::string& filename)
 }
 
 
-size_t Series::EODSeries::load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end)
+size_t Series::EODSeries::load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end) throw(EODSeriesException)
 {
   ThisMap::clear();
 
   if( !driver.open(filename) )
-    return 0;
+    throw EODSeriesException("Can't open series file");
 
   DayPrice rec;
   while( !driver.eof() ) {

@@ -20,10 +20,6 @@
 #ifndef _SERIES_EODSERIES_HPP_
 #define _SERIES_EODSERIES_HPP_
 
-#ifdef WIN32
-#pragma warning (disable:4290)
-#endif
-
 // STL
 #include <iostream>
 #include <map>
@@ -86,7 +82,7 @@ namespace Series
       \see YahooDriver
       \see DMYCloseDriver
     */
-    std::size_t load(FileDriver& driver, const std::string& filename); // load all records returned by the driver
+    std::size_t load(FileDriver& driver, const std::string& filename) throw(EODSeriesException); // load all records returned by the driver
     
     /*!
       Load data series from a file for a specific time period.
@@ -97,7 +93,7 @@ namespace Series
       \see YahooDriver
       \see DMYCloseDriver
     */
-    std::size_t load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end); // load date range
+    std::size_t load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end) throw(EODSeriesException); // load date range
 
     //! Returns the loaded period.
     boost::gregorian::date_period period(void) const throw(EODSeriesException);
