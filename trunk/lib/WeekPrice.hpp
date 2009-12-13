@@ -20,10 +20,6 @@
 #ifndef _SERIES_WEEKPRICE_HPP_
 #define _SERIES_WEEKPRICE_HPP_
 
-#ifdef WIN32
-#pragma warning (disable:4290)
-#endif
-
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 

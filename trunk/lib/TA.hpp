@@ -20,10 +20,6 @@
 #ifndef _TA_HPP_ 
 #define _TA_HPP_
 
-#ifdef WIN32
-#pragma warning (disable:4290)
-#endif
-
 // STL
 #include <stdexcept>
 #include <string>

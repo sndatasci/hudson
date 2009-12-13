@@ -58,9 +58,13 @@ void Series::EODDB::load(const std::string& name, const std::string& filename, D
 
   // Load new series
   EODSeries* pSeries = new EODSeries(name);
-  pSeries->load(*pFD, filename, begin, end);
-
-  _sDB.insert(DB::value_type(name, pSeries));
+  try {
+    pSeries->load(*pFD, filename, begin, end);
+    _sDB.insert(DB::value_type(name, pSeries));
+  } catch( const EODSeriesException& ex ) {
+    delete pSeries;
+    throw EODDBException(ex.what());
+  }
 }
 
 
