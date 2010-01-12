@@ -18,7 +18,7 @@ FILENAME=$1
 TICKER=$2
 
 #
-# Run sqlite import commands
+# Run sqlite import commands. Import table column order must mirror raw file columns.
 #
 sqlite3 eoddb <<EOF
 CREATE TEMPORARY TABLE myimport(
@@ -27,8 +27,8 @@ CREATE TEMPORARY TABLE myimport(
   high_price REAL,
   low_price REAL,
   close_price REAL,
-  adjclose_price REAL,
-  volume INTEGER
+  volume INTEGER,
+  adjclose_price REAL
 );
 .separator ","
 .import $FILENAME myimport
