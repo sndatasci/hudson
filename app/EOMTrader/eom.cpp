@@ -19,10 +19,12 @@
 
 // STD
 #include <iostream>
+#include <fstream>
 #include <string>
 
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/program_options.hpp>
 
 // Hudson
 #include <Database.hpp>
@@ -34,32 +36,82 @@
 
 // App
 #include "EOMTrader.hpp"
+#include "Args.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
 using namespace Series;
 
+namespace po = boost::program_options;
+
 
 int main(int argc, char* argv[])
 {
+  Args args;
+
   try {
 
-    Database::SeriesFile sf;
-    Database::SERIES_MAP mSeries;
+    // Command line only options
+    po::options_description generic_opt("Command line options");
+    generic_opt.add_options()
+      ("help,h", "print help message")
+      ("symbol,s", po::value<string>(&args.symbol), "tested symbol price series")
+      ("begin_date,b", po::value<string>(&args.begin_date), "begin of backtest date (YYYYMMDD)")
+      ("end_date,e", po::value<string>(&args.end_date), "end of backtest date (YYYYMMDD)")
+      ("config,c", po::value<string>(&args.config), "configuration file")
+      ;
+
+    // Config file or command line options
+    po::options_description config_opt("Configuration options");
+    config_opt.add_options()
+      ("database", po::value<string>(&args.database), "price database")
+      ("table", po::value<string>(&args.table)->default_value("eod"), "price table")
+      ("processors", po::value<unsigned int>(&args.cpus)->default_value(1), "number of system CPUs")
+      ;
+
+    po::options_description config_file_options;
+    config_file_options.add(config_opt);
+
+    po::options_description cmdline_options;
+    cmdline_options.add(generic_opt).add(config_opt);
+
+    // Priority to command line options
+    po::variables_map opt_vars;
+    po::store(parse_command_line(argc, argv, cmdline_options), opt_vars);
+    po::notify(opt_vars);
+
+    // Check for config file
+    if( ! args.config.empty() ) {
+      ifstream ifs(args.config.c_str());
+      po::store(parse_config_file(ifs, config_file_options), opt_vars);
+      po::notify(opt_vars);
+    }
+
+    if( opt_vars.count("help") ) {
+      cout << cmdline_options << endl;
+      return 0;
+    }
+
+    if( args.symbol.empty() ||
+	args.begin_date.empty() ||
+	args.end_date.empty() ) {
+      cerr << cmdline_options << endl;
+      return -1;
+    }
+
+    set<string> symbols;
 
     // SPX
-    sf.filename = "../../db/SPX.csv";
-    sf.driver = EODDB::YAHOO;
-    mSeries.insert(Database::SERIES_MAP::value_type("SPX", sf));
+    symbols.insert(args.symbol);
 
     date begin(1981, Jan, 1), end(2008, May, 31);
-    Database db(date_period(begin, end), mSeries);
+    Database db(args.database, date_period(begin, end), symbols);
     db.load();
     db.print();
 
-    const EODSeries& spx_db = EODDB::instance().get("SPX");
+    const EODSeries& spx_db = EODDB::instance().get(args.symbol);
 
-    EOMTrader trader("SPX", spx_db);
+    EOMTrader trader(args.symbol, spx_db);
     trader.run(3, 3);
 
     /*

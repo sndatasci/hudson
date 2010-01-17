@@ -38,14 +38,14 @@ namespace Series
   class DayPrice
   {
   public:
-	  boost::gregorian::date key;
-
-	  double high; //! High price.
-	  double low; //! Low price.
-	  double open; //! Open price.
-	  double close; //! Close price.
-	  double adjclose; //! Adjusted closed. This is the adjusted price to account for split and dividends.
-	  unsigned long volume; //! Day volume.
+    boost::gregorian::date key;
+    
+    double high; //! High price.
+    double low; //! Low price.
+    double open; //! Open price.
+    double close; //! Close price.
+    double adjclose; //! Adjusted closed.
+    unsigned long volume; //! Day volume.
   };
 
 } // namespace Series

@@ -19,15 +19,17 @@
 
 // Hudson
 #include "Database.hpp"
+#include "EODDB.hpp"
 
 using namespace boost::gregorian;
 using namespace std;
 using namespace Series;
 
 
-Series::Database::Database(const date_period& dp, const SERIES_MAP& mSeries):
+Series::Database::Database(const std::string& filename, const date_period& dp, const std::set<std::string>& symbols):
+  _filename(filename),
   _dp(dp),
-  _mSeries(mSeries)
+  _symbols(symbols)
 {
 }
 
@@ -37,15 +39,16 @@ void Series::Database::load(void) throw(DatabaseException)
   if( _dp.is_null() )
     throw DatabaseException("Invalid period");
 
-  for( SERIES_MAP::const_iterator iter = _mSeries.begin(); iter != _mSeries.end(); ++iter ) {
-    string symbol = iter->first;
+  for( set<string>::const_iterator iter = _symbols.begin(); iter != _symbols.end(); ++iter ) {
+
+    string symbol = *iter;
 
     try {
 
-      Series::EODDB::instance().load(symbol, iter->second.filename, iter->second.driver, _dp.begin(), _dp.last());
+      Series::EODDB::instance().load(_filename, symbol, _dp.begin(), _dp.last());
 
     } catch(const std::exception& ex) {
-      cerr << "Cannot load series " << symbol << " from file " << iter->second.filename << ": " << ex.what() << endl;
+      cerr << "Cannot load " << symbol << " data from " << _filename << ": " << ex.what() << endl;
       throw DatabaseException("Invalid series");
     }
 
@@ -55,21 +58,21 @@ void Series::Database::load(void) throw(DatabaseException)
 
 void Series::Database::print(void)
 {
-  for( SERIES_MAP::const_iterator iter = _mSeries.begin(); iter != _mSeries.end(); ++iter ) {
+  for( set<string>::const_iterator iter = _symbols.begin(); iter != _symbols.end(); ++iter ) {
 
     try {
 
-      const Series::EODSeries& db = Series::EODDB::instance().get(iter->first);
+      const Series::EODSeries& series = Series::EODDB::instance().get(*iter);
 
       cout << "--" << endl;
-      cout << "Symbol: " << iter->first << endl;
-      cout << "Records: " << db.size() << endl;
-      cout << "Total days: " << db.days() << endl;
-      cout << "From: " << db.begin()->first << endl;
-      cout << "To: " << db.rbegin()->first << endl;
+      cout << "Symbol: " << *iter << endl;
+      cout << "Records: " << series.size() << endl;
+      cout << "Total days: " << series.days() << endl;
+      cout << "From: " << series.begin()->first << endl;
+      cout << "To: " << series.rbegin()->first << endl;
 
     } catch( const std::exception& ex ) {
-      cerr << "Cannot print data for database symbol " << iter->first << ": " << ex.what() << endl;
+      cerr << "Cannot print data for database symbol " << *iter << ": " << ex.what() << endl;
       continue;
     }
 

@@ -30,81 +30,8 @@ using namespace boost::gregorian;
 
 
 Series::EODSeries::EODSeries(const std::string& name):
-  _name(name),
-  _isLoaded(false)
+  _name(name)
 {
-}
-
-
-size_t Series::EODSeries::load(FileDriver& driver, const std::string& filename) throw(EODSeriesException)
-{
-  ThisMap::clear();
-
-  if( !driver.open(filename) )
-    throw EODSeriesException("Can't open series file");
-
-  DayPrice rec;
-  while( !driver.eof() ) {
-
-    try {
-
-      if( driver.next(rec) == false )
-        continue;
-
-      if( ThisMap::insert(ThisMap::value_type(rec.key, rec)).second == false ) {
-        cerr << "Duplicate record " << rec.key << endl;
-        continue;
-      }
-
-    } catch( DriverException& e ) {
-      cerr << e.what() << endl;
-      continue;
-    }
-
-  }	// while not EOF
-
-  driver.close();
-
-  _isLoaded = true;
-
-  return std::map<boost::gregorian::date, DayPrice>::size();
-}
-
-
-size_t Series::EODSeries::load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end) throw(EODSeriesException)
-{
-  ThisMap::clear();
-
-  if( !driver.open(filename) )
-    throw EODSeriesException("Can't open series file");
-
-  DayPrice rec;
-  while( !driver.eof() ) {
-
-    try {
-
-      if( driver.next(rec) == false ) // EOF
-        continue;
-
-      if( rec.key < begin || rec.key > end )
-        continue;					// out of range
-
-      if( ThisMap::insert(ThisMap::value_type(rec.key, rec)).second == false ) {
-        cerr << "Duplicate record " << rec.key << endl;
-        continue;
-      }
-
-    } catch( DriverException& e ) {
-      cerr << e.what() << endl;
-      continue;
-    }
-  }	// while not EOF
-
-  driver.close();
-
-  _isLoaded = true;
-
-  return ThisMap::size();
 }
 
 
@@ -266,7 +193,7 @@ std::vector<double> Series::EODSeries::open( const_iterator iter, unsigned long 
 {
   vector<double> v;
 
-  if( !_isLoaded || iter == end() )
+  if( iter == end() )
     return v;
 
   // reverse iterator init skips the first element in collection. We must manually insert the current element.

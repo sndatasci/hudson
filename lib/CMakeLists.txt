@@ -6,15 +6,12 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 #
 #
 FIND_PACKAGE(Boost 1.33 COMPONENTS date_time REQUIRED)
-SET(Boost_USE_MULTITHREADED OFF)
 
 INCLUDE_DIRECTORIES(/usr/include)
 LINK_DIRECTORIES(/usr/lib)
 
 ADD_LIBRARY(HUDSON SHARED
-YahooDriver.cpp 
 Database.cpp
-DMYCloseDriver.cpp
 EODSeries.cpp
 EOMSeries.cpp
 EOWSeries.cpp
