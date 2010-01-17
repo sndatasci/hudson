@@ -22,13 +22,10 @@
 
 // STL
 #include <string>
-#include <map>
+#include <set>
 
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
-
-// Hudson
-#include "EODDB.hpp"
 
 
 #ifdef WIN32
@@ -62,16 +59,7 @@ protected:
 class Database
 {
 public:
-  struct SeriesFile {
-    std::string filename;
-    Series::EODDB::DriverType driver;
-  };
-
-  typedef std::string SYMBOL;
-  typedef std::map<SYMBOL, SeriesFile> SERIES_MAP;
-
-public:
-  Database(const boost::gregorian::date_period& dp, const SERIES_MAP& mSeries);
+  Database(const std::string& filename, const boost::gregorian::date_period& dp, const std::set<std::string>& symbols);
 
   //! Load all time-series defined in class constructor
   void load(void) throw(DatabaseException);
@@ -80,8 +68,9 @@ public:
   void print(void);
 
 protected:
+  const std::string _filename;
   const boost::gregorian::date_period _dp;
-  const SERIES_MAP _mSeries;
+  const std::set<std::string> _symbols;
 };
 
 

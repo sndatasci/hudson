@@ -31,7 +31,6 @@
 
 // Series
 #include "DayPrice.hpp"
-#include "FileDriver.hpp"
 #include "EOWSeries.hpp"
 #include "EOMSeries.hpp"
 
@@ -54,10 +53,7 @@ namespace Series
     std::string _Str;
   };
 
-  /*!
-    EODSeries is an STL map collection indexed by date. The collection is meant to store
-    historical EOD data ordered by time.
-  */
+
   class EODSeries: public std::map<boost::gregorian::date, Series::DayPrice>
   {
     typedef std::map<boost::gregorian::date, DayPrice> ThisMap;
@@ -72,29 +68,6 @@ namespace Series
     //! Returns data series name.
     std::string name(void) const { return _name; }
     
-    //! Returns true if data was loaded from a file. False otherwise.
-    bool isLoaded(void) const { return _isLoaded; }
-
-    /*!
-      Load data series from a file using a specific driver.
-      \param driver The parser that will be called to read lines from the file.
-      \param filename The path to the file containing the data series.
-      \see YahooDriver
-      \see DMYCloseDriver
-    */
-    std::size_t load(FileDriver& driver, const std::string& filename) throw(EODSeriesException); // load all records returned by the driver
-    
-    /*!
-      Load data series from a file for a specific time period.
-      \param driver The parser that will be called to read lines from the file.
-      \param filename The path to the file containing the data series.
-      \param begin Beginning of requested EOD series.
-      \param end End of requested EOD series.
-      \see YahooDriver
-      \see DMYCloseDriver
-    */
-    std::size_t load(FileDriver& driver, const std::string& filename, const boost::gregorian::date& begin, const boost::gregorian::date& end) throw(EODSeriesException); // load date range
-
     //! Returns the loaded period.
     boost::gregorian::date_period period(void) const throw(EODSeriesException);
 
@@ -119,62 +92,62 @@ namespace Series
     */  
     EOMSeries monthly(void) const;
 
-    //! Extract all open prices from current loaded series preserving the original time order.
+    //! Extract all open prices.
     std::vector<double> open(void) const;
     
-    //! Extract all close prices from current loaded series preserving the original time order.
+    //! Extract all close prices.
     std::vector<double> close(void) const;
     
-    //! Extract all adjusted close prices from current loaded series preserving the original time order.
+    //! Extract all adjusted close prices.
     std::vector<double> adjclose(void) const;
     
-    //! Extract all high prices from current loaded series preserving the original time order.
+    //! Extract all high prices.
     std::vector<double> high(void) const;
     
-    //! Extract all low prices from current loaded series preserving the original time order.
+    //! Extract all low prices.
     std::vector<double> low(void) const;
     
-    //! Extract all volume values from current loaded series preserving the original time order.
+    //! Extract all volume values.
     std::vector<double> volume(void) const;
 
     //! Extract all open prices from iter included backwards num elements
     /*!
-      \param iter An iterator that points to the first item in the series that should be extracted.
+      \param iter An iterator that points to the first item in the series.
       \param num The number of items that should be extracted in reverse order.
     */
     std::vector<double> open(const_iterator iter, unsigned long num) const;
     
     //! Extract all close prices from iter included backwards num elements
     /*!
-      \param iter An iterator that points to the first item in the series that should be extracted.
+      \param iter An iterator that points to the first item in the series.
       \param num The number of items that should be extracted in reverse order.
     */
     std::vector<double> close(const_iterator iter, unsigned long num) const;
     
     //! Extract all adjusted close prices from iter included backwards num elements
     /*!
-      \param iter An iterator that points to the first item in the series that should be extracted.
+      \param iter An iterator that points to the first item in the series.
       \param num The number of items that should be extracted in reverse order.
     */
     std::vector<double> adjclose(const_iterator iter, unsigned long num) const;
     
     //! Extract all high prices from iter included backwards num elements
     /*!
-      \param iter An iterator that points to the first item in the series that should be extracted.
+      \param iter An iterator that points to the first item in the series.
       \param num The number of items that should be extracted in reverse order.
     */
     std::vector<double> high(const_iterator iter, unsigned long num) const;
     
     //! Extract all low prices from iter included backwards num elements
     /*!
-      \param iter An iterator that points to the first item in the series that should be extracted.
+      \param iter An iterator that points to the first item in the series.
       \param num The number of items that should be extracted in reverse order.
     */
     std::vector<double> low(const_iterator iter, unsigned long num) const;
     
     //! Extract all volume values from iter included backwards num elements
     /*!
-      \param iter An iterator that points to the first item in the series that should be extracted.
+      \param iter An iterator that points to the first item in the series.
       \param num The number of items that should be extracted in reverse order.
     */
     std::vector<double> volume(const_iterator iter, unsigned long num) const;
@@ -256,7 +229,6 @@ namespace Series
 
   private:
     std::string _name;
-    bool _isLoaded;
   };
 
 } // namespace Series

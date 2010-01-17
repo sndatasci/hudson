@@ -11,3 +11,9 @@ CREATE TABLE eod(
 
 CREATE UNIQUE INDEX eodIdx
 ON eod (symbol, day_date);
+
+CREATE TABLE desc(
+	symbol VARCHAR(16) PRIMARY KEY,
+	source VARCHAR(32) NOT NULL,
+	description VARCHAR(64)
+);

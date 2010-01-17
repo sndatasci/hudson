@@ -20,15 +20,16 @@
 #ifndef _SERIES_EODDB_HPP_
 #define _SERIES_EODDB_HPP_
 
-// STL
+// STD
 #include <map>
 #include <string>
 #include <stdexcept>
 #include <memory>
 
+// SQLITE
+#include <sqlite3.h>
+
 // Hudson
-#include "YahooDriver.hpp"
-#include "DMYCloseDriver.hpp"
 #include "EODSeries.hpp"
 
 
@@ -55,12 +56,6 @@ namespace Series
   class EODDB
   {
   public:
-    enum DriverType {
-      DT_NA,
-      YAHOO,
-      DMYC
-    };
- 
     enum PriceType {
       PT_NA,
       OPEN,
@@ -71,18 +66,15 @@ namespace Series
   public:
     static EODDB& instance(void);
 
-    void load(const std::string& name, const std::string& filename, DriverType dt,
-	            const boost::gregorian::date& begin, const boost::gregorian::date& end) throw(EODDBException);
-    const EODSeries& get(const std::string& name) const throw(EODDBException);
+    void load(const std::string& filename, const std::string& symbol,
+	      const boost::gregorian::date& begin, const boost::gregorian::date& end) throw(EODDBException);
+    const EODSeries& get(const std::string& symbol) const throw(EODDBException);
 
   protected:
     EODDB(void) { }
 
-    YahooDriver _yd;
-    DMYCloseDriver _dmycd;
-
-    typedef std::map<std::string, EODSeries*> DB;
-    DB _sDB;
+    typedef std::map<std::string, EODSeries*> SERIES_MAP;
+    SERIES_MAP _mSeries;
 
   private:
     static std::auto_ptr<EODDB> _pInstance;
