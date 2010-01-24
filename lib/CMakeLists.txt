@@ -7,9 +7,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 #
 FIND_PACKAGE(Boost 1.33 COMPONENTS date_time REQUIRED)
 
-INCLUDE_DIRECTORIES(/usr/include)
-LINK_DIRECTORIES(/usr/lib)
-
 ADD_LIBRARY(HUDSON SHARED
 Database.cpp
 EODSeries.cpp
@@ -42,4 +39,5 @@ BnHTrader.cpp
 TA.cpp
 )
 
-TARGET_LINK_LIBRARIES(HUDSON boost_date_time-mt boost_program_options-mt ta_lib gslcblas)
+TARGET_LINK_LIBRARIES(HUDSON boost_date_time-mt boost_program_options-mt ta_lib gslcblas gsl sqlite3)
+

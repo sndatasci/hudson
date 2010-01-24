@@ -3,8 +3,9 @@ PROJECT(Hudson)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 SUBDIRS(lib)
-INCLUDE_DIRECTORIES(/home/ag/include lib)
-LINK_DIRECTORIES(/home/ag/lib /usr/lib lib)
+
+INCLUDE_DIRECTORIES(/opt/local/include lib)
+LINK_DIRECTORIES(/opt/local/lib lib)
 
 ADD_EXECUTABLE(aa app/AATrader/AATrader.cpp app/AATrader/aa.cpp)
 ADD_EXECUTABLE(aamacd app/AATraderMACD/AATraderMACD.cpp app/AATraderMACD/aaMACD.cpp)
