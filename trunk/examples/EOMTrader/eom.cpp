@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007,2008 Alberto Giannetti
+ * Copyright (C) 2007,2008,2009,2010 Alberto Giannetti
  *
  * This file is part of Hudson.
  *
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     // SPX
     symbols.insert(args.symbol);
 
-    date begin(1981, Jan, 1), end(2008, May, 31);
+    date begin(from_string(args.begin_date)), end(from_string(args.end_date));
     Database db(args.database, date_period(begin, end), symbols);
     db.load();
     db.print();
