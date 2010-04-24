@@ -1,18 +1,5 @@
 #!/bin/bash
 
-############################################################################
-
-get_date () {
-    local date=$1
-    yyyymmdd[0]=${date:0:4}
-    yyyymmdd[1]=${date:4:2}
-    yyyymmdd[2]=${date:6:2}
-
-    return $yyyymmdd
-}
-
-############################################################################
-
 USAGE="yahoofetch -s symbol -b begin_date (YYYYMMDD) -e end_date (YYYYMMDD)"
 
 symbol=
