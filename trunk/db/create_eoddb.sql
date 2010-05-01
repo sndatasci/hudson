@@ -9,11 +9,10 @@ CREATE TABLE eod(
 	volume INTEGER
 );
 
-CREATE UNIQUE INDEX eodIdx
+CREATE UNIQUE INDEX eod_idx
 ON eod (symbol, day_date);
 
 CREATE TABLE desc(
 	symbol VARCHAR(16) PRIMARY KEY,
-	source VARCHAR(32) NOT NULL,
 	description VARCHAR(64)
 );
