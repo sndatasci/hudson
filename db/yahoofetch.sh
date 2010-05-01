@@ -1,16 +1,79 @@
 #!/bin/bash
 
-USAGE="yahoofetch -s symbol -b begin_date (YYYYMMDD) -e end_date (YYYYMMDD)"
+#####################################################################################
 
-symbol=
+function download {
+
+    # Parameters
+    local filename=$1
+    local begin=$2
+    local end=$3
+    # End parameters
+
+    local begin_year=${begin:0:4}
+    local begin_month=${begin:4:2}
+    local begin_day=${begin:6:2}
+
+    local end_year=${end:0:4}
+    local end_month=${end:4:2}
+    local end_day=${end:6:2}
+
+    local begin_month=$(( 10#$begin_month-1 ))
+    local end_month=$(( 10#$end_month-1 ))
+
+    url=`printf 'http://ichart.finance.yahoo.com/table.csv?s=%s&a=%02d&b=%d&c=%d&d=%02d&e=%d&f=%d&g=d&ignore=.csv' ${symbol} ${begin_month} ${begin_day} ${begin_year} ${end_month} ${end_day} ${end_year}`
+
+    wget -q -O ${filename} "${url}"
+
+    return $?
+}
+
+#####################################################################################
+
+function dbimport
+{
+
+    # Parameters
+    local db=$1
+    local filename=$2
+    # End parameters
+
+    sqlite3 $db <<EOF
+CREATE TEMPORARY TABLE myimport(
+  day_date VARCHAR(16),
+  open_price REAL,
+  high_price REAL,
+  low_price REAL,
+  close_price REAL,
+  volume INTEGER,
+  adjclose_price REAL
+);
+.separator ","
+.import $filename myimport
+INSERT OR REPLACE INTO eod(symbol, day_date, open_price, high_price, low_price, close_price, adjclose_price, volume) SELECT '$symbol', day_date, open_price, high_price, low_price, close_price, adjclose_price, volume FROM myimport;
+DELETE FROM eod WHERE open_price='Open';
+EOF
+
+    return $?
+}
+
+#####################################################################################
+
+USAGE="yahoofetch -f tickers_file -d database -b begin_date (YYYYMMDD) -e end_date (YYYYMMDD)"
+
+tickers_file=
 begin_date=
 end_date=
+database=
 
-while getopts "s:b:e:" ARG
+while getopts "f:b:e:d:" ARG
 do
     case $ARG in
-        s)
-            symbol=$OPTARG
+        f)
+            tickers_file=$OPTARG
+            ;;
+        d)
+            database=$OPTARG
             ;;
         b)
             begin_date=$OPTARG
@@ -21,29 +84,33 @@ do
     esac
 done
 
-if [[ -z "$symbol" || -z "$begin_date" || -z "$end_date" ]]
+if [[ -z "$tickers_file" || -z "$begin_date" || -z "$end_date" || -z "$database" ]]
 then
     echo $USAGE
     exit -1
 fi
 
-url="http://ichart.finance.yahoo.com/table.csv?s=${symbol}&a=00&b=23&c=2009&d=03&e=24&f=2010&g=d&ignore=.csv"
+cat $tickers_file | while read line
+do
+    symbol=$line
+    filename=${symbol}.csv
+    echo "Downloading $symbol..."
+    download $filename $begin_date $end_date
+    if [ $? -ne 0 ] ; then
+        echo "$symbol download failed"
+        continue
+    fi
 
-begin_year=${begin_date:0:4}
-begin_month=${begin_date:4:2}
-begin_day=${begin_date:6:2}
+    echo "Importing $symbol..."
+    dbimport $database $filename
+    if [ $? -ne 0 ] ; then
+        echo "$symbol import failed"
+        continue
+    fi
 
-end_year=${end_date:0:4}
-end_month=${end_date:4:2}
-end_day=${end_date:6:2}
+    rm $filename
 
-begin_month=$(( 10#$begin_month-1 ))
-end_month=$(( 10#$end_month-1 ))
-
-ofile=${symbol}.csv
-
-url=`printf 'http://ichart.finance.yahoo.com/table.csv?s=%s&a=%02d&b=%d&c=%d&d=%02d&e=%d&f=%d&g=d&ignore=.csv' ${symbol} ${begin_month} ${begin_day} ${begin_year} ${end_month} ${end_day} ${end_year}`
-
-wget -q -O ${ofile} "${url}"
+    sleep 1
+done
 
 exit 0
