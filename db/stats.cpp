@@ -75,7 +75,7 @@ bool stats::calc()
 
     if( ! header ) {
       unsigned months = row / 21;
-      cout << "Symbol," << months << "M Return,Stddev,21dVol" << endl;
+      cout << "Symbol," << months << "M Return,Stddev,Return/Stddev,21dVol" << endl;
       header = true;
     }
 
