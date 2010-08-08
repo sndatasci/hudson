@@ -96,11 +96,12 @@ bool stats::calc()
       acc2(vol);
     }
 
-    double first_price = atof(results[col+1]);
-    double last_price = atof(results[row*col+1]);
-    double tot_ret = (last_price - first_price)/first_price;
-    double stddev = std::sqrt(boost::accumulators::variance(acc1));
-    cout << symbol << ',' << tot_ret << ',' << stddev << "," << boost::accumulators::mean(acc2) << endl;
+    const double first_price = atof(results[col+1]);
+    const double last_price = atof(results[row*col+1]);
+    const double tot_ret = (last_price - first_price)/first_price;
+    const double stddev = std::sqrt(boost::accumulators::variance(acc1));
+    const double tot_ret_stddev = tot_ret / stddev;
+    cout << symbol << ',' << tot_ret << ',' << stddev << "," << tot_ret_stddev << "," << boost::accumulators::mean(acc2) << endl;
 
     sqlite3_free_table(results);
   }
