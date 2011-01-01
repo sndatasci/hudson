@@ -16,6 +16,7 @@ struct args
   }
 
   boost::gregorian::date begin;
+  boost::gregorian::date risk_begin;
   boost::gregorian::date end;
   std::string tickers;
   std::string database;
